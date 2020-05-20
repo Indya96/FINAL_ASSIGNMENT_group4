@@ -20,14 +20,22 @@
 // Variables declaration
 uint8 ch_receveid;
 
+/******************************************************************************************************************/
+/*                                              UART RX INTERRUPT                                                 */
+/******************************************************************************************************************/
+
 CY_ISR(Custom_ISR_RX)
 {
+    /*******************************/
+    /*         INPUT CHECK         */
+    /*******************************/
+    
     // Non-blocking call to get the latest data recieved
     ch_receveid = UART_GetChar();
         
     // Set flags based on UART command
-    switch(ch_receveid)
-    {
+    switch(ch_receveid){
+        
         case 'B':
         case 'b':
             FLAG_BS = 1;
@@ -126,21 +134,21 @@ CY_ISR(Custom_ISR_RX)
             break;    
     }
     
-    /* integrity control */
-    if(FLAG_FSR==1 && FLAG_SF==1)
-    {
+    /*******************************/
+    /*     INTEGRITY CONTROL       */
+    /*******************************/
+    
+    if(FLAG_FSR==1 && FLAG_SF==1){
         FLAG_FSR=0;
         FLAG_SF=0;
     }
     
-    if(FLAG_AS==1 && FLAG_SF==1)
-    {
+    if(FLAG_AS==1 && FLAG_SF==1){
         FLAG_AS=0;
         FLAG_SF=0;
     }
     
-        if(FLAG_AS==1 && FLAG_FSR==1)
-    {
+    if(FLAG_AS==1 && FLAG_FSR==1){
         FLAG_AS=0;
         FLAG_FSR=0;
     }

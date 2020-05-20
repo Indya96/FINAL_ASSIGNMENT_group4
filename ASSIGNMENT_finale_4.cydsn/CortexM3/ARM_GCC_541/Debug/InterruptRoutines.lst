@@ -1,0 +1,1235 @@
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"InterruptRoutines.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.Custom_ISR_RX,"ax",%progbits
+  20              		.align	2
+  21              		.global	Custom_ISR_RX
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	Custom_ISR_RX, %function
+  25              	Custom_ISR_RX:
+  26              	.LFB64:
+  27              		.file 1 "InterruptRoutines.c"
+   1:InterruptRoutines.c **** /* ========================================
+   2:InterruptRoutines.c ****  *
+   3:InterruptRoutines.c ****  * Copyright YOUR COMPANY, THE YEAR
+   4:InterruptRoutines.c ****  * All Rights Reserved
+   5:InterruptRoutines.c ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:InterruptRoutines.c ****  *
+   7:InterruptRoutines.c ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8:InterruptRoutines.c ****  * WHICH IS THE PROPERTY OF your company.
+   9:InterruptRoutines.c ****  *
+  10:InterruptRoutines.c ****  * ========================================
+  11:InterruptRoutines.c **** */
+  12:InterruptRoutines.c **** 
+  13:InterruptRoutines.c **** // Include header
+  14:InterruptRoutines.c **** #include "InterruptRoutines.h"
+  15:InterruptRoutines.c **** #include "Pages.h"
+  16:InterruptRoutines.c **** 
+  17:InterruptRoutines.c **** // Include required header files
+  18:InterruptRoutines.c **** #include "project.h"
+  19:InterruptRoutines.c **** 
+  20:InterruptRoutines.c **** // Variables declaration
+  21:InterruptRoutines.c **** uint8 ch_receveid;
+  22:InterruptRoutines.c **** 
+  23:InterruptRoutines.c **** /**************************************************************************************************
+  24:InterruptRoutines.c **** /*                                              UART RX INTERRUPT                                  
+  25:InterruptRoutines.c **** /**************************************************************************************************
+  26:InterruptRoutines.c **** 
+  27:InterruptRoutines.c **** CY_ISR(Custom_ISR_RX)
+  28:InterruptRoutines.c **** {
+  28              		.loc 1 28 0
+  29              		.cfi_startproc
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 2
+
+
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 3, -8
+  35              		.cfi_offset 14, -4
+  29:InterruptRoutines.c ****     /*******************************/
+  30:InterruptRoutines.c ****     /*         INPUT CHECK         */
+  31:InterruptRoutines.c ****     /*******************************/
+  32:InterruptRoutines.c ****     
+  33:InterruptRoutines.c ****     // Non-blocking call to get the latest data recieved
+  34:InterruptRoutines.c ****     ch_receveid = UART_GetChar();
+  36              		.loc 1 34 0
+  37 0002 FFF7FEFF 		bl	UART_GetChar
+  38              	.LVL0:
+  39 0006 924B     		ldr	r3, .L24
+  40 0008 1870     		strb	r0, [r3]
+  35:InterruptRoutines.c ****         
+  36:InterruptRoutines.c ****     // Set flags based on UART command
+  37:InterruptRoutines.c ****     switch(ch_receveid){
+  41              		.loc 1 37 0
+  42 000a 3138     		subs	r0, r0, #49
+  43 000c 4228     		cmp	r0, #66
+  44 000e 00F23281 		bhi	.L2
+  45 0012 DFE810F0 		tbh	[pc, r0, lsl #1]
+  46              	.L4:
+  47 0016 5700     		.2byte	(.L3-.L4)/2
+  48 0018 9A00     		.2byte	(.L5-.L4)/2
+  49 001a DA00     		.2byte	(.L6-.L4)/2
+  50 001c FB00     		.2byte	(.L7-.L4)/2
+  51 001e 3001     		.2byte	(.L2-.L4)/2
+  52 0020 3001     		.2byte	(.L2-.L4)/2
+  53 0022 3001     		.2byte	(.L2-.L4)/2
+  54 0024 3001     		.2byte	(.L2-.L4)/2
+  55 0026 3001     		.2byte	(.L2-.L4)/2
+  56 0028 3001     		.2byte	(.L2-.L4)/2
+  57 002a 3001     		.2byte	(.L2-.L4)/2
+  58 002c 3001     		.2byte	(.L2-.L4)/2
+  59 002e 3001     		.2byte	(.L2-.L4)/2
+  60 0030 3001     		.2byte	(.L2-.L4)/2
+  61 0032 3001     		.2byte	(.L2-.L4)/2
+  62 0034 3001     		.2byte	(.L2-.L4)/2
+  63 0036 3001     		.2byte	(.L2-.L4)/2
+  64 0038 4300     		.2byte	(.L8-.L4)/2
+  65 003a 3001     		.2byte	(.L2-.L4)/2
+  66 003c 3001     		.2byte	(.L2-.L4)/2
+  67 003e 3001     		.2byte	(.L2-.L4)/2
+  68 0040 4B00     		.2byte	(.L9-.L4)/2
+  69 0042 3001     		.2byte	(.L2-.L4)/2
+  70 0044 3001     		.2byte	(.L2-.L4)/2
+  71 0046 3001     		.2byte	(.L2-.L4)/2
+  72 0048 3001     		.2byte	(.L2-.L4)/2
+  73 004a 3001     		.2byte	(.L2-.L4)/2
+  74 004c 5300     		.2byte	(.L10-.L4)/2
+  75 004e 3001     		.2byte	(.L2-.L4)/2
+  76 0050 3001     		.2byte	(.L2-.L4)/2
+  77 0052 2D01     		.2byte	(.L11-.L4)/2
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 3
+
+
+  78 0054 4F00     		.2byte	(.L12-.L4)/2
+  79 0056 3001     		.2byte	(.L2-.L4)/2
+  80 0058 3001     		.2byte	(.L2-.L4)/2
+  81 005a 4700     		.2byte	(.L13-.L4)/2
+  82 005c 3001     		.2byte	(.L2-.L4)/2
+  83 005e 3001     		.2byte	(.L2-.L4)/2
+  84 0060 3001     		.2byte	(.L2-.L4)/2
+  85 0062 3001     		.2byte	(.L2-.L4)/2
+  86 0064 3001     		.2byte	(.L2-.L4)/2
+  87 0066 3001     		.2byte	(.L2-.L4)/2
+  88 0068 3001     		.2byte	(.L2-.L4)/2
+  89 006a 3001     		.2byte	(.L2-.L4)/2
+  90 006c 3001     		.2byte	(.L2-.L4)/2
+  91 006e 3001     		.2byte	(.L2-.L4)/2
+  92 0070 3001     		.2byte	(.L2-.L4)/2
+  93 0072 3001     		.2byte	(.L2-.L4)/2
+  94 0074 3001     		.2byte	(.L2-.L4)/2
+  95 0076 3001     		.2byte	(.L2-.L4)/2
+  96 0078 4300     		.2byte	(.L8-.L4)/2
+  97 007a 3001     		.2byte	(.L2-.L4)/2
+  98 007c 3001     		.2byte	(.L2-.L4)/2
+  99 007e 3001     		.2byte	(.L2-.L4)/2
+ 100 0080 4B00     		.2byte	(.L9-.L4)/2
+ 101 0082 3001     		.2byte	(.L2-.L4)/2
+ 102 0084 3001     		.2byte	(.L2-.L4)/2
+ 103 0086 3001     		.2byte	(.L2-.L4)/2
+ 104 0088 3001     		.2byte	(.L2-.L4)/2
+ 105 008a 3001     		.2byte	(.L2-.L4)/2
+ 106 008c 5300     		.2byte	(.L10-.L4)/2
+ 107 008e 3001     		.2byte	(.L2-.L4)/2
+ 108 0090 3001     		.2byte	(.L2-.L4)/2
+ 109 0092 2D01     		.2byte	(.L11-.L4)/2
+ 110 0094 4F00     		.2byte	(.L12-.L4)/2
+ 111 0096 3001     		.2byte	(.L2-.L4)/2
+ 112 0098 3001     		.2byte	(.L2-.L4)/2
+ 113 009a 4700     		.2byte	(.L13-.L4)/2
+ 114              		.p2align 1
+ 115              	.L8:
+  38:InterruptRoutines.c ****         
+  39:InterruptRoutines.c ****         case 'B':
+  40:InterruptRoutines.c ****         case 'b':
+  41:InterruptRoutines.c ****             FLAG_BS = 1;
+ 116              		.loc 1 41 0
+ 117 009c 0122     		movs	r2, #1
+ 118 009e 6D4B     		ldr	r3, .L24+4
+ 119 00a0 1A70     		strb	r2, [r3]
+  42:InterruptRoutines.c ****             //todo
+  43:InterruptRoutines.c ****             break;
+ 120              		.loc 1 43 0
+ 121 00a2 E8E0     		b	.L2
+ 122              	.L13:
+  44:InterruptRoutines.c ****             
+  45:InterruptRoutines.c ****         case 'S':
+  46:InterruptRoutines.c ****         case 's':
+  47:InterruptRoutines.c ****             FLAG_BS = 0;
+ 123              		.loc 1 47 0
+ 124 00a4 0022     		movs	r2, #0
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 4
+
+
+ 125 00a6 6B4B     		ldr	r3, .L24+4
+ 126 00a8 1A70     		strb	r2, [r3]
+  48:InterruptRoutines.c ****             //todo
+  49:InterruptRoutines.c ****             break;
+ 127              		.loc 1 49 0
+ 128 00aa E4E0     		b	.L2
+ 129              	.L9:
+  50:InterruptRoutines.c ****             
+  51:InterruptRoutines.c ****         case 'F':
+  52:InterruptRoutines.c ****         case 'f':
+  53:InterruptRoutines.c ****             FLAG_FSR = 1;
+ 130              		.loc 1 53 0
+ 131 00ac 0122     		movs	r2, #1
+ 132 00ae 6A4B     		ldr	r3, .L24+8
+ 133 00b0 1A70     		strb	r2, [r3]
+  54:InterruptRoutines.c ****             break;
+ 134              		.loc 1 54 0
+ 135 00b2 E0E0     		b	.L2
+ 136              	.L12:
+  55:InterruptRoutines.c ****             
+  56:InterruptRoutines.c ****         case 'P':
+  57:InterruptRoutines.c ****         case 'p':
+  58:InterruptRoutines.c ****             FLAG_SF = 1;
+ 137              		.loc 1 58 0
+ 138 00b4 0122     		movs	r2, #1
+ 139 00b6 694B     		ldr	r3, .L24+12
+ 140 00b8 1A70     		strb	r2, [r3]
+  59:InterruptRoutines.c ****             break;
+ 141              		.loc 1 59 0
+ 142 00ba DCE0     		b	.L2
+ 143              	.L10:
+  60:InterruptRoutines.c ****             
+  61:InterruptRoutines.c ****         case 'L':
+  62:InterruptRoutines.c ****         case 'l':
+  63:InterruptRoutines.c ****             FLAG_AS = 1;
+ 144              		.loc 1 63 0
+ 145 00bc 0122     		movs	r2, #1
+ 146 00be 684B     		ldr	r3, .L24+16
+ 147 00c0 1A70     		strb	r2, [r3]
+  64:InterruptRoutines.c ****             break;
+ 148              		.loc 1 64 0
+ 149 00c2 D8E0     		b	.L2
+ 150              	.L3:
+  65:InterruptRoutines.c ****             
+  66:InterruptRoutines.c ****         case '1':
+  67:InterruptRoutines.c ****             if(FLAG_FSR==1 && FLAG_SF==0 && FLAG_AS==0){ // FULL SCALE RANGE
+ 151              		.loc 1 67 0
+ 152 00c4 644B     		ldr	r3, .L24+8
+ 153 00c6 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 154 00c8 DBB2     		uxtb	r3, r3
+ 155 00ca 012B     		cmp	r3, #1
+ 156 00cc 0FD1     		bne	.L14
+ 157              		.loc 1 67 0 is_stmt 0 discriminator 1
+ 158 00ce 634B     		ldr	r3, .L24+12
+ 159 00d0 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 160 00d2 13F0FF0F 		tst	r3, #255
+ 161 00d6 0AD1     		bne	.L14
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 5
+
+
+ 162              		.loc 1 67 0 discriminator 2
+ 163 00d8 614B     		ldr	r3, .L24+16
+ 164 00da 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 165 00dc 13F0FF0F 		tst	r3, #255
+ 166 00e0 05D1     		bne	.L14
+  68:InterruptRoutines.c ****                 FLAG_FSR  = 0;
+ 167              		.loc 1 68 0 is_stmt 1
+ 168 00e2 0022     		movs	r2, #0
+ 169 00e4 5C4B     		ldr	r3, .L24+8
+ 170 00e6 1A70     		strb	r2, [r3]
+  69:InterruptRoutines.c ****                 OPTION_FSR = 1;
+ 171              		.loc 1 69 0
+ 172 00e8 0122     		movs	r2, #1
+ 173 00ea 5E4B     		ldr	r3, .L24+20
+ 174 00ec 1A70     		strb	r2, [r3]
+ 175              	.L14:
+  70:InterruptRoutines.c ****                 //todo
+  71:InterruptRoutines.c ****             }
+  72:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==1 && FLAG_AS==0){ // SAMPLING FREQUENCY
+ 176              		.loc 1 72 0
+ 177 00ee 5A4B     		ldr	r3, .L24+8
+ 178 00f0 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 179 00f2 13F0FF0F 		tst	r3, #255
+ 180 00f6 0FD1     		bne	.L15
+ 181              		.loc 1 72 0 is_stmt 0 discriminator 1
+ 182 00f8 584B     		ldr	r3, .L24+12
+ 183 00fa 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 184 00fc DBB2     		uxtb	r3, r3
+ 185 00fe 012B     		cmp	r3, #1
+ 186 0100 0AD1     		bne	.L15
+ 187              		.loc 1 72 0 discriminator 2
+ 188 0102 574B     		ldr	r3, .L24+16
+ 189 0104 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 190 0106 13F0FF0F 		tst	r3, #255
+ 191 010a 05D1     		bne	.L15
+  73:InterruptRoutines.c ****                 FLAG_SF  = 0;
+ 192              		.loc 1 73 0 is_stmt 1
+ 193 010c 0022     		movs	r2, #0
+ 194 010e 534B     		ldr	r3, .L24+12
+ 195 0110 1A70     		strb	r2, [r3]
+  74:InterruptRoutines.c ****                 OPTION_SF = 1;
+ 196              		.loc 1 74 0
+ 197 0112 0122     		movs	r2, #1
+ 198 0114 544B     		ldr	r3, .L24+24
+ 199 0116 1A70     		strb	r2, [r3]
+ 200              	.L15:
+  75:InterruptRoutines.c ****                 //todo
+  76:InterruptRoutines.c ****             }
+  77:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==0 && FLAG_AS==1){ // Additional sensors
+ 201              		.loc 1 77 0
+ 202 0118 4F4B     		ldr	r3, .L24+8
+ 203 011a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 204 011c 13F0FF0F 		tst	r3, #255
+ 205 0120 40F0A980 		bne	.L2
+ 206              		.loc 1 77 0 is_stmt 0 discriminator 1
+ 207 0124 4D4B     		ldr	r3, .L24+12
+ 208 0126 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 6
+
+
+ 209 0128 13F0FF0F 		tst	r3, #255
+ 210 012c 40F0A380 		bne	.L2
+ 211              		.loc 1 77 0 discriminator 2
+ 212 0130 4B4B     		ldr	r3, .L24+16
+ 213 0132 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 214 0134 DBB2     		uxtb	r3, r3
+ 215 0136 012B     		cmp	r3, #1
+ 216 0138 40F09D80 		bne	.L2
+  78:InterruptRoutines.c ****                 FLAG_AS  = 0;
+ 217              		.loc 1 78 0 is_stmt 1
+ 218 013c 0022     		movs	r2, #0
+ 219 013e 484B     		ldr	r3, .L24+16
+ 220 0140 1A70     		strb	r2, [r3]
+  79:InterruptRoutines.c ****                 OPTION_AS = 1;
+ 221              		.loc 1 79 0
+ 222 0142 0122     		movs	r2, #1
+ 223 0144 494B     		ldr	r3, .L24+28
+ 224 0146 1A70     		strb	r2, [r3]
+ 225 0148 95E0     		b	.L2
+ 226              	.L5:
+  80:InterruptRoutines.c ****                 //todo
+  81:InterruptRoutines.c ****             }
+  82:InterruptRoutines.c ****             break;
+  83:InterruptRoutines.c ****         
+  84:InterruptRoutines.c ****         case '2':
+  85:InterruptRoutines.c ****             if(FLAG_FSR==1 && FLAG_SF==0 && FLAG_AS==0){ // FULL SCALE RANGE
+ 227              		.loc 1 85 0
+ 228 014a 434B     		ldr	r3, .L24+8
+ 229 014c 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 230 014e DBB2     		uxtb	r3, r3
+ 231 0150 012B     		cmp	r3, #1
+ 232 0152 0FD1     		bne	.L16
+ 233              		.loc 1 85 0 is_stmt 0 discriminator 1
+ 234 0154 414B     		ldr	r3, .L24+12
+ 235 0156 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 236 0158 13F0FF0F 		tst	r3, #255
+ 237 015c 0AD1     		bne	.L16
+ 238              		.loc 1 85 0 discriminator 2
+ 239 015e 404B     		ldr	r3, .L24+16
+ 240 0160 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 241 0162 13F0FF0F 		tst	r3, #255
+ 242 0166 05D1     		bne	.L16
+  86:InterruptRoutines.c ****                 FLAG_FSR  = 0;
+ 243              		.loc 1 86 0 is_stmt 1
+ 244 0168 0022     		movs	r2, #0
+ 245 016a 3B4B     		ldr	r3, .L24+8
+ 246 016c 1A70     		strb	r2, [r3]
+  87:InterruptRoutines.c ****                 OPTION_FSR = 2;
+ 247              		.loc 1 87 0
+ 248 016e 0222     		movs	r2, #2
+ 249 0170 3C4B     		ldr	r3, .L24+20
+ 250 0172 1A70     		strb	r2, [r3]
+ 251              	.L16:
+  88:InterruptRoutines.c ****                 //todo
+  89:InterruptRoutines.c ****             }
+  90:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==1 && FLAG_AS==0){ // SAMPLING FREQUENCY
+ 252              		.loc 1 90 0
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 7
+
+
+ 253 0174 384B     		ldr	r3, .L24+8
+ 254 0176 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 255 0178 13F0FF0F 		tst	r3, #255
+ 256 017c 0FD1     		bne	.L17
+ 257              		.loc 1 90 0 is_stmt 0 discriminator 1
+ 258 017e 374B     		ldr	r3, .L24+12
+ 259 0180 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 260 0182 DBB2     		uxtb	r3, r3
+ 261 0184 012B     		cmp	r3, #1
+ 262 0186 0AD1     		bne	.L17
+ 263              		.loc 1 90 0 discriminator 2
+ 264 0188 354B     		ldr	r3, .L24+16
+ 265 018a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 266 018c 13F0FF0F 		tst	r3, #255
+ 267 0190 05D1     		bne	.L17
+  91:InterruptRoutines.c ****                 FLAG_SF  = 0;
+ 268              		.loc 1 91 0 is_stmt 1
+ 269 0192 0022     		movs	r2, #0
+ 270 0194 314B     		ldr	r3, .L24+12
+ 271 0196 1A70     		strb	r2, [r3]
+  92:InterruptRoutines.c ****                 OPTION_SF = 2;
+ 272              		.loc 1 92 0
+ 273 0198 0222     		movs	r2, #2
+ 274 019a 334B     		ldr	r3, .L24+24
+ 275 019c 1A70     		strb	r2, [r3]
+ 276              	.L17:
+  93:InterruptRoutines.c ****                 //todo
+  94:InterruptRoutines.c ****             }
+  95:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==0 && FLAG_AS==1){ // Additional sensors
+ 277              		.loc 1 95 0
+ 278 019e 2E4B     		ldr	r3, .L24+8
+ 279 01a0 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 280 01a2 13F0FF0F 		tst	r3, #255
+ 281 01a6 66D1     		bne	.L2
+ 282              		.loc 1 95 0 is_stmt 0 discriminator 1
+ 283 01a8 2C4B     		ldr	r3, .L24+12
+ 284 01aa 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 285 01ac 13F0FF0F 		tst	r3, #255
+ 286 01b0 61D1     		bne	.L2
+ 287              		.loc 1 95 0 discriminator 2
+ 288 01b2 2B4B     		ldr	r3, .L24+16
+ 289 01b4 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 290 01b6 DBB2     		uxtb	r3, r3
+ 291 01b8 012B     		cmp	r3, #1
+ 292 01ba 5CD1     		bne	.L2
+  96:InterruptRoutines.c ****                 FLAG_AS  = 0;
+ 293              		.loc 1 96 0 is_stmt 1
+ 294 01bc 0022     		movs	r2, #0
+ 295 01be 284B     		ldr	r3, .L24+16
+ 296 01c0 1A70     		strb	r2, [r3]
+  97:InterruptRoutines.c ****                 OPTION_AS = 2;
+ 297              		.loc 1 97 0
+ 298 01c2 0222     		movs	r2, #2
+ 299 01c4 294B     		ldr	r3, .L24+28
+ 300 01c6 1A70     		strb	r2, [r3]
+ 301 01c8 55E0     		b	.L2
+ 302              	.L6:
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 8
+
+
+  98:InterruptRoutines.c ****                 //todo
+  99:InterruptRoutines.c ****             }
+ 100:InterruptRoutines.c ****             break;
+ 101:InterruptRoutines.c ****             
+ 102:InterruptRoutines.c ****         case '3':
+ 103:InterruptRoutines.c ****             if(FLAG_FSR==1 && FLAG_SF==0){ // FULL SCALE RANGE
+ 303              		.loc 1 103 0
+ 304 01ca 234B     		ldr	r3, .L24+8
+ 305 01cc 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 306 01ce DBB2     		uxtb	r3, r3
+ 307 01d0 012B     		cmp	r3, #1
+ 308 01d2 0AD1     		bne	.L18
+ 309              		.loc 1 103 0 is_stmt 0 discriminator 1
+ 310 01d4 214B     		ldr	r3, .L24+12
+ 311 01d6 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 312 01d8 13F0FF0F 		tst	r3, #255
+ 313 01dc 05D1     		bne	.L18
+ 104:InterruptRoutines.c ****                 FLAG_FSR  = 0;
+ 314              		.loc 1 104 0 is_stmt 1
+ 315 01de 0022     		movs	r2, #0
+ 316 01e0 1D4B     		ldr	r3, .L24+8
+ 317 01e2 1A70     		strb	r2, [r3]
+ 105:InterruptRoutines.c ****                 OPTION_FSR = 3;
+ 318              		.loc 1 105 0
+ 319 01e4 0322     		movs	r2, #3
+ 320 01e6 1F4B     		ldr	r3, .L24+20
+ 321 01e8 1A70     		strb	r2, [r3]
+ 322              	.L18:
+ 106:InterruptRoutines.c ****                 //todo
+ 107:InterruptRoutines.c ****             }
+ 108:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==1){ // SAMPLING FREQUENCY
+ 323              		.loc 1 108 0
+ 324 01ea 1B4B     		ldr	r3, .L24+8
+ 325 01ec 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 326 01ee 13F0FF0F 		tst	r3, #255
+ 327 01f2 40D1     		bne	.L2
+ 328              		.loc 1 108 0 is_stmt 0 discriminator 1
+ 329 01f4 194B     		ldr	r3, .L24+12
+ 330 01f6 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 331 01f8 DBB2     		uxtb	r3, r3
+ 332 01fa 012B     		cmp	r3, #1
+ 333 01fc 3BD1     		bne	.L2
+ 109:InterruptRoutines.c ****                 FLAG_SF  = 0;
+ 334              		.loc 1 109 0 is_stmt 1
+ 335 01fe 0022     		movs	r2, #0
+ 336 0200 164B     		ldr	r3, .L24+12
+ 337 0202 1A70     		strb	r2, [r3]
+ 110:InterruptRoutines.c ****                 OPTION_SF = 3;
+ 338              		.loc 1 110 0
+ 339 0204 0322     		movs	r2, #3
+ 340 0206 184B     		ldr	r3, .L24+24
+ 341 0208 1A70     		strb	r2, [r3]
+ 342 020a 34E0     		b	.L2
+ 343              	.L7:
+ 111:InterruptRoutines.c ****                 //todo
+ 112:InterruptRoutines.c ****             }
+ 113:InterruptRoutines.c ****             break;
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 9
+
+
+ 114:InterruptRoutines.c ****             
+ 115:InterruptRoutines.c ****         case '4':
+ 116:InterruptRoutines.c ****             if(FLAG_FSR==1 && FLAG_SF==0){ // FULL SCALE RANGE
+ 344              		.loc 1 116 0
+ 345 020c 124B     		ldr	r3, .L24+8
+ 346 020e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 347 0210 DBB2     		uxtb	r3, r3
+ 348 0212 012B     		cmp	r3, #1
+ 349 0214 0AD1     		bne	.L19
+ 350              		.loc 1 116 0 is_stmt 0 discriminator 1
+ 351 0216 114B     		ldr	r3, .L24+12
+ 352 0218 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 353 021a 13F0FF0F 		tst	r3, #255
+ 354 021e 05D1     		bne	.L19
+ 117:InterruptRoutines.c ****                 FLAG_FSR  = 0;
+ 355              		.loc 1 117 0 is_stmt 1
+ 356 0220 0022     		movs	r2, #0
+ 357 0222 0D4B     		ldr	r3, .L24+8
+ 358 0224 1A70     		strb	r2, [r3]
+ 118:InterruptRoutines.c ****                 OPTION_FSR = 4;
+ 359              		.loc 1 118 0
+ 360 0226 0422     		movs	r2, #4
+ 361 0228 0E4B     		ldr	r3, .L24+20
+ 362 022a 1A70     		strb	r2, [r3]
+ 363              	.L19:
+ 119:InterruptRoutines.c ****                 //todo
+ 120:InterruptRoutines.c ****             }
+ 121:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==1){ // SAMPLING FREQUENCY
+ 364              		.loc 1 121 0
+ 365 022c 0A4B     		ldr	r3, .L24+8
+ 366 022e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 367 0230 13F0FF0F 		tst	r3, #255
+ 368 0234 1FD1     		bne	.L2
+ 369              		.loc 1 121 0 is_stmt 0 discriminator 1
+ 370 0236 094B     		ldr	r3, .L24+12
+ 371 0238 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 372 023a DBB2     		uxtb	r3, r3
+ 373 023c 012B     		cmp	r3, #1
+ 374 023e 1AD1     		bne	.L2
+ 122:InterruptRoutines.c ****                 FLAG_SF  = 0;
+ 375              		.loc 1 122 0 is_stmt 1
+ 376 0240 0022     		movs	r2, #0
+ 377 0242 064B     		ldr	r3, .L24+12
+ 378 0244 1A70     		strb	r2, [r3]
+ 123:InterruptRoutines.c ****                 OPTION_SF = 4;
+ 379              		.loc 1 123 0
+ 380 0246 0422     		movs	r2, #4
+ 381 0248 074B     		ldr	r3, .L24+24
+ 382 024a 1A70     		strb	r2, [r3]
+ 383 024c 13E0     		b	.L2
+ 384              	.L25:
+ 385 024e 00BF     		.align	2
+ 386              	.L24:
+ 387 0250 00000000 		.word	ch_receveid
+ 388 0254 00000000 		.word	FLAG_BS
+ 389 0258 00000000 		.word	FLAG_FSR
+ 390 025c 00000000 		.word	FLAG_SF
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 10
+
+
+ 391 0260 00000000 		.word	FLAG_AS
+ 392 0264 00000000 		.word	OPTION_FSR
+ 393 0268 00000000 		.word	OPTION_SF
+ 394 026c 00000000 		.word	OPTION_AS
+ 395              	.L11:
+ 124:InterruptRoutines.c ****                 //todo
+ 125:InterruptRoutines.c ****             }
+ 126:InterruptRoutines.c ****             break;
+ 127:InterruptRoutines.c ****          
+ 128:InterruptRoutines.c ****         case 'O':
+ 129:InterruptRoutines.c ****         case 'o':
+ 130:InterruptRoutines.c ****             summary_ready = 1;
+ 396              		.loc 1 130 0
+ 397 0270 0122     		movs	r2, #1
+ 398 0272 184B     		ldr	r3, .L26
+ 399 0274 1A70     		strb	r2, [r3]
+ 400              	.L2:
+ 131:InterruptRoutines.c ****             break;
+ 132:InterruptRoutines.c ****             
+ 133:InterruptRoutines.c ****         default:
+ 134:InterruptRoutines.c ****             break;    
+ 135:InterruptRoutines.c ****     }
+ 136:InterruptRoutines.c ****     
+ 137:InterruptRoutines.c ****     /*******************************/
+ 138:InterruptRoutines.c ****     /*     INTEGRITY CONTROL       */
+ 139:InterruptRoutines.c ****     /*******************************/
+ 140:InterruptRoutines.c ****     
+ 141:InterruptRoutines.c ****     if(FLAG_FSR==1 && FLAG_SF==1){
+ 401              		.loc 1 141 0
+ 402 0276 184B     		ldr	r3, .L26+4
+ 403 0278 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 404 027a DBB2     		uxtb	r3, r3
+ 405 027c 012B     		cmp	r3, #1
+ 406 027e 09D1     		bne	.L20
+ 407              		.loc 1 141 0 is_stmt 0 discriminator 1
+ 408 0280 164B     		ldr	r3, .L26+8
+ 409 0282 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 410 0284 DBB2     		uxtb	r3, r3
+ 411 0286 012B     		cmp	r3, #1
+ 412 0288 04D1     		bne	.L20
+ 142:InterruptRoutines.c ****         FLAG_FSR=0;
+ 413              		.loc 1 142 0 is_stmt 1
+ 414 028a 0023     		movs	r3, #0
+ 415 028c 124A     		ldr	r2, .L26+4
+ 416 028e 1370     		strb	r3, [r2]
+ 143:InterruptRoutines.c ****         FLAG_SF=0;
+ 417              		.loc 1 143 0
+ 418 0290 124A     		ldr	r2, .L26+8
+ 419 0292 1370     		strb	r3, [r2]
+ 420              	.L20:
+ 144:InterruptRoutines.c ****     }
+ 145:InterruptRoutines.c ****     
+ 146:InterruptRoutines.c ****     if(FLAG_AS==1 && FLAG_SF==1){
+ 421              		.loc 1 146 0
+ 422 0294 124B     		ldr	r3, .L26+12
+ 423 0296 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 424 0298 DBB2     		uxtb	r3, r3
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 11
+
+
+ 425 029a 012B     		cmp	r3, #1
+ 426 029c 09D1     		bne	.L21
+ 427              		.loc 1 146 0 is_stmt 0 discriminator 1
+ 428 029e 0F4B     		ldr	r3, .L26+8
+ 429 02a0 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 430 02a2 DBB2     		uxtb	r3, r3
+ 431 02a4 012B     		cmp	r3, #1
+ 432 02a6 04D1     		bne	.L21
+ 147:InterruptRoutines.c ****         FLAG_AS=0;
+ 433              		.loc 1 147 0 is_stmt 1
+ 434 02a8 0023     		movs	r3, #0
+ 435 02aa 0D4A     		ldr	r2, .L26+12
+ 436 02ac 1370     		strb	r3, [r2]
+ 148:InterruptRoutines.c ****         FLAG_SF=0;
+ 437              		.loc 1 148 0
+ 438 02ae 0B4A     		ldr	r2, .L26+8
+ 439 02b0 1370     		strb	r3, [r2]
+ 440              	.L21:
+ 149:InterruptRoutines.c ****     }
+ 150:InterruptRoutines.c ****     
+ 151:InterruptRoutines.c ****     if(FLAG_AS==1 && FLAG_FSR==1){
+ 441              		.loc 1 151 0
+ 442 02b2 0B4B     		ldr	r3, .L26+12
+ 443 02b4 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 444 02b6 DBB2     		uxtb	r3, r3
+ 445 02b8 012B     		cmp	r3, #1
+ 446 02ba 09D1     		bne	.L1
+ 447              		.loc 1 151 0 is_stmt 0 discriminator 1
+ 448 02bc 064B     		ldr	r3, .L26+4
+ 449 02be 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 450 02c0 DBB2     		uxtb	r3, r3
+ 451 02c2 012B     		cmp	r3, #1
+ 452 02c4 04D1     		bne	.L1
+ 152:InterruptRoutines.c ****         FLAG_AS=0;
+ 453              		.loc 1 152 0 is_stmt 1
+ 454 02c6 0023     		movs	r3, #0
+ 455 02c8 054A     		ldr	r2, .L26+12
+ 456 02ca 1370     		strb	r3, [r2]
+ 153:InterruptRoutines.c ****         FLAG_FSR=0;
+ 457              		.loc 1 153 0
+ 458 02cc 024A     		ldr	r2, .L26+4
+ 459 02ce 1370     		strb	r3, [r2]
+ 460              	.L1:
+ 461 02d0 08BD     		pop	{r3, pc}
+ 462              	.L27:
+ 463 02d2 00BF     		.align	2
+ 464              	.L26:
+ 465 02d4 00000000 		.word	summary_ready
+ 466 02d8 00000000 		.word	FLAG_FSR
+ 467 02dc 00000000 		.word	FLAG_SF
+ 468 02e0 00000000 		.word	FLAG_AS
+ 469              		.cfi_endproc
+ 470              	.LFE64:
+ 471              		.size	Custom_ISR_RX, .-Custom_ISR_RX
+ 472              		.comm	ch_receveid,1,1
+ 473              		.comm	summary_ready,1,1
+ 474              		.comm	OPTION_AS,1,1
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 12
+
+
+ 475              		.comm	OPTION_SF,1,1
+ 476              		.comm	OPTION_FSR,1,1
+ 477              		.comm	FLAG_BS,1,1
+ 478              		.comm	FLAG_AS,1,1
+ 479              		.comm	FLAG_SF,1,1
+ 480              		.comm	FLAG_FSR,1,1
+ 481              		.text
+ 482              	.Letext0:
+ 483              		.file 2 "c:\\program files\\cypress\\psoc creator\\4.3\\psoc creator\\import\\gnu\\arm\\5.4.1\\arm
+ 484              		.file 3 "c:\\program files\\cypress\\psoc creator\\4.3\\psoc creator\\import\\gnu\\arm\\5.4.1\\arm
+ 485              		.file 4 "Generated_Source\\PSoC5/cytypes.h"
+ 486              		.file 5 "Pages.h"
+ 487              		.file 6 "Generated_Source\\PSoC5/core_cm3.h"
+ 488              		.file 7 "Generated_Source\\PSoC5/UART.h"
+ 489              		.section	.debug_info,"",%progbits
+ 490              	.Ldebug_info0:
+ 491 0000 86010000 		.4byte	0x186
+ 492 0004 0400     		.2byte	0x4
+ 493 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 494 000a 04       		.byte	0x4
+ 495 000b 01       		.uleb128 0x1
+ 496 000c 9E000000 		.4byte	.LASF27
+ 497 0010 0C       		.byte	0xc
+ 498 0011 29020000 		.4byte	.LASF28
+ 499 0015 20000000 		.4byte	.LASF29
+ 500 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 501 001d 00000000 		.4byte	0
+ 502 0021 00000000 		.4byte	.Ldebug_line0
+ 503 0025 02       		.uleb128 0x2
+ 504 0026 01       		.byte	0x1
+ 505 0027 06       		.byte	0x6
+ 506 0028 FB010000 		.4byte	.LASF0
+ 507 002c 02       		.uleb128 0x2
+ 508 002d 01       		.byte	0x1
+ 509 002e 08       		.byte	0x8
+ 510 002f 90000000 		.4byte	.LASF1
+ 511 0033 02       		.uleb128 0x2
+ 512 0034 02       		.byte	0x2
+ 513 0035 05       		.byte	0x5
+ 514 0036 D1010000 		.4byte	.LASF2
+ 515 003a 02       		.uleb128 0x2
+ 516 003b 02       		.byte	0x2
+ 517 003c 07       		.byte	0x7
+ 518 003d 3E010000 		.4byte	.LASF3
+ 519 0041 03       		.uleb128 0x3
+ 520 0042 0E000000 		.4byte	.LASF9
+ 521 0046 02       		.byte	0x2
+ 522 0047 3F       		.byte	0x3f
+ 523 0048 4C000000 		.4byte	0x4c
+ 524 004c 02       		.uleb128 0x2
+ 525 004d 04       		.byte	0x4
+ 526 004e 05       		.byte	0x5
+ 527 004f E1010000 		.4byte	.LASF4
+ 528 0053 02       		.uleb128 0x2
+ 529 0054 04       		.byte	0x4
+ 530 0055 07       		.byte	0x7
+ 531 0056 2C010000 		.4byte	.LASF5
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 13
+
+
+ 532 005a 02       		.uleb128 0x2
+ 533 005b 08       		.byte	0x8
+ 534 005c 05       		.byte	0x5
+ 535 005d B5010000 		.4byte	.LASF6
+ 536 0061 02       		.uleb128 0x2
+ 537 0062 08       		.byte	0x8
+ 538 0063 07       		.byte	0x7
+ 539 0064 85010000 		.4byte	.LASF7
+ 540 0068 04       		.uleb128 0x4
+ 541 0069 04       		.byte	0x4
+ 542 006a 05       		.byte	0x5
+ 543 006b 696E7400 		.ascii	"int\000"
+ 544 006f 02       		.uleb128 0x2
+ 545 0070 04       		.byte	0x4
+ 546 0071 07       		.byte	0x7
+ 547 0072 78010000 		.4byte	.LASF8
+ 548 0076 03       		.uleb128 0x3
+ 549 0077 A4010000 		.4byte	.LASF10
+ 550 007b 03       		.byte	0x3
+ 551 007c 2C       		.byte	0x2c
+ 552 007d 41000000 		.4byte	0x41
+ 553 0081 05       		.uleb128 0x5
+ 554 0082 DB010000 		.4byte	.LASF11
+ 555 0086 04       		.byte	0x4
+ 556 0087 E401     		.2byte	0x1e4
+ 557 0089 2C000000 		.4byte	0x2c
+ 558 008d 02       		.uleb128 0x2
+ 559 008e 04       		.byte	0x4
+ 560 008f 04       		.byte	0x4
+ 561 0090 82000000 		.4byte	.LASF12
+ 562 0094 02       		.uleb128 0x2
+ 563 0095 08       		.byte	0x8
+ 564 0096 04       		.byte	0x4
+ 565 0097 5E010000 		.4byte	.LASF13
+ 566 009b 02       		.uleb128 0x2
+ 567 009c 01       		.byte	0x1
+ 568 009d 08       		.byte	0x8
+ 569 009e EA010000 		.4byte	.LASF14
+ 570 00a2 06       		.uleb128 0x6
+ 571 00a3 81000000 		.4byte	0x81
+ 572 00a7 02       		.uleb128 0x2
+ 573 00a8 08       		.byte	0x8
+ 574 00a9 04       		.byte	0x4
+ 575 00aa EF010000 		.4byte	.LASF15
+ 576 00ae 02       		.uleb128 0x2
+ 577 00af 04       		.byte	0x4
+ 578 00b0 07       		.byte	0x7
+ 579 00b1 AC010000 		.4byte	.LASF16
+ 580 00b5 07       		.uleb128 0x7
+ 581 00b6 C3010000 		.4byte	.LASF30
+ 582 00ba 01       		.byte	0x1
+ 583 00bb 1B       		.byte	0x1b
+ 584 00bc 00000000 		.4byte	.LFB64
+ 585 00c0 E4020000 		.4byte	.LFE64-.LFB64
+ 586 00c4 01       		.uleb128 0x1
+ 587 00c5 9C       		.byte	0x9c
+ 588 00c6 D4000000 		.4byte	0xd4
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 14
+
+
+ 589 00ca 08       		.uleb128 0x8
+ 590 00cb 06000000 		.4byte	.LVL0
+ 591 00cf 7E010000 		.4byte	0x17e
+ 592 00d3 00       		.byte	0
+ 593 00d4 09       		.uleb128 0x9
+ 594 00d5 6F010000 		.4byte	.LASF17
+ 595 00d9 05       		.byte	0x5
+ 596 00da 18       		.byte	0x18
+ 597 00db A2000000 		.4byte	0xa2
+ 598 00df 05       		.uleb128 0x5
+ 599 00e0 03       		.byte	0x3
+ 600 00e1 00000000 		.4byte	FLAG_FSR
+ 601 00e5 09       		.uleb128 0x9
+ 602 00e6 9C010000 		.4byte	.LASF18
+ 603 00ea 05       		.byte	0x5
+ 604 00eb 19       		.byte	0x19
+ 605 00ec A2000000 		.4byte	0xa2
+ 606 00f0 05       		.uleb128 0x5
+ 607 00f1 03       		.byte	0x3
+ 608 00f2 00000000 		.4byte	FLAG_SF
+ 609 00f6 09       		.uleb128 0x9
+ 610 00f7 88000000 		.4byte	.LASF19
+ 611 00fb 05       		.byte	0x5
+ 612 00fc 1A       		.byte	0x1a
+ 613 00fd A2000000 		.4byte	0xa2
+ 614 0101 05       		.uleb128 0x5
+ 615 0102 03       		.byte	0x3
+ 616 0103 00000000 		.4byte	FLAG_AS
+ 617 0107 09       		.uleb128 0x9
+ 618 0108 18000000 		.4byte	.LASF20
+ 619 010c 05       		.byte	0x5
+ 620 010d 1B       		.byte	0x1b
+ 621 010e A2000000 		.4byte	0xa2
+ 622 0112 05       		.uleb128 0x5
+ 623 0113 03       		.byte	0x3
+ 624 0114 00000000 		.4byte	FLAG_BS
+ 625 0118 09       		.uleb128 0x9
+ 626 0119 1E020000 		.4byte	.LASF21
+ 627 011d 05       		.byte	0x5
+ 628 011e 1E       		.byte	0x1e
+ 629 011f A2000000 		.4byte	0xa2
+ 630 0123 05       		.uleb128 0x5
+ 631 0124 03       		.byte	0x3
+ 632 0125 00000000 		.4byte	OPTION_FSR
+ 633 0129 09       		.uleb128 0x9
+ 634 012a 14020000 		.4byte	.LASF22
+ 635 012e 05       		.byte	0x5
+ 636 012f 1F       		.byte	0x1f
+ 637 0130 A2000000 		.4byte	0xa2
+ 638 0134 05       		.uleb128 0x5
+ 639 0135 03       		.byte	0x3
+ 640 0136 00000000 		.4byte	OPTION_SF
+ 641 013a 09       		.uleb128 0x9
+ 642 013b 65010000 		.4byte	.LASF23
+ 643 013f 05       		.byte	0x5
+ 644 0140 20       		.byte	0x20
+ 645 0141 A2000000 		.4byte	0xa2
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 15
+
+
+ 646 0145 05       		.uleb128 0x5
+ 647 0146 03       		.byte	0x3
+ 648 0147 00000000 		.4byte	OPTION_AS
+ 649 014b 09       		.uleb128 0x9
+ 650 014c 00000000 		.4byte	.LASF24
+ 651 0150 05       		.byte	0x5
+ 652 0151 23       		.byte	0x23
+ 653 0152 A2000000 		.4byte	0xa2
+ 654 0156 05       		.uleb128 0x5
+ 655 0157 03       		.byte	0x3
+ 656 0158 00000000 		.4byte	summary_ready
+ 657 015c 0A       		.uleb128 0xa
+ 658 015d 51010000 		.4byte	.LASF25
+ 659 0161 06       		.byte	0x6
+ 660 0162 1207     		.2byte	0x712
+ 661 0164 68010000 		.4byte	0x168
+ 662 0168 06       		.uleb128 0x6
+ 663 0169 76000000 		.4byte	0x76
+ 664 016d 09       		.uleb128 0x9
+ 665 016e 76000000 		.4byte	.LASF26
+ 666 0172 01       		.byte	0x1
+ 667 0173 15       		.byte	0x15
+ 668 0174 81000000 		.4byte	0x81
+ 669 0178 05       		.uleb128 0x5
+ 670 0179 03       		.byte	0x3
+ 671 017a 00000000 		.4byte	ch_receveid
+ 672 017e 0B       		.uleb128 0xb
+ 673 017f 07020000 		.4byte	.LASF31
+ 674 0183 07020000 		.4byte	.LASF31
+ 675 0187 07       		.byte	0x7
+ 676 0188 71       		.byte	0x71
+ 677 0189 00       		.byte	0
+ 678              		.section	.debug_abbrev,"",%progbits
+ 679              	.Ldebug_abbrev0:
+ 680 0000 01       		.uleb128 0x1
+ 681 0001 11       		.uleb128 0x11
+ 682 0002 01       		.byte	0x1
+ 683 0003 25       		.uleb128 0x25
+ 684 0004 0E       		.uleb128 0xe
+ 685 0005 13       		.uleb128 0x13
+ 686 0006 0B       		.uleb128 0xb
+ 687 0007 03       		.uleb128 0x3
+ 688 0008 0E       		.uleb128 0xe
+ 689 0009 1B       		.uleb128 0x1b
+ 690 000a 0E       		.uleb128 0xe
+ 691 000b 55       		.uleb128 0x55
+ 692 000c 17       		.uleb128 0x17
+ 693 000d 11       		.uleb128 0x11
+ 694 000e 01       		.uleb128 0x1
+ 695 000f 10       		.uleb128 0x10
+ 696 0010 17       		.uleb128 0x17
+ 697 0011 00       		.byte	0
+ 698 0012 00       		.byte	0
+ 699 0013 02       		.uleb128 0x2
+ 700 0014 24       		.uleb128 0x24
+ 701 0015 00       		.byte	0
+ 702 0016 0B       		.uleb128 0xb
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 16
+
+
+ 703 0017 0B       		.uleb128 0xb
+ 704 0018 3E       		.uleb128 0x3e
+ 705 0019 0B       		.uleb128 0xb
+ 706 001a 03       		.uleb128 0x3
+ 707 001b 0E       		.uleb128 0xe
+ 708 001c 00       		.byte	0
+ 709 001d 00       		.byte	0
+ 710 001e 03       		.uleb128 0x3
+ 711 001f 16       		.uleb128 0x16
+ 712 0020 00       		.byte	0
+ 713 0021 03       		.uleb128 0x3
+ 714 0022 0E       		.uleb128 0xe
+ 715 0023 3A       		.uleb128 0x3a
+ 716 0024 0B       		.uleb128 0xb
+ 717 0025 3B       		.uleb128 0x3b
+ 718 0026 0B       		.uleb128 0xb
+ 719 0027 49       		.uleb128 0x49
+ 720 0028 13       		.uleb128 0x13
+ 721 0029 00       		.byte	0
+ 722 002a 00       		.byte	0
+ 723 002b 04       		.uleb128 0x4
+ 724 002c 24       		.uleb128 0x24
+ 725 002d 00       		.byte	0
+ 726 002e 0B       		.uleb128 0xb
+ 727 002f 0B       		.uleb128 0xb
+ 728 0030 3E       		.uleb128 0x3e
+ 729 0031 0B       		.uleb128 0xb
+ 730 0032 03       		.uleb128 0x3
+ 731 0033 08       		.uleb128 0x8
+ 732 0034 00       		.byte	0
+ 733 0035 00       		.byte	0
+ 734 0036 05       		.uleb128 0x5
+ 735 0037 16       		.uleb128 0x16
+ 736 0038 00       		.byte	0
+ 737 0039 03       		.uleb128 0x3
+ 738 003a 0E       		.uleb128 0xe
+ 739 003b 3A       		.uleb128 0x3a
+ 740 003c 0B       		.uleb128 0xb
+ 741 003d 3B       		.uleb128 0x3b
+ 742 003e 05       		.uleb128 0x5
+ 743 003f 49       		.uleb128 0x49
+ 744 0040 13       		.uleb128 0x13
+ 745 0041 00       		.byte	0
+ 746 0042 00       		.byte	0
+ 747 0043 06       		.uleb128 0x6
+ 748 0044 35       		.uleb128 0x35
+ 749 0045 00       		.byte	0
+ 750 0046 49       		.uleb128 0x49
+ 751 0047 13       		.uleb128 0x13
+ 752 0048 00       		.byte	0
+ 753 0049 00       		.byte	0
+ 754 004a 07       		.uleb128 0x7
+ 755 004b 2E       		.uleb128 0x2e
+ 756 004c 01       		.byte	0x1
+ 757 004d 3F       		.uleb128 0x3f
+ 758 004e 19       		.uleb128 0x19
+ 759 004f 03       		.uleb128 0x3
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 17
+
+
+ 760 0050 0E       		.uleb128 0xe
+ 761 0051 3A       		.uleb128 0x3a
+ 762 0052 0B       		.uleb128 0xb
+ 763 0053 3B       		.uleb128 0x3b
+ 764 0054 0B       		.uleb128 0xb
+ 765 0055 27       		.uleb128 0x27
+ 766 0056 19       		.uleb128 0x19
+ 767 0057 11       		.uleb128 0x11
+ 768 0058 01       		.uleb128 0x1
+ 769 0059 12       		.uleb128 0x12
+ 770 005a 06       		.uleb128 0x6
+ 771 005b 40       		.uleb128 0x40
+ 772 005c 18       		.uleb128 0x18
+ 773 005d 9742     		.uleb128 0x2117
+ 774 005f 19       		.uleb128 0x19
+ 775 0060 01       		.uleb128 0x1
+ 776 0061 13       		.uleb128 0x13
+ 777 0062 00       		.byte	0
+ 778 0063 00       		.byte	0
+ 779 0064 08       		.uleb128 0x8
+ 780 0065 898201   		.uleb128 0x4109
+ 781 0068 00       		.byte	0
+ 782 0069 11       		.uleb128 0x11
+ 783 006a 01       		.uleb128 0x1
+ 784 006b 31       		.uleb128 0x31
+ 785 006c 13       		.uleb128 0x13
+ 786 006d 00       		.byte	0
+ 787 006e 00       		.byte	0
+ 788 006f 09       		.uleb128 0x9
+ 789 0070 34       		.uleb128 0x34
+ 790 0071 00       		.byte	0
+ 791 0072 03       		.uleb128 0x3
+ 792 0073 0E       		.uleb128 0xe
+ 793 0074 3A       		.uleb128 0x3a
+ 794 0075 0B       		.uleb128 0xb
+ 795 0076 3B       		.uleb128 0x3b
+ 796 0077 0B       		.uleb128 0xb
+ 797 0078 49       		.uleb128 0x49
+ 798 0079 13       		.uleb128 0x13
+ 799 007a 3F       		.uleb128 0x3f
+ 800 007b 19       		.uleb128 0x19
+ 801 007c 02       		.uleb128 0x2
+ 802 007d 18       		.uleb128 0x18
+ 803 007e 00       		.byte	0
+ 804 007f 00       		.byte	0
+ 805 0080 0A       		.uleb128 0xa
+ 806 0081 34       		.uleb128 0x34
+ 807 0082 00       		.byte	0
+ 808 0083 03       		.uleb128 0x3
+ 809 0084 0E       		.uleb128 0xe
+ 810 0085 3A       		.uleb128 0x3a
+ 811 0086 0B       		.uleb128 0xb
+ 812 0087 3B       		.uleb128 0x3b
+ 813 0088 05       		.uleb128 0x5
+ 814 0089 49       		.uleb128 0x49
+ 815 008a 13       		.uleb128 0x13
+ 816 008b 3F       		.uleb128 0x3f
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 18
+
+
+ 817 008c 19       		.uleb128 0x19
+ 818 008d 3C       		.uleb128 0x3c
+ 819 008e 19       		.uleb128 0x19
+ 820 008f 00       		.byte	0
+ 821 0090 00       		.byte	0
+ 822 0091 0B       		.uleb128 0xb
+ 823 0092 2E       		.uleb128 0x2e
+ 824 0093 00       		.byte	0
+ 825 0094 3F       		.uleb128 0x3f
+ 826 0095 19       		.uleb128 0x19
+ 827 0096 3C       		.uleb128 0x3c
+ 828 0097 19       		.uleb128 0x19
+ 829 0098 6E       		.uleb128 0x6e
+ 830 0099 0E       		.uleb128 0xe
+ 831 009a 03       		.uleb128 0x3
+ 832 009b 0E       		.uleb128 0xe
+ 833 009c 3A       		.uleb128 0x3a
+ 834 009d 0B       		.uleb128 0xb
+ 835 009e 3B       		.uleb128 0x3b
+ 836 009f 0B       		.uleb128 0xb
+ 837 00a0 00       		.byte	0
+ 838 00a1 00       		.byte	0
+ 839 00a2 00       		.byte	0
+ 840              		.section	.debug_aranges,"",%progbits
+ 841 0000 1C000000 		.4byte	0x1c
+ 842 0004 0200     		.2byte	0x2
+ 843 0006 00000000 		.4byte	.Ldebug_info0
+ 844 000a 04       		.byte	0x4
+ 845 000b 00       		.byte	0
+ 846 000c 0000     		.2byte	0
+ 847 000e 0000     		.2byte	0
+ 848 0010 00000000 		.4byte	.LFB64
+ 849 0014 E4020000 		.4byte	.LFE64-.LFB64
+ 850 0018 00000000 		.4byte	0
+ 851 001c 00000000 		.4byte	0
+ 852              		.section	.debug_ranges,"",%progbits
+ 853              	.Ldebug_ranges0:
+ 854 0000 00000000 		.4byte	.LFB64
+ 855 0004 E4020000 		.4byte	.LFE64
+ 856 0008 00000000 		.4byte	0
+ 857 000c 00000000 		.4byte	0
+ 858              		.section	.debug_line,"",%progbits
+ 859              	.Ldebug_line0:
+ 860 0000 29020000 		.section	.debug_str,"MS",%progbits,1
+ 860      02006201 
+ 860      00000201 
+ 860      FB0E0D00 
+ 860      01010101 
+ 861              	.LASF24:
+ 862 0000 73756D6D 		.ascii	"summary_ready\000"
+ 862      6172795F 
+ 862      72656164 
+ 862      7900
+ 863              	.LASF9:
+ 864 000e 5F5F696E 		.ascii	"__int32_t\000"
+ 864      7433325F 
+ 864      7400
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 19
+
+
+ 865              	.LASF20:
+ 866 0018 464C4147 		.ascii	"FLAG_BS\000"
+ 866      5F425300 
+ 867              	.LASF29:
+ 868 0020 433A5C55 		.ascii	"C:\\Users\\LIUX\\Desktop\\PROGETTI_COMPLETI\\ASSIGN"
+ 868      73657273 
+ 868      5C4C4955 
+ 868      585C4465 
+ 868      736B746F 
+ 869 004e 4D454E54 		.ascii	"MENT_finale_4\\ASSIGNMENT_finale_4.cydsn\000"
+ 869      5F66696E 
+ 869      616C655F 
+ 869      345C4153 
+ 869      5349474E 
+ 870              	.LASF26:
+ 871 0076 63685F72 		.ascii	"ch_receveid\000"
+ 871      65636576 
+ 871      65696400 
+ 872              	.LASF12:
+ 873 0082 666C6F61 		.ascii	"float\000"
+ 873      7400
+ 874              	.LASF19:
+ 875 0088 464C4147 		.ascii	"FLAG_AS\000"
+ 875      5F415300 
+ 876              	.LASF1:
+ 877 0090 756E7369 		.ascii	"unsigned char\000"
+ 877      676E6564 
+ 877      20636861 
+ 877      7200
+ 878              	.LASF27:
+ 879 009e 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 879      43313120 
+ 879      352E342E 
+ 879      31203230 
+ 879      31363036 
+ 880 00d1 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 880      20726576 
+ 880      6973696F 
+ 880      6E203233 
+ 880      37373135 
+ 881 0104 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 881      66756E63 
+ 881      74696F6E 
+ 881      2D736563 
+ 881      74696F6E 
+ 882              	.LASF5:
+ 883 012c 6C6F6E67 		.ascii	"long unsigned int\000"
+ 883      20756E73 
+ 883      69676E65 
+ 883      6420696E 
+ 883      7400
+ 884              	.LASF3:
+ 885 013e 73686F72 		.ascii	"short unsigned int\000"
+ 885      7420756E 
+ 885      7369676E 
+ 885      65642069 
+ 885      6E7400
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 20
+
+
+ 886              	.LASF25:
+ 887 0151 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 887      52784275 
+ 887      66666572 
+ 887      00
+ 888              	.LASF13:
+ 889 015e 646F7562 		.ascii	"double\000"
+ 889      6C6500
+ 890              	.LASF23:
+ 891 0165 4F505449 		.ascii	"OPTION_AS\000"
+ 891      4F4E5F41 
+ 891      5300
+ 892              	.LASF17:
+ 893 016f 464C4147 		.ascii	"FLAG_FSR\000"
+ 893      5F465352 
+ 893      00
+ 894              	.LASF8:
+ 895 0178 756E7369 		.ascii	"unsigned int\000"
+ 895      676E6564 
+ 895      20696E74 
+ 895      00
+ 896              	.LASF7:
+ 897 0185 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 897      206C6F6E 
+ 897      6720756E 
+ 897      7369676E 
+ 897      65642069 
+ 898              	.LASF18:
+ 899 019c 464C4147 		.ascii	"FLAG_SF\000"
+ 899      5F534600 
+ 900              	.LASF10:
+ 901 01a4 696E7433 		.ascii	"int32_t\000"
+ 901      325F7400 
+ 902              	.LASF16:
+ 903 01ac 73697A65 		.ascii	"sizetype\000"
+ 903      74797065 
+ 903      00
+ 904              	.LASF6:
+ 905 01b5 6C6F6E67 		.ascii	"long long int\000"
+ 905      206C6F6E 
+ 905      6720696E 
+ 905      7400
+ 906              	.LASF30:
+ 907 01c3 43757374 		.ascii	"Custom_ISR_RX\000"
+ 907      6F6D5F49 
+ 907      53525F52 
+ 907      5800
+ 908              	.LASF2:
+ 909 01d1 73686F72 		.ascii	"short int\000"
+ 909      7420696E 
+ 909      7400
+ 910              	.LASF11:
+ 911 01db 75696E74 		.ascii	"uint8\000"
+ 911      3800
+ 912              	.LASF4:
+ 913 01e1 6C6F6E67 		.ascii	"long int\000"
+ 913      20696E74 
+ARM GAS  C:\Users\LIUX\AppData\Local\Temp\ccNK1Q6R.s 			page 21
+
+
+ 913      00
+ 914              	.LASF14:
+ 915 01ea 63686172 		.ascii	"char\000"
+ 915      00
+ 916              	.LASF15:
+ 917 01ef 6C6F6E67 		.ascii	"long double\000"
+ 917      20646F75 
+ 917      626C6500 
+ 918              	.LASF0:
+ 919 01fb 7369676E 		.ascii	"signed char\000"
+ 919      65642063 
+ 919      68617200 
+ 920              	.LASF31:
+ 921 0207 55415254 		.ascii	"UART_GetChar\000"
+ 921      5F476574 
+ 921      43686172 
+ 921      00
+ 922              	.LASF22:
+ 923 0214 4F505449 		.ascii	"OPTION_SF\000"
+ 923      4F4E5F53 
+ 923      4600
+ 924              	.LASF21:
+ 925 021e 4F505449 		.ascii	"OPTION_FSR\000"
+ 925      4F4E5F46 
+ 925      535200
+ 926              	.LASF28:
+ 927 0229 496E7465 		.ascii	"InterruptRoutines.c\000"
+ 927      72727570 
+ 927      74526F75 
+ 927      74696E65 
+ 927      732E6300 
+ 928              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran
