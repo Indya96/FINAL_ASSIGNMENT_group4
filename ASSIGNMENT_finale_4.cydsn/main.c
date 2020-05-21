@@ -55,7 +55,8 @@ int main(void)
                                            FIFO_CTRL_REG,
                                            fifo_ctrl_reg);
     CyGlobalIntEnable; /* Enable global interrupts. */
-
+    isr_FIFO_StartEx(Custom_FIFO_ISR); /* FIFO interrupt enabled pointing to proper function adress. */
+    
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
 
     for(;;)
