@@ -24,6 +24,11 @@
 
     _VOLATILE uint8_t AccData[FIFO_DATA_DIM];
 
+    _VOLATILE uint8_t FlagFifo;
+
+    _VOLATILE uint8_t CountSensor;
+
+
 
 
 #endif

@@ -59,6 +59,6 @@ CY_ISR(Custom_FIFO_ISR)
 
   }
 
-
+  FlagFifo=1;
 }
 /* [] END OF FILE */
