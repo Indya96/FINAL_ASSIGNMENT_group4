@@ -33,15 +33,17 @@ void EEPROM_writeEnable() {
 uint8_t EEPROM_readByte(uint16_t addr) {
 
 	/* Prepare the TX data packet: instruction + address */
-	uint8_t dataTX[3] = { SPI_EEPROM_READ, ((addr & 0xFF00) >> 8), (addr & 0x00FF) };
+	uint8_t dataTX[3]= {SPI_EEPROM_READ, ((addr & 0xFF00)>>8), (addr & 0x00FF) };
 	
 	/* Prepare the RX byte */
-	uint8_t dataRX = 0;
+	uint8_t dataRX =0;
 	
 	/* Read 1 byte from addr */
 	SPI_Interface_Multi_RW(dataTX, 3, &dataRX, 1);
+    
+    return dataRX;
 	
-	return dataRX;
+	
     
 }
 
@@ -62,37 +64,75 @@ void EEPROM_writeByte(uint16_t addr, uint8_t dataByte) {
 
 void EEPROM_readPage(uint16_t addr, uint8_t* dataRX, uint8_t nBytes) {
     
+
+
+    
+
 	/* Prepare the TX data packet: instruction + address */
+
 	uint8_t dataTX[3] = {SPI_EEPROM_READ, ((addr & 0xFF00) >> 8), (addr & 0x00FF)};
+
 	
+
 	/* Read the nBytes */
+
 	SPI_Interface_Multi_RW(dataTX, 3, dataRX, nBytes);
+
 		
+
 }
 
+
+
 void EEPROM_writePage(uint16_t addr, uint8_t* data, uint8_t nBytes) {
+
 	    
+
     /* Enable WRITE operations */
+
     EEPROM_writeEnable();
+
 	
+
     CyDelayUs(1);
+
     
+
 	/* Prepare the TX packet of size nBytes+3 
+
        [ Write Instruction - Address MSB - Address LSB - +++data+++ ]
+
     */
+
 	uint8_t dataTX[3+nBytes];
+
     dataTX[0] = SPI_EEPROM_WRITE;
+
     dataTX[1] = (addr & 0xFF00) >> 8;
+
     dataTX[2] = addr & 0x00FF;
+
     /* Copy the input data in the memory */
+
 	memcpy(&dataTX[3], data, nBytes);
+
 	
+
 	/* Nothing to RX: point to a dummy variable */
+
 	uint8_t temp = 0;
+
 	
+
 	SPI_Interface_Multi_RW(dataTX, 3+nBytes, &temp, 0);
+
 	
+
 }
+	
+		
+
+
 
 void EEPROM_waitForWriteComplete() {
     
@@ -101,3 +141,4 @@ void EEPROM_waitForWriteComplete() {
 }
 
 /* [] END OF FILE */
+

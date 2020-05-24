@@ -61,4 +61,46 @@ CY_ISR(Custom_FIFO_ISR)
 
   FlagFifo=1;
 }
+
+
+uint8_t counter_timer= 0;   
+
+
+CY_ISR(Custom_TIMER_ISR)
+{
+    Timer_ReadStatusRegister();         //restart the timer
+    
+    if(counter_timer<(SENSOR_DATA_DIM))
+    {
+        
+        SensData[counter_timer]= ADC_DelSig_Read32();  //read data from ADC
+        
+        /* verify the value */
+        if (SensData[counter_timer] < 0)        SensData[counter_timer] = 0;
+        if (SensData[counter_timer] > 65535)    SensData[counter_timer] = 65535;
+        
+        SensBytes[2*counter_timer]= (uint8_t)(SensData[counter_timer] & 0xFF);  //LSB
+        SensBytes[2*counter_timer +1]= (uint8_t)(SensData[counter_timer]>>8) ;  //MSB
+        
+        counter_timer ++;
+    }
+    
+    else if(counter_timer == (SENSOR_DATA_DIM))
+    {
+        int i=0;
+        for(i=0;i<SENSOR_DATA_DIM*2;i++)
+        {
+            SensBytes_old[i]=SensBytes[i];
+        }
+        counter_timer=0;
+        SensorDataReady=1;
+    }
+       
+    
+    
+    
+}
+
+
+
 /* [] END OF FILE */
