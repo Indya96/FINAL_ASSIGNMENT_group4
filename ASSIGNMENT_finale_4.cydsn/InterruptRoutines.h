@@ -15,7 +15,21 @@
     
     #include "cytypes.h"
     #include "stdio.h"
-
+    
+    char elapsed_time_string[64];
+    volatile uint16 elapsed_time;     
+    
+    // PWM toggling modes
+    typedef struct{            
+        uint16_t Period;
+        uint16_t CMP; 
+    } mode;
+    
+    // ISR PUSH BUTTON 
+    CY_ISR_PROTO(ISR_PB_LOW);
+    CY_ISR_PROTO(ISR_PB_HIGH);
+    
+    // ISR UART RX
     CY_ISR_PROTO (Custom_ISR_RX);
  
 #endif

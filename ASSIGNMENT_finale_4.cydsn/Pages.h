@@ -18,21 +18,23 @@
     
     void WELCOME(void);
     void INFO(void);
+    void PB_INFO(uint8_t PB_event);
     void ACKNOWLEDGEMENT(void); // todo
     
     // declaring flags
-    volatile uint8 FLAG_FSR; // full scale range
-    volatile uint8 FLAG_SF ; // sampling frequency
-    volatile uint8 FLAG_AS ; // additional sensor
-    volatile uint8 FLAG_BS ; // begin/stop
+    volatile uint8 FLAG_FSR;    // full scale range
+    volatile uint8 FLAG_SF ;    // sampling frequency
+    volatile uint8 FLAG_AS ;    // additional sensor
+    volatile uint8 FLAG_BS ;    // begin/stop
 
     // declaring various mode values
-    volatile uint8 OPTION_FSR; // full scale range value
-    volatile uint8 OPTION_SF ; // sampling frequency value
-    volatile uint8 OPTION_AS ; // additional sensor 0 or 1
+    volatile uint8 OPTION_FSR;  // full scale range value
+    volatile uint8 OPTION_SF ;  // sampling frequency value
+    volatile uint8 OPTION_AS ;  // additional sensor 0 or 1
     
     // declaring summary flag
     volatile uint8 summary_ready;
+    volatile uint8 push_button_event; // todo
     
 #endif
 

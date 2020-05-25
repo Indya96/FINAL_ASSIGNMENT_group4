@@ -63,7 +63,7 @@ void WELCOME(void){
     UART_PutString("     example 2: if 'L3 P1'   are entered, P   and L status flags are reset. \r\n");
     UART_PutString("     example 3: if 'P5 2'    are entered, the sampling frequency is set to 10Hz. \r\n");
     UART_PutString("\r\n");
-    UART_PutString("     Enter the new command: ");
+    UART_PutString("     Enter the new command:  \r\n");
 }
 
 
@@ -149,7 +149,41 @@ void INFO(void){
     }
     
     UART_PutString(" \r\n");
-    UART_PutString("     Enter the new command: ");
+    UART_PutString("     Enter the new command:  \r\n");
+}
+
+/******************************************************************************************************************/
+/*                                           PUSH BUTTON INFO PAGE                                                */
+/******************************************************************************************************************/
+
+void PB_INFO(uint8_t PB_event){
+    
+    switch(PB_event)
+    {
+        
+        case 1:
+            UART_PutString(" \r\n");
+            UART_PutString("     THE PUSH BUTTON HAS BEEN PRESSED \r\n");
+            UART_PutString(elapsed_time_string);
+            UART_PutString("     The 'counter' has been reset \r\n");
+            UART_PutString(" \r\n");
+            UART_PutString("     Enter the new command: \r\n");
+            
+            push_button_event = 0;
+        break;
+        
+        case 2:
+            UART_PutString(" \r\n");
+            UART_PutString("     THE PUSH BUTTON HAS BEEN PRESSED \r\n");
+            UART_PutString(elapsed_time_string);
+            UART_PutString("     The data storing has been restarted \r\n");
+            UART_PutString(" \r\n");
+            UART_PutString("     Enter the new command: \r\n");
+            
+            push_button_event = 0;
+        break;
+
+    }
 }
 
 /* [] END OF FILE */
