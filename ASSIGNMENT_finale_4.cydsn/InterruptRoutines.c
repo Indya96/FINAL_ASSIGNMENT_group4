@@ -18,6 +18,45 @@
 #include "project.h"
 
 /******************************************************************************************************************/
+/*                                                REGISTER OPTIONS                                                */
+/******************************************************************************************************************/
+/*
+* From datasheet:
+*
+*    FS[1:0]: Full-scale selection. default value: 00
+*             (00: ±2 g; 01: ±4 g; 10: ±8 g; 11: ±16 g)
+*
+*   |************ CTRL_REG4 register **************|
+*   | BDU | BLE | FS1 | FS0 | HR | ST1 | ST0 | SIM |
+*   |  1  |  0  |  0  |  0  | 0  |  0  |  0  |  0  |  0x80  (±2g)
+*   |  1  |  0  |  0  |  1  | 0  |  0  |  0  |  0  |  0x90  (±4g)
+*   |  1  |  0  |  1  |  0  | 0  |  0  |  0  |  0  |  0xA0  (±8g)
+*   |  1  |  0  |  1  |  1  | 0  |  0  |  0  |  0  |  0xB0  (±16g)
+*/
+
+#define LIS3DH_CTRL_REG4_FSR_2G  0x80
+#define LIS3DH_CTRL_REG4_FSR_4G  0x90
+#define LIS3DH_CTRL_REG4_FSR_8G  0xA0
+#define LIS3DH_CTRL_REG4_FSR_16G 0xB0
+
+/*
+* From datasheet:
+*
+*   |**************** CTRL_REG1 register ****************|
+*   | ODR3 | ODR2 | ODR1 | ODR0 | LPen | Zen | Yen | Xen |
+*   |  0   |  0   |  0   |  1   |  0   |  1  |  1  |  1  |  0x17  (1Hz)
+*   |  0   |  0   |  1   |  0   |  0   |  1  |  1  |  1  |  0x27  (10Hz)
+*   |  0   |  0   |  1   |  1   |  0   |  1  |  1  |  1  |  0x37  (25Hz)
+*   |  0   |  1   |  0   |  0   |  0   |  1  |  1  |  1  |  0x47  (50Hz)
+*/
+
+#define LIS3DH_CTRL_REG1_SF_1HZ   0x17
+#define LIS3DH_CTRL_REG1_SF_10HZ  0x27
+#define LIS3DH_CTRL_REG1_SF_25HZ  0x37
+#define LIS3DH_CTRL_REG1_SF_50HZ  0x47
+
+
+/******************************************************************************************************************/
 /*                                            VARIABLES DECLARATION                                               */
 /******************************************************************************************************************/
 
@@ -58,6 +97,11 @@ CY_ISR(Custom_ISR_RX)
     // Set flags based on UART command
     switch(ch_receveid){
         
+        case '?':
+            // todo - bloccare tutto
+            WELCOME();
+            break;
+        
         case 'B':
         case 'b':
             FLAG_BS = 1;
@@ -85,65 +129,76 @@ CY_ISR(Custom_ISR_RX)
             FLAG_AS = 1;
             break;
             
-        case '1':
-            if(FLAG_FSR==1 && FLAG_SF==0 && FLAG_AS==0){ // FULL SCALE RANGE
-                FLAG_FSR  = 0;
-                OPTION_FSR = 1;
-                //todo
-            }
-            if(FLAG_FSR==0 && FLAG_SF==1 && FLAG_AS==0){ // SAMPLING FREQUENCY
-                FLAG_SF  = 0;
-                OPTION_SF = 1;
-                //todo
-            }
-            if(FLAG_FSR==0 && FLAG_SF==0 && FLAG_AS==1){ // Additional sensors
-                FLAG_AS  = 0;
+        case '0':
+            if(FLAG_AS==1){
+                FLAG_AS   = 0;
                 OPTION_AS = 1;
-                //todo
+                AMux_Select(1);   // LDR               
+            }
+            break;
+            
+        case '1':
+            if(FLAG_FSR==1 && FLAG_SF==0 && FLAG_AS==0){
+                FLAG_FSR            = 0;
+                OPTION_FSR          = 1;
+                SETUP_FSR           = LIS3DH_CTRL_REG4_FSR_2G;
+                SETUP_FSR_CHANGED   = 1;
+            }
+            if(FLAG_FSR==0 && FLAG_SF==1 && FLAG_AS==0){
+                FLAG_SF            = 0;
+                OPTION_SF          = 1;
+                SETUP_SF           = LIS3DH_CTRL_REG1_SF_1HZ;
+                SETUP_SF_CHANGED   = 1;
+            }
+            if(FLAG_FSR==0 && FLAG_SF==0 && FLAG_AS==1){ 
+                FLAG_AS   = 0;
+                OPTION_AS = 2;
+                AMux_Select(0);   // POT      
             }
             break;
         
         case '2':
-            if(FLAG_FSR==1 && FLAG_SF==0 && FLAG_AS==0){ // FULL SCALE RANGE
-                FLAG_FSR  = 0;
-                OPTION_FSR = 2;
-                //todo
+            if(FLAG_FSR==1 && FLAG_SF==0 && FLAG_AS==0){
+                FLAG_FSR            = 0;
+                OPTION_FSR          = 2;
+                SETUP_FSR           = LIS3DH_CTRL_REG4_FSR_4G;
+                SETUP_FSR_CHANGED   = 1;
             }
-            if(FLAG_FSR==0 && FLAG_SF==1 && FLAG_AS==0){ // SAMPLING FREQUENCY
-                FLAG_SF  = 0;
-                OPTION_SF = 2;
-                //todo
-            }
-            if(FLAG_FSR==0 && FLAG_SF==0 && FLAG_AS==1){ // Additional sensors
-                FLAG_AS  = 0;
-                OPTION_AS = 2;
-                //todo
+            if(FLAG_FSR==0 && FLAG_SF==1 && FLAG_AS==0){
+                FLAG_SF            = 0;
+                OPTION_SF          = 2;
+                SETUP_SF           = LIS3DH_CTRL_REG1_SF_10HZ;
+                SETUP_SF_CHANGED   = 1;
             }
             break;
             
         case '3':
-            if(FLAG_FSR==1 && FLAG_SF==0){ // FULL SCALE RANGE
-                FLAG_FSR  = 0;
-                OPTION_FSR = 3;
-                //todo
+            if(FLAG_FSR==1 && FLAG_SF==0){
+                FLAG_FSR            = 0;
+                OPTION_FSR          = 3;
+                SETUP_FSR           = LIS3DH_CTRL_REG4_FSR_8G;
+                SETUP_FSR_CHANGED   = 1;
             }
-            if(FLAG_FSR==0 && FLAG_SF==1){ // SAMPLING FREQUENCY
-                FLAG_SF  = 0;
-                OPTION_SF = 3;
-                //todo
+            if(FLAG_FSR==0 && FLAG_SF==1){
+                FLAG_SF            = 0;
+                OPTION_SF          = 3;
+                SETUP_SF           = LIS3DH_CTRL_REG1_SF_25HZ;
+                SETUP_SF_CHANGED   = 1;
             }
             break;
             
         case '4':
-            if(FLAG_FSR==1 && FLAG_SF==0){ // FULL SCALE RANGE
-                FLAG_FSR  = 0;
-                OPTION_FSR = 4;
-                //todo
+            if(FLAG_FSR==1 && FLAG_SF==0){ 
+                FLAG_FSR            = 0;
+                OPTION_FSR          = 4;
+                SETUP_FSR           = LIS3DH_CTRL_REG4_FSR_16G;
+                SETUP_FSR_CHANGED   = 1;
             }
-            if(FLAG_FSR==0 && FLAG_SF==1){ // SAMPLING FREQUENCY
-                FLAG_SF  = 0;
-                OPTION_SF = 4;
-                //todo
+            if(FLAG_FSR==0 && FLAG_SF==1){ 
+                FLAG_SF            = 0;
+                OPTION_SF          = 4;
+                SETUP_SF           = LIS3DH_CTRL_REG1_SF_50HZ;
+                SETUP_SF_CHANGED   = 1;
             }
             break;
          
@@ -190,13 +245,13 @@ CY_ISR(ISR_PB_HIGH){
     if(PB_PRESSED == 1){                            // if the button has been pressed
         
         TIMER_COUNTER = Timer_PB_ReadCounter();     // read the time elapsed
-        Timer_PB_WriteCounter(0);                   // reset time elapsed
+        Timer_PB_WriteCounter(0);                   // reset time elapsed 
         PB_PRESSED = 0;          
         
         // if 5 seconds have been elapsed
         if(TIMER_COUNTER < 59000){ 
             push_button_event = 1;
-            elapsed_time = 5*(60000-TIMER_COUNTER);///200;
+            elapsed_time = 5*(60000-TIMER_COUNTER);
             sprintf(elapsed_time_string, "     Elapsed time: %dms \r\n", elapsed_time);
             // TODO
         }
@@ -204,7 +259,7 @@ CY_ISR(ISR_PB_HIGH){
         // if 5 seconds haven't been elapsed
         if(TIMER_COUNTER > 59000){
             push_button_event = 2;
-            elapsed_time = 5*(60000-TIMER_COUNTER);///200;
+            elapsed_time = 5*(60000-TIMER_COUNTER);
             sprintf(elapsed_time_string, "     Elapsed time: %dms \r\n", elapsed_time);
             // TODO
         }
