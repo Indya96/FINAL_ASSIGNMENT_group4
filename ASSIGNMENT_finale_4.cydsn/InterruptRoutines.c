@@ -10,75 +10,135 @@
  * ========================================
 */
 
-// Include header
+/******************************************************************************************************************/
+/*                                                   INCLUSIONS                                                   */
+/******************************************************************************************************************/
+
 #include "InterruptRoutines.h"
-#include "Pages.h"
-
-// Include required header files
+#include "I2C_Interface.h"
+#include "SPI_Interface.h"
 #include "project.h"
-
-/******************************************************************************************************************/
-/*                                                REGISTER OPTIONS                                                */
-/******************************************************************************************************************/
-/*
-* From datasheet:
-*
-*    FS[1:0]: Full-scale selection. default value: 00
-*             (00: ±2 g; 01: ±4 g; 10: ±8 g; 11: ±16 g)
-*
-*   |************ CTRL_REG4 register **************|
-*   | BDU | BLE | FS1 | FS0 | HR | ST1 | ST0 | SIM |
-*   |  1  |  0  |  0  |  0  | 0  |  0  |  0  |  0  |  0x80  (±2g)
-*   |  1  |  0  |  0  |  1  | 0  |  0  |  0  |  0  |  0x90  (±4g)
-*   |  1  |  0  |  1  |  0  | 0  |  0  |  0  |  0  |  0xA0  (±8g)
-*   |  1  |  0  |  1  |  1  | 0  |  0  |  0  |  0  |  0xB0  (±16g)
-*/
-
-#define LIS3DH_CTRL_REG4_FSR_2G  0x80
-#define LIS3DH_CTRL_REG4_FSR_4G  0x90
-#define LIS3DH_CTRL_REG4_FSR_8G  0xA0
-#define LIS3DH_CTRL_REG4_FSR_16G 0xB0
-
-/*
-* From datasheet:
-*
-*   |**************** CTRL_REG1 register ****************|
-*   | ODR3 | ODR2 | ODR1 | ODR0 | LPen | Zen | Yen | Xen |
-*   |  0   |  0   |  0   |  1   |  0   |  1  |  1  |  1  |  0x17  (1Hz)
-*   |  0   |  0   |  1   |  0   |  0   |  1  |  1  |  1  |  0x27  (10Hz)
-*   |  0   |  0   |  1   |  1   |  0   |  1  |  1  |  1  |  0x37  (25Hz)
-*   |  0   |  1   |  0   |  0   |  0   |  1  |  1  |  1  |  0x47  (50Hz)
-*/
-
-#define LIS3DH_CTRL_REG1_SF_1HZ   0x17
-#define LIS3DH_CTRL_REG1_SF_10HZ  0x27
-#define LIS3DH_CTRL_REG1_SF_25HZ  0x37
-#define LIS3DH_CTRL_REG1_SF_50HZ  0x47
+#include "Registers.h"
+#include "Pages.h"
 
 
 /******************************************************************************************************************/
 /*                                            VARIABLES DECLARATION                                               */
 /******************************************************************************************************************/
 
-uint8       ch_receveid;                            // flag char 
-uint8_t     PB_PRESSED           = 0;               // flag button pressed (1 means "pressed")
-uint16_t    TIMER_COUNTER        = 0;               // timer counter variable
-const mode  LED_ACQUISITION_ON   = {199, 100};     
-const mode  LED_EXT_EEPROM_FULL  = { 49,  25};
+uint8       ch_receveid;                             // flag char 
+uint8_t     PB_PRESSED            = 0;               // flag button pressed (1 means "pressed")
+uint16_t    TIMER_COUNTER         = 0;               // timer counter variable
+ErrorCode   error;
 
+const mode  LED_ACQUISITION_ON    = {199, 100};    
+const mode  LED_ACQUISITION_OFF   = {199,  0};    
+const mode  LED_EXT_EEPROM_FULL   = { 49,  25};
+const mode  LED_EXT_EEPROM_EMPTY  = { 49,  0};
+
+/******************************************************************************************************************/
+/*                                            CHANGE ADC SAMPLING FREQ.                                           */
+/******************************************************************************************************************/
+
+void CHANGE_ADC_SF(uint16_t period){
+    
+    Timer_sensor_Stop();
+    Timer_sensor_ReadStatusRegister();
+    Timer_sensor_WritePeriod(period);
+    Timer_sensor_ReadStatusRegister();
+    Timer_sensor_Start();
+
+}
+
+/******************************************************************************************************************/
+/*                                               CUSTOM FIFO ISR                                                  */
+/******************************************************************************************************************/
+
+CY_ISR(Custom_FIFO_ISR)
+{
+    //UART_PutString("FIFO OVR ISR \r\n");
+    //Reading data from FIFO and storing data in AccData array;
+    ErrorCode error = I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS,
+                                                       LIS3DH_OUT_X_L,
+                                                       FIFO_DATA_DIM,
+                                                       &AccData2[0]);
+        if (error==NO_ERROR){
+
+            for (int t=0; t<FIFO_DATA_DIM; t++){
+                AccData[t] = AccData2[t];}
+
+
+            if (error == NO_ERROR){
+                error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                     LIS3DH_FIFO_CTRL_REG,
+                                                     LIS3DH_FIFO_CTRL_REG_BYPASS_MODE);}
+            
+            if (error == NO_ERROR){
+                error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                     LIS3DH_FIFO_CTRL_REG,
+                                                     LIS3DH_FIFO_CTRL_REG_FIFO_MODE);}
+
+            FlagFifo = 1;
+            
+    }
+    
+}
+
+/******************************************************************************************************************/
+/*                                              CUSTOM TIMER ISR                                                  */
+/******************************************************************************************************************/
+
+CY_ISR(Custom_TIMER_ISR)
+{
+    Timer_sensor_ReadStatusRegister();         //restart the time
+    if(counter_timer<(SENSOR_DATA_DIM))
+    {
+        SensData[counter_timer]= ADC_Read32();  //read data from ADC
+        /* verify the value */
+        if (SensData[counter_timer] < 0)        SensData[counter_timer] = 0;
+        if (SensData[counter_timer] > 65535)    SensData[counter_timer] = 65535;
+        
+        SensBytes[2*counter_timer]     = (uint8_t)(SensData[counter_timer] & 0xFF);  //LSB
+        SensBytes[2*counter_timer + 1] = (uint8_t)(SensData[counter_timer]>>8) ;     //MSB
+        
+        counter_timer ++;
+    }
+    
+    else if(counter_timer == (SENSOR_DATA_DIM))
+    {
+        int i=0;
+        for(i=0;i<SENSOR_DATA_DIM*2;i++)
+        {
+            SensBytes_old[i]=SensBytes[i];
+        }
+        counter_timer=0;
+        SensorDataReady=1;
+    }
+       
+}
 
 /******************************************************************************************************************/
 /*                                                TOGGLING MODES                                                  */
 /******************************************************************************************************************/
 
-static void LED_ACQUISITION_ON_TOGGLE(void){
+void LED_ACQUISITION_ON_TOGGLE(void){
     PWM_WritePeriod(LED_ACQUISITION_ON.Period);
-    PWM_WriteCompare1(LED_ACQUISITION_ON.CMP);
+    PWM_WriteCompare(LED_ACQUISITION_ON.CMP);
 }
 
-static void LED_EXT_EEPROM_FULL_TOGGLE(void){
-    PWM_WritePeriod(LED_EXT_EEPROM_FULL.Period);
-    PWM_WriteCompare2(LED_EXT_EEPROM_FULL.CMP); 
+void LED_ACQUISITION_OFF_TOGGLE(void){
+    PWM_WritePeriod(LED_ACQUISITION_OFF.Period);
+    PWM_WriteCompare(LED_ACQUISITION_OFF.CMP);
+}
+
+void LED_EXT_EEPROM_FULL_TOGGLE(void){
+    PWM_EXT_WritePeriod(LED_EXT_EEPROM_FULL.Period);
+    PWM_EXT_WriteCompare(LED_EXT_EEPROM_FULL.CMP); 
+}
+
+void LED_EXT_EEPROM_EMPTY_TOGGLE(void){
+    PWM_EXT_WritePeriod(LED_EXT_EEPROM_EMPTY.Period);
+    PWM_EXT_WriteCompare(LED_EXT_EEPROM_EMPTY.CMP); 
 }
 
 /******************************************************************************************************************/
@@ -98,20 +158,56 @@ CY_ISR(Custom_ISR_RX)
     switch(ch_receveid){
         
         case '?':
-            // todo - bloccare tutto
+            StartStream_flag = 0;
             WELCOME();
             break;
         
         case 'B':
         case 'b':
+            UART_PutString("\r\n");
+            StartAcquisition_flag = 1;
             FLAG_BS = 1;
-            //todo
+            Timer_sensor_ReadStatusRegister();
+            Timer_sensor_Start();
+            error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                 LIS3DH_CTRL_REG3,
+                                                 LIS3DH_CTRL_REG3_INT_ENABLE);
+            if (error == NO_ERROR){UART_PutString("     Overrun interrupt    ENABLED\r\n");}
+            
+            error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                 LIS3DH_FIFO_CTRL_REG,
+                                                 LIS3DH_FIFO_CTRL_REG_FIFO_MODE);
+            if (error == NO_ERROR){UART_PutString("     FIFO mode            SELECTED\r\n");}
+            
+            error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                 LIS3DH_CTRL_REG5,
+                                                 LIS3DH_CTRL_REG5_FIFO_ENABLE);
+            if (error == NO_ERROR){UART_PutString("     Fifo mode            ENABLED\r\n");}
+            UART_PutString("\r\n");
+            LED_ACQUISITION_ON_TOGGLE();
             break;
             
         case 'S':
         case 's':
+            UART_PutString("\r\n");
+            StartAcquisition_flag = 0;
             FLAG_BS = 0;
-            //todo
+            Timer_sensor_Stop();
+            Timer_sensor_ReadStatusRegister();
+            error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                 LIS3DH_CTRL_REG3,
+                                                 LIS3DH_CTRL_REG3_INT_DISABLED);
+            if (error == NO_ERROR){UART_PutString("     Overrun interrupt    DISABLED\r\n");}
+            error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                 LIS3DH_FIFO_CTRL_REG,
+                                                 LIS3DH_FIFO_CTRL_REG_BYPASS_MODE);
+            if (error == NO_ERROR){UART_PutString("     BYPASS mode          SELECTED\r\n");}
+            error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                 LIS3DH_CTRL_REG5,
+                                                 LIS3DH_CTRL_REG5_FIFO_DISABLE);
+            if (error == NO_ERROR){UART_PutString("     FIFO mode            DISABLED\r\n");}
+            UART_PutString("\r\n");
+            LED_ACQUISITION_OFF_TOGGLE();
             break;
             
         case 'F':
@@ -128,7 +224,31 @@ CY_ISR(Custom_ISR_RX)
         case 'l':
             FLAG_AS = 1;
             break;
+        
+        case 'V':
+        case 'v':
+            StartAcquisition_flag = 0;
+            FLAG_BS = 0;
+            error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                 LIS3DH_CTRL_REG3,
+                                                 LIS3DH_CTRL_REG3_INT_DISABLED);
+            error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                 LIS3DH_FIFO_CTRL_REG,
+                                                 LIS3DH_FIFO_CTRL_REG_BYPASS_MODE);
+            error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+                                                 LIS3DH_CTRL_REG5,
+                                                 LIS3DH_CTRL_REG5_FIFO_DISABLE);
+            Timer_sensor_Stop();
+            Timer_sensor_ReadStatusRegister();
+            LED_ACQUISITION_OFF_TOGGLE();
+            StartStream_flag = 1;
+            break;
             
+        case 'U':
+        case 'u':
+            StartStream_flag = 0;
+            break;
+        
         case '0':
             if(FLAG_AS==1){
                 FLAG_AS   = 0;
@@ -147,8 +267,9 @@ CY_ISR(Custom_ISR_RX)
             if(FLAG_FSR==0 && FLAG_SF==1 && FLAG_AS==0){
                 FLAG_SF            = 0;
                 OPTION_SF          = 1;
-                SETUP_SF           = LIS3DH_CTRL_REG1_SF_1HZ;
+                SETUP_SF           = LIS3DH_CTRL_REG1_SF_1HZ;    
                 SETUP_SF_CHANGED   = 1;
+                CHANGE_ADC_SF(1000);
             }
             if(FLAG_FSR==0 && FLAG_SF==0 && FLAG_AS==1){ 
                 FLAG_AS   = 0;
@@ -169,6 +290,7 @@ CY_ISR(Custom_ISR_RX)
                 OPTION_SF          = 2;
                 SETUP_SF           = LIS3DH_CTRL_REG1_SF_10HZ;
                 SETUP_SF_CHANGED   = 1;
+                CHANGE_ADC_SF(100);
             }
             break;
             
@@ -184,6 +306,7 @@ CY_ISR(Custom_ISR_RX)
                 OPTION_SF          = 3;
                 SETUP_SF           = LIS3DH_CTRL_REG1_SF_25HZ;
                 SETUP_SF_CHANGED   = 1;
+                CHANGE_ADC_SF(40);
             }
             break;
             
@@ -199,6 +322,7 @@ CY_ISR(Custom_ISR_RX)
                 OPTION_SF          = 4;
                 SETUP_SF           = LIS3DH_CTRL_REG1_SF_50HZ;
                 SETUP_SF_CHANGED   = 1;
+                CHANGE_ADC_SF(20);
             }
             break;
          
@@ -245,7 +369,7 @@ CY_ISR(ISR_PB_HIGH){
     if(PB_PRESSED == 1){                            // if the button has been pressed
         
         TIMER_COUNTER = Timer_PB_ReadCounter();     // read the time elapsed
-        Timer_PB_WriteCounter(0);                   // reset time elapsed 
+        Timer_PB_WriteCounter(0);                   // reset time elapsed
         PB_PRESSED = 0;          
         
         // if 5 seconds have been elapsed

@@ -166,7 +166,7 @@ void PB_INFO(uint8_t PB_event){
             UART_PutString(" \r\n");
             UART_PutString("     THE PUSH BUTTON HAS BEEN PRESSED \r\n");
             UART_PutString(elapsed_time_string);
-            UART_PutString("     The 'counter' has been reset \r\n");
+            UART_PutString("     The data storing has been restarted \r\n");
             UART_PutString(" \r\n");
             UART_PutString("     Enter the new command: \r\n");
             
@@ -177,7 +177,7 @@ void PB_INFO(uint8_t PB_event){
             UART_PutString(" \r\n");
             UART_PutString("     THE PUSH BUTTON HAS BEEN PRESSED \r\n");
             UART_PutString(elapsed_time_string);
-            UART_PutString("     The data storing has been restarted \r\n");
+            UART_PutString("     5 seconds haven't been elapsed yet \r\n");
             UART_PutString(" \r\n");
             UART_PutString("     Enter the new command: \r\n");
             

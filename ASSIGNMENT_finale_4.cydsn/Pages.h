@@ -16,34 +16,36 @@
     #include "cytypes.h"
     #include "stdio.h"
     
-    void WELCOME(void);
-    void INFO(void);
-    void PB_INFO(uint8_t PB_event);
-    void ACKNOWLEDGEMENT(void); // todo
+    // control
+    volatile uint8 StartAcquisition_flag ;      // begin/stop acquisition
+    volatile uint8 StartStream_flag;            // begin/stop streaming data
     
-    // declaring flags
-    volatile uint8 FLAG_FSR;    // full scale range
-    volatile uint8 FLAG_SF ;    // sampling frequency
-    volatile uint8 FLAG_AS ;    // additional sensor
-    volatile uint8 FLAG_BS ;    // begin/stop
+    // human interface
+    volatile uint8 FLAG_FSR;                    // full scale range
+    volatile uint8 FLAG_SF ;                    // sampling frequency
+    volatile uint8 FLAG_AS ;                    // additional sensor
+    volatile uint8 FLAG_BS ;                    // begin/stop
 
-    // declaring various mode values
-    volatile uint8 OPTION_FSR;  // full scale range value
-    volatile uint8 OPTION_SF ;  // sampling frequency value
-    volatile uint8 OPTION_AS ;  // additional sensor 0 or 1
+    // option 
+    volatile uint8 OPTION_FSR;                  // full scale range value
+    volatile uint8 OPTION_SF ;                  // sampling frequency value
+    volatile uint8 OPTION_AS ;                  // additional sensor 0 or 1
     
-    // declaring summary flag
+    // notification
     volatile uint8 summary_ready;
-    volatile uint8 push_button_event; 
+    volatile uint8 push_button_event;
     
-    // new variables 
-    volatile uint8 SETUP_FSR_CHANGED;  // nel main, se le impostazioni di FSR sono cambiate
-                                       // si scrive il registro con le impostazioni "SETUP_FSR"
-                                       // cambiate le impostazioni si resetta "SETUP_FSR_CHANGED"
+    // setup 
+    volatile uint8 SETUP_FSR_CHANGED;  
     volatile uint8 SETUP_SF_CHANGED;
     volatile uint8 SETUP_FSR;
     volatile uint8 SETUP_SF;
     
+    // pages
+    void WELCOME(void);
+    void INFO(void);
+    void PB_INFO(uint8_t PB_event);
+    void ACKNOWLEDGEMENT(void);                 // todo
     
 #endif
 
