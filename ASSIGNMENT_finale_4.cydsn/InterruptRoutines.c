@@ -22,6 +22,7 @@
 #include "Pages.h"
 
 
+
 /******************************************************************************************************************/
 /*                                            VARIABLES DECLARATION                                               */
 /******************************************************************************************************************/
@@ -56,7 +57,7 @@ void CHANGE_ADC_SF(uint16_t period){
 
 CY_ISR(Custom_FIFO_ISR)
 {
-    //UART_PutString("FIFO OVR ISR \r\n");
+    //UART_PutString("FIFO OVR ISR \r\n"); // stringa di debug
     //Reading data from FIFO and storing data in AccData array;
     ErrorCode error = I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS,
                                                        LIS3DH_OUT_X_L,
@@ -90,10 +91,10 @@ CY_ISR(Custom_FIFO_ISR)
 
 CY_ISR(Custom_TIMER_ISR)
 {
-    Timer_sensor_ReadStatusRegister();         //restart the time
+    Timer_sensor_ReadStatusRegister();          // restart the timer
     if(counter_timer<(SENSOR_DATA_DIM))
     {
-        SensData[counter_timer]= ADC_Read32();  //read data from ADC
+        SensData[counter_timer]= ADC_Read32();  // read data from ADC
         /* verify the value */
         if (SensData[counter_timer] < 0)        SensData[counter_timer] = 0;
         if (SensData[counter_timer] > 65535)    SensData[counter_timer] = 65535;
@@ -111,8 +112,8 @@ CY_ISR(Custom_TIMER_ISR)
         {
             SensBytes_old[i]=SensBytes[i];
         }
-        counter_timer=0;
-        SensorDataReady=1;
+        counter_timer   = 0;
+        SensorDataReady = 1;
     }
        
 }
@@ -167,6 +168,7 @@ CY_ISR(Custom_ISR_RX)
             UART_PutString("\r\n");
             StartAcquisition_flag = 1;
             FLAG_BS = 1;
+            SETUP_BS_CHANGED = 1;
             Timer_sensor_ReadStatusRegister();
             Timer_sensor_Start();
             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
@@ -192,6 +194,7 @@ CY_ISR(Custom_ISR_RX)
             UART_PutString("\r\n");
             StartAcquisition_flag = 0;
             FLAG_BS = 0;
+            SETUP_BS_CHANGED = 1;
             Timer_sensor_Stop();
             Timer_sensor_ReadStatusRegister();
             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
@@ -228,6 +231,7 @@ CY_ISR(Custom_ISR_RX)
         case 'V':
         case 'v':
             StartAcquisition_flag = 0;
+            StartStream_flag = 1;
             FLAG_BS = 0;
             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
                                                  LIS3DH_CTRL_REG3,
@@ -241,7 +245,6 @@ CY_ISR(Custom_ISR_RX)
             Timer_sensor_Stop();
             Timer_sensor_ReadStatusRegister();
             LED_ACQUISITION_OFF_TOGGLE();
-            StartStream_flag = 1;
             break;
             
         case 'U':
@@ -253,6 +256,7 @@ CY_ISR(Custom_ISR_RX)
             if(FLAG_AS==1){
                 FLAG_AS   = 0;
                 OPTION_AS = 1;
+                SETUP_AS_CHANGED = 1;
                 AMux_Select(1);   // LDR               
             }
             break;
@@ -274,6 +278,7 @@ CY_ISR(Custom_ISR_RX)
             if(FLAG_FSR==0 && FLAG_SF==0 && FLAG_AS==1){ 
                 FLAG_AS   = 0;
                 OPTION_AS = 2;
+                SETUP_AS_CHANGED = 1;
                 AMux_Select(0);   // POT      
             }
             break;

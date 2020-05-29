@@ -36,6 +36,8 @@
     volatile uint8 push_button_event;
     
     // setup 
+    volatile uint8 SETUP_BS_CHANGED;  
+    volatile uint8 SETUP_AS_CHANGED;
     volatile uint8 SETUP_FSR_CHANGED;  
     volatile uint8 SETUP_SF_CHANGED;
     volatile uint8 SETUP_FSR;

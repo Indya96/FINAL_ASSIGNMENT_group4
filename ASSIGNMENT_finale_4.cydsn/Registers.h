@@ -14,10 +14,14 @@
 
 #ifndef __REGISTERS_H
     #define __REGISTERS_H
-     
+    
+    #define EEPROM_PAGE_DIM                     64
     #define EEPROM_DIMENSION                    0x7FFF
     #define EEPROM_INITIAL_ADDRESS              0x80
-    #define EEPROM_PAGE_DIM                     64
+    #define EEPROM_OLD_SF_ADDRESS               0x0002
+    #define EEPROM_OLD_FSR_ADDRESS              0x0003
+    #define EEPROM_OLD_AS_ADDRESS               0x0004
+    #define EEPROM_OLD_BS_ADDRESS               0x0005
     
     #define ACC_PACKET_DIM                      4
     #define SENS_PACKET_DIM                     2
