@@ -176,48 +176,57 @@ int main(void)
 
           }
         }
-
+        
         /*******************************************************************************************************************/
         /*                                                  STREAMING                                                      */
         /*******************************************************************************************************************/
-        /* when "v" is received the data from the EEPROM must be streamed to the BCP and data acquisition must stop*/
+        
+        if(StartStream_flag==1){
+            
+            EEPROM_Adress_Pointer_L = EEPROM_readByte(0x0000);
+            EEPROM_Adress_Pointer_H = EEPROM_readByte(0x0001);
+            EEPROM_Adress = (uint16_t) EEPROM_Adress_Pointer_L | (EEPROM_Adress_Pointer_H<<8);
 
-        if(StartStream_flag)
-        {
+            Adress_to_read = EEPROM_INITIAL_ADDRESS;
 
-            if (EEPROM_read_address < EEPROM_Address)
-            {
+            while (Adress_to_read < EEPROM_Adress && StartStream_flag){
+                
+                UART_ClearTxBuffer(); // Clean Tx Buffer
+              
+                EEPROM_readPage(Adress_to_read, Out_Data, DATA_PACKET_DIM);
+              
+                xl = (uint8_t)  (Out_Data[2]&0x30)<<2;
+                xh = (uint8_t)  (Out_Data[2]&0xC0)>>6  |  (Out_Data[3]&0x3f)<<2;
+                yl = (uint8_t)  (Out_Data[1]&0x0C)<<4;
+                yh = (uint8_t) ((Out_Data[1]&0xF0)>>4) | ((Out_Data[2]&0x0F)<<4);                      
+                zl = (uint8_t)  (Out_Data[0]&0x03)<<6;
+                zh = (uint8_t) ((Out_Data[0]&0xFC)>>2) |  (Out_Data[1]&0x03)<<6;
+                
+                x = (int16)((xh<<8)|(xl))>>6;               //X-axis acceleration in digit
+                y = (int16)((yh <<8)|(yl))>>6;              //Y-axis acceleration in digit
+                z = (int16)((zh <<8)|zl)>>6;                //Z-axis acceleration in digit
+                
+                z_uart = (int16_t) (((float32)z)*Sensitivity*0.981 + 0.5);
+                y_uart = (int16_t) (((float32)y)*Sensitivity*0.981 + 0.5);
+                x_uart = (int16_t) (((float32)x)*Sensitivity*0.981 + 0.5);
+ 
+                UART_OutArray[1] = (uint8_t)(z_uart & 0xFF);     //LSB Z
+                UART_OutArray[2] = (uint8_t)(z_uart >>8);        //MSB Z
+                UART_OutArray[3] = (uint8_t)(y_uart & 0xFF);     //LSB Y
+                UART_OutArray[4] = (uint8_t)(y_uart >>8);        //MSB Y
+                UART_OutArray[5] = (uint8_t)(x_uart & 0xFF);     //LSB Z
+                UART_OutArray[6] = (uint8_t)(x_uart >>8);        //MSB Z
+                UART_OutArray[7] = Out_Data[4];                   //LSB of sensor
+                UART_OutArray[8] = Out_Data[5];                   //MSB of sensor
+            
+                UART_PutArray(UART_OutArray, UART_PACKET_DIM);   
+                CyDelay(10);                                // 10ms
+                
+                Adress_to_read=Adress_to_read +6;
 
-                EEPROM_readPage(EEPROM_read_address,OutputData,DATA_PACKET_DIM);
-
-                Z_acc_digit= (int16)((OutputData[1] & 0x03)<<8|OutputData[0]); //Z-axis acceleration in digit
-                Y_acc_digit= (int16)((OutputData[2] & 0x0F)<<8|((OutputData[1]>>2) & 0x3F)); //Y-axis acceleration in digit
-                X_acc_digit= (int16)((OutputData[3] & 0x3F)<<8|((OutputData[2]>>4) & 0x0F)); //X-axis acceleration in digit
-
-                Z_acc_mg= Z_acc_digit * sensitivity;
-                Y_acc_mg= Y_acc_digit * sensitivity;
-                X_acc_mg= X_acc_digit * sensitivity;
-
-                UART_OutArray[1]= (uint8_t)(Z_acc_mg & 0xFF); //LSB Z
-                UART_OutArray[2]= (uint8_t)(Z_acc_mg >>8);    //MSB Z
-                UART_OutArray[3]= (uint8_t)(Y_acc_mg & 0xFF); //LSB Y
-                UART_OutArray[4]= (uint8_t)(Y_acc_mg >>8);    //MSB Y
-                UART_OutArray[5]= (uint8_t)(X_acc_mg & 0xFF);  //LSB Z
-                UART_OutArray[6]=  (uint8_t)(X_acc_mg >>8);    //MSB Z
-                UART_OutArray[7]= OutputData[4]; //LSB of sensor
-                UART_OutArray[8]= OutputData[5]; //MSB of sensor
-
-                UART_PutArray(UART_OutArray, UART_PACKET_DIM);
-
-
-                EEPROM_read_address = EEPROM_read_address + 6;
-
-
-
-            }
-            if(EEPROM_read_address = EEPROM_Address)
-            {
-                EEPROM_read_address = INITIAL_ADDRESS;
+                if(Adress_to_read >= EEPROM_Adress){
+                    Adress_to_read = EEPROM_INITIAL_ADDRESS;       
+                }
             }
 
         }

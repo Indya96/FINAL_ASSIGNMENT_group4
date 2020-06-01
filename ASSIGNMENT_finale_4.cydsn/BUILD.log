@@ -1,0 +1,153 @@
+--------------- Build Started: 06/01/2020 14:05:34 Project: ASSIGNMENT_finale_4, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
+cydsfit.exe -.appdatapath "C:\Users\indya\AppData\Local\Cypress Semiconductor\PSoC Creator\4.3" -.fdsnotice -.fdswarpdepfile=warp_dependencies.txt -.fdselabdepfile=elab_dependencies.txt -.fdsbldfile=generated_files.txt -.fdsreffile=referenced_files.txt -p C:\Users\indya\Desktop\master\FINAL_ASSIGNMENT_group4\ASSIGNMENT_finale_4.cydsn\ASSIGNMENT_finale_4.cyprj -d CY8C5888LTI-LP097 -s C:\Users\indya\Desktop\master\FINAL_ASSIGNMENT_group4\ASSIGNMENT_finale_4.cydsn\Generated_Source\PSoC5 -- -yv2 -q10 -ygs -o2 -v3 -.fftcfgtype=LE
+Elaborating Design...
+HDL Generation...
+Synthesis...
+Tech Mapping...
+Info: plm.M0038: The pin named pin_INT_ACC(0) at location P12[4] prevents usage of special purposes: I2C:SCL. (App=cydsfit)
+Analog Placement...
+Info: apr.M0002: Analog signal "\ADC:Net_35\" is connected to one terminal only. (App=cydsfit)
+Analog Routing...
+Analog Code Generation...
+Digital Placement...
+Digital Routing...
+Bitstream Generation...
+Bitstream Verification...
+Static timing analysis...
+API Generation...
+Dependency Generation...
+Cleanup...
+arm-none-eabi-gcc.exe -mcpu=cortex-m3 -mthumb -I. -IGenerated_Source\PSoC5 -Wa,-alh=.\CortexM3\ARM_GCC_541\Debug/main.lst -g -D DEBUG -D CY_CORE_ID=0 -Wall -ffunction-sections -ffat-lto-objects -Og -c main.c -o .\CortexM3\ARM_GCC_541\Debug\main.o
+main.c:30:1: warning: data definition has no type or storage class
+ StartAcquisition_flag = 0;
+ ^
+main.c:30:1: warning: type defaults to 'int' in declaration of 'StartAcquisition_flag' [-Wimplicit-int]
+main.c:30:1: error: conflicting type qualifiers for 'StartAcquisition_flag'
+In file included from main.c:17:0:
+Pages.h:20:20: note: previous declaration of 'StartAcquisition_flag' was here
+     volatile uint8 StartAcquisition_flag ;      // begin/stop acquisition
+                    ^
+main.c:31:1: warning: data definition has no type or storage class
+ StartStream_flag      = 0;
+ ^
+main.c:31:1: warning: type defaults to 'int' in declaration of 'StartStream_flag' [-Wimplicit-int]
+main.c:31:1: error: conflicting type qualifiers for 'StartStream_flag'
+In file included from main.c:17:0:
+Pages.h:21:20: note: previous declaration of 'StartStream_flag' was here
+     volatile uint8 StartStream_flag;            // begin/stop streaming data
+                    ^
+main.c: In function 'main':
+main.c:48:5: warning: implicit declaration of function 'UART_Debug_Start' [-Wimplicit-function-declaration]
+     UART_Debug_Start();
+     ^
+main.c:52:5: warning: implicit declaration of function 'ADC_DelSig_start' [-Wimplicit-function-declaration]
+     ADC_DelSig_start();
+     ^
+main.c:53:5: warning: implicit declaration of function 'TIMER_start' [-Wimplicit-function-declaration]
+     TIMER_start();
+     ^
+main.c:58:5: error: expected ',' or ';' before 'if'
+     if(EEPROM_Adress<EEPROM_INITIAL_ADDRESS)
+     ^
+main.c:65:17: error: 'CTRL_REG3_INT_ENABLE' undeclared (first use in this function)
+     ctrl_reg3 = CTRL_REG3_INT_ENABLE; // ctrl_reg3 I1_OVERRUN bit set to '1'
+                 ^
+main.c:65:17: note: each undeclared identifier is reported only once for each function it appears in
+main.c:68:44: error: 'CTRL_REG3' undeclared (first use in this function)
+                                            CTRL_REG3,
+                                            ^
+main.c:72:21: error: 'FIFO_CTRL_REG_FIFO_MODE' undeclared (first use in this function)
+     fifo_ctrl_reg = FIFO_CTRL_REG_FIFO_MODE; // Enabling FIFO mode
+                     ^
+main.c:73:15: error: redefinition of 'error'
+     ErrorCode error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+               ^
+main.c:67:15: note: previous definition of 'error' was here
+     ErrorCode error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+               ^
+main.c:74:44: error: 'FIFO_CTRL_REG' undeclared (first use in this function)
+                                            FIFO_CTRL_REG,
+                                            ^
+main.c:78:23: error: 'custom_TIMER_ISR' undeclared (first use in this function)
+     isr_TIMER_StartEx(custom_TIMER_ISR);   /* TIMER interrupt enabled pointing to proper function adress. */
+                       ^
+main.c:85:36: error: 'INITIAL_ADDRESS' undeclared (first use in this function)
+     uint16_t  EEPROM_read_address= INITIAL_ADDRESS;
+                                    ^
+main.c:124:19: error: 'i' undeclared (first use in this function)
+               for(i=0; i<32; i++){
+                   ^
+main.c:151:23: error: 'Adress_to_write' undeclared (first use in this function)
+                       Adress_to_write = EEPROM_Adress + t*64;
+                       ^
+main.c:190:13: error: 'Adress_to_read' undeclared (first use in this function)
+             Adress_to_read = EEPROM_INITIAL_ADDRESS;
+             ^
+main.c:198:17: error: 'xl' undeclared (first use in this function)
+                 xl = (uint8_t)  (Out_Data[2]&0x30)<<2;
+                 ^
+main.c:199:17: error: 'xh' undeclared (first use in this function)
+                 xh = (uint8_t)  (Out_Data[2]&0xC0)>>6  |  (Out_Data[3]&0x3f)<<2;
+                 ^
+main.c:200:17: error: 'yl' undeclared (first use in this function)
+                 yl = (uint8_t)  (Out_Data[1]&0x0C)<<4;
+                 ^
+main.c:201:17: error: 'yh' undeclared (first use in this function)
+                 yh = (uint8_t) ((Out_Data[1]&0xF0)>>4) | ((Out_Data[2]&0x0F)<<4);                      
+                 ^
+main.c:202:17: error: 'zl' undeclared (first use in this function)
+                 zl = (uint8_t)  (Out_Data[0]&0x03)<<6;
+                 ^
+main.c:203:17: error: 'zh' undeclared (first use in this function)
+                 zh = (uint8_t) ((Out_Data[0]&0xFC)>>2) |  (Out_Data[1]&0x03)<<6;
+                 ^
+main.c:205:17: error: 'x' undeclared (first use in this function)
+                 x = (int16)((xh<<8)|(xl))>>6;               //X-axis acceleration in digit
+                 ^
+main.c:206:17: error: 'y' undeclared (first use in this function)
+                 y = (int16)((yh <<8)|(yl))>>6;              //Y-axis acceleration in digit
+                 ^
+The command 'arm-none-eabi-gcc.exe' failed with exit code '1'.
+main.c:207:17: error: 'z' undeclared (first use in this function)
+                 z = (int16)((zh <<8)|zl)>>6;                //Z-axis acceleration in digit
+                 ^
+main.c:209:17: error: 'z_uart' undeclared (first use in this function)
+                 z_uart = (int16_t) (((float32)z)*Sensitivity*0.981 + 0.5);
+                 ^
+main.c:210:17: error: 'y_uart' undeclared (first use in this function)
+                 y_uart = (int16_t) (((float32)y)*Sensitivity*0.981 + 0.5);
+                 ^
+main.c:211:17: error: 'x_uart' undeclared (first use in this function)
+                 x_uart = (int16_t) (((float32)x)*Sensitivity*0.981 + 0.5);
+                 ^
+main.c:97:11: warning: unused variable 'sensitivity' [-Wunused-variable]
+     int16 sensitivity;
+           ^
+main.c:95:13: warning: unused variable 'X_acc_mg' [-Wunused-variable]
+     int16_t X_acc_mg;
+             ^
+main.c:94:13: warning: unused variable 'Y_acc_mg' [-Wunused-variable]
+     int16_t Y_acc_mg;
+             ^
+main.c:93:13: warning: unused variable 'Z_acc_mg' [-Wunused-variable]
+     int16_t Z_acc_mg;
+             ^
+main.c:91:13: warning: unused variable 'X_acc_digit' [-Wunused-variable]
+     int16_t X_acc_digit;
+             ^
+main.c:90:13: warning: unused variable 'Y_acc_digit' [-Wunused-variable]
+     int16_t Y_acc_digit;
+             ^
+main.c:89:13: warning: unused variable 'Z_acc_digit' [-Wunused-variable]
+     int16_t Z_acc_digit;
+             ^
+main.c:85:15: warning: unused variable 'EEPROM_read_address' [-Wunused-variable]
+     uint16_t  EEPROM_read_address= INITIAL_ADDRESS;
+               ^
+main.c:83:13: warning: unused variable 'OutputData' [-Wunused-variable]
+     uint8_t OutputData[DATA_PACKET_DIM];
+             ^
+main.c:73:15: warning: unused variable 'error' [-Wunused-variable]
+     ErrorCode error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+               ^
+--------------- Build Failed: 06/01/2020 14:05:45 ---------------
