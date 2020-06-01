@@ -41,6 +41,7 @@
           <File BuildType="BUILD" Toolchain="">InterruptRoutines.c</File>
           <File BuildType="BUILD" Toolchain="">I2C_Interface.c</File>
           <File BuildType="BUILD" Toolchain="">25LC256.c</File>
+          <File BuildType="BUILD" Toolchain="">Pages.c</File>
           <File BuildType="BUILD" Toolchain="">cyapicallbacks.h</File>
           <File BuildType="BUILD" Toolchain="">I2C_Interface.h</File>
           <File BuildType="BUILD" Toolchain="">InterruptRoutines.h</File>

@@ -1,0 +1,4289 @@
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"InterruptRoutines.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.CHANGE_ADC_SF,"ax",%progbits
+  20              		.align	2
+  21              		.global	CHANGE_ADC_SF
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	CHANGE_ADC_SF, %function
+  25              	CHANGE_ADC_SF:
+  26              	.LFB64:
+  27              		.file 1 "InterruptRoutines.c"
+   1:InterruptRoutines.c **** /* ========================================
+   2:InterruptRoutines.c ****  *
+   3:InterruptRoutines.c ****  * Copyright YOUR COMPANY, THE YEAR
+   4:InterruptRoutines.c ****  * All Rights Reserved
+   5:InterruptRoutines.c ****  * UNPUBLISHED, LICENSED SOFTWARE.
+   6:InterruptRoutines.c ****  *
+   7:InterruptRoutines.c ****  * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8:InterruptRoutines.c ****  * WHICH IS THE PROPERTY OF your company.
+   9:InterruptRoutines.c ****  *
+  10:InterruptRoutines.c ****  * ========================================
+  11:InterruptRoutines.c **** */
+  12:InterruptRoutines.c **** 
+  13:InterruptRoutines.c **** /**************************************************************************************************
+  14:InterruptRoutines.c **** /*                                                   INCLUSIONS                                    
+  15:InterruptRoutines.c **** /**************************************************************************************************
+  16:InterruptRoutines.c **** 
+  17:InterruptRoutines.c **** #include "InterruptRoutines.h"
+  18:InterruptRoutines.c **** #include "I2C_Interface.h"
+  19:InterruptRoutines.c **** #include "SPI_Interface.h"
+  20:InterruptRoutines.c **** #include "project.h"
+  21:InterruptRoutines.c **** #include "Registers.h"
+  22:InterruptRoutines.c **** #include "Pages.h"
+  23:InterruptRoutines.c **** 
+  24:InterruptRoutines.c **** /**************************************************************************************************
+  25:InterruptRoutines.c **** /*                                            VARIABLES DECLARATION                                
+  26:InterruptRoutines.c **** /**************************************************************************************************
+  27:InterruptRoutines.c **** 
+  28:InterruptRoutines.c **** uint8       ch_receveid;                             // flag char 
+  29:InterruptRoutines.c **** uint8_t     PB_PRESSED            = 0;               // flag button pressed (1 means "pressed")
+  30:InterruptRoutines.c **** uint16_t    TIMER_COUNTER         = 0;               // timer counter variable
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 2
+
+
+  31:InterruptRoutines.c **** ErrorCode   error;
+  32:InterruptRoutines.c **** 
+  33:InterruptRoutines.c **** const mode  LED_ACQUISITION_ON    = {199, 100}; 
+  34:InterruptRoutines.c **** const mode  LED_EEPROM_FULL       = { 49,  24};
+  35:InterruptRoutines.c **** #define LED_EXT_ON     1
+  36:InterruptRoutines.c **** #define LED_EXT_OFF    0
+  37:InterruptRoutines.c **** 
+  38:InterruptRoutines.c **** /**************************************************************************************************
+  39:InterruptRoutines.c **** /*                                            CHANGE ADC SAMPLING FREQ.                            
+  40:InterruptRoutines.c **** /**************************************************************************************************
+  41:InterruptRoutines.c **** 
+  42:InterruptRoutines.c **** void CHANGE_ADC_SF(uint16_t period){
+  28              		.loc 1 42 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              	.LVL0:
+  33 0000 10B5     		push	{r4, lr}
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 4, -8
+  36              		.cfi_offset 14, -4
+  37 0002 0446     		mov	r4, r0
+  43:InterruptRoutines.c ****     
+  44:InterruptRoutines.c ****     Timer_sensor_Stop();
+  38              		.loc 1 44 0
+  39 0004 FFF7FEFF 		bl	Timer_sensor_Stop
+  40              	.LVL1:
+  45:InterruptRoutines.c ****     Timer_sensor_ReadStatusRegister();
+  41              		.loc 1 45 0
+  42 0008 FFF7FEFF 		bl	Timer_sensor_ReadStatusRegister
+  43              	.LVL2:
+  46:InterruptRoutines.c ****     Timer_sensor_WritePeriod(period);
+  44              		.loc 1 46 0
+  45 000c 2046     		mov	r0, r4
+  46 000e FFF7FEFF 		bl	Timer_sensor_WritePeriod
+  47              	.LVL3:
+  47:InterruptRoutines.c ****     Timer_sensor_ReadStatusRegister();
+  48              		.loc 1 47 0
+  49 0012 FFF7FEFF 		bl	Timer_sensor_ReadStatusRegister
+  50              	.LVL4:
+  48:InterruptRoutines.c ****     Timer_sensor_Start();
+  51              		.loc 1 48 0
+  52 0016 FFF7FEFF 		bl	Timer_sensor_Start
+  53              	.LVL5:
+  54 001a 10BD     		pop	{r4, pc}
+  55              		.cfi_endproc
+  56              	.LFE64:
+  57              		.size	CHANGE_ADC_SF, .-CHANGE_ADC_SF
+  58              		.section	.text.Custom_FIFO_ISR,"ax",%progbits
+  59              		.align	2
+  60              		.global	Custom_FIFO_ISR
+  61              		.thumb
+  62              		.thumb_func
+  63              		.type	Custom_FIFO_ISR, %function
+  64              	Custom_FIFO_ISR:
+  65              	.LFB65:
+  49:InterruptRoutines.c **** 
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 3
+
+
+  50:InterruptRoutines.c **** }
+  51:InterruptRoutines.c **** 
+  52:InterruptRoutines.c **** /**************************************************************************************************
+  53:InterruptRoutines.c **** /*                                               CUSTOM FIFO ISR                                   
+  54:InterruptRoutines.c **** /**************************************************************************************************
+  55:InterruptRoutines.c **** 
+  56:InterruptRoutines.c **** CY_ISR(Custom_FIFO_ISR)
+  57:InterruptRoutines.c **** {
+  66              		.loc 1 57 0
+  67              		.cfi_startproc
+  68              		@ args = 0, pretend = 0, frame = 0
+  69              		@ frame_needed = 0, uses_anonymous_args = 0
+  70 0000 10B5     		push	{r4, lr}
+  71              		.cfi_def_cfa_offset 8
+  72              		.cfi_offset 4, -8
+  73              		.cfi_offset 14, -4
+  58:InterruptRoutines.c **** 
+  59:InterruptRoutines.c ****     ErrorCode error = I2C_Peripheral_ReadRegisterMulti(LIS3DH_DEVICE_ADDRESS,
+  74              		.loc 1 59 0
+  75 0002 114B     		ldr	r3, .L11
+  76 0004 C022     		movs	r2, #192
+  77 0006 2821     		movs	r1, #40
+  78 0008 1820     		movs	r0, #24
+  79 000a FFF7FEFF 		bl	I2C_Peripheral_ReadRegisterMulti
+  80              	.LVL6:
+  60:InterruptRoutines.c ****                                                        LIS3DH_OUT_X_L,
+  61:InterruptRoutines.c ****                                                        FIFO_DATA_DIM,
+  62:InterruptRoutines.c ****                                                        &AccData2[0]);
+  63:InterruptRoutines.c ****     
+  64:InterruptRoutines.c ****     if (error==NO_ERROR){
+  81              		.loc 1 64 0
+  82 000e 30B1     		cbz	r0, .L9
+  83 0010 10BD     		pop	{r4, pc}
+  84              	.LVL7:
+  85              	.L6:
+  86              	.LBB2:
+  65:InterruptRoutines.c **** 
+  66:InterruptRoutines.c ****         for (int t=0; t<FIFO_DATA_DIM; t++){
+  67:InterruptRoutines.c ****             AccData[t] = AccData2[t];}
+  87              		.loc 1 67 0 discriminator 3
+  88 0012 0D4A     		ldr	r2, .L11
+  89 0014 D15C     		ldrb	r1, [r2, r3]	@ zero_extendqisi2
+  90 0016 0D4A     		ldr	r2, .L11+4
+  91 0018 D154     		strb	r1, [r2, r3]
+  66:InterruptRoutines.c ****             AccData[t] = AccData2[t];}
+  92              		.loc 1 66 0 discriminator 3
+  93 001a 0133     		adds	r3, r3, #1
+  94              	.LVL8:
+  95 001c 01E0     		b	.L4
+  96              	.LVL9:
+  97              	.L9:
+  98 001e 0446     		mov	r4, r0
+  99              	.LBE2:
+ 100 0020 0023     		movs	r3, #0
+ 101              	.L4:
+ 102              	.LVL10:
+ 103              	.LBB3:
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 4
+
+
+  66:InterruptRoutines.c ****             AccData[t] = AccData2[t];}
+ 104              		.loc 1 66 0 is_stmt 0 discriminator 1
+ 105 0022 BF2B     		cmp	r3, #191
+ 106 0024 F5DD     		ble	.L6
+ 107              	.LBE3:
+  68:InterruptRoutines.c **** 
+  69:InterruptRoutines.c **** 
+  70:InterruptRoutines.c ****         if (error == NO_ERROR){
+ 108              		.loc 1 70 0 is_stmt 1
+ 109 0026 2CB9     		cbnz	r4, .L7
+  71:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ 110              		.loc 1 71 0
+ 111 0028 0022     		movs	r2, #0
+ 112 002a 2E21     		movs	r1, #46
+ 113 002c 1820     		movs	r0, #24
+ 114              	.LVL11:
+ 115 002e FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 116              	.LVL12:
+ 117 0032 0446     		mov	r4, r0
+ 118              	.LVL13:
+ 119              	.L7:
+  72:InterruptRoutines.c ****                                                  LIS3DH_FIFO_CTRL_REG,
+  73:InterruptRoutines.c ****                                                  LIS3DH_FIFO_CTRL_REG_BYPASS_MODE);}
+  74:InterruptRoutines.c ****         
+  75:InterruptRoutines.c ****         if (error == NO_ERROR){
+ 120              		.loc 1 75 0
+ 121 0034 24B9     		cbnz	r4, .L8
+  76:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ 122              		.loc 1 76 0
+ 123 0036 4022     		movs	r2, #64
+ 124 0038 2E21     		movs	r1, #46
+ 125 003a 1820     		movs	r0, #24
+ 126 003c FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 127              	.LVL14:
+ 128              	.L8:
+  77:InterruptRoutines.c ****                                                  LIS3DH_FIFO_CTRL_REG,
+  78:InterruptRoutines.c ****                                                  LIS3DH_FIFO_CTRL_REG_FIFO_MODE);}
+  79:InterruptRoutines.c **** 
+  80:InterruptRoutines.c ****         FlagFifo = 1;
+ 129              		.loc 1 80 0
+ 130 0040 0122     		movs	r2, #1
+ 131 0042 034B     		ldr	r3, .L11+8
+ 132 0044 1A70     		strb	r2, [r3]
+ 133 0046 10BD     		pop	{r4, pc}
+ 134              	.L12:
+ 135              		.align	2
+ 136              	.L11:
+ 137 0048 00000000 		.word	AccData2
+ 138 004c 00000000 		.word	AccData
+ 139 0050 00000000 		.word	FlagFifo
+ 140              		.cfi_endproc
+ 141              	.LFE65:
+ 142              		.size	Custom_FIFO_ISR, .-Custom_FIFO_ISR
+ 143              		.section	.text.Custom_TIMER_ISR,"ax",%progbits
+ 144              		.align	2
+ 145              		.global	Custom_TIMER_ISR
+ 146              		.thumb
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 5
+
+
+ 147              		.thumb_func
+ 148              		.type	Custom_TIMER_ISR, %function
+ 149              	Custom_TIMER_ISR:
+ 150              	.LFB66:
+  81:InterruptRoutines.c ****             
+  82:InterruptRoutines.c ****     }
+  83:InterruptRoutines.c ****     
+  84:InterruptRoutines.c **** }
+  85:InterruptRoutines.c **** 
+  86:InterruptRoutines.c **** /**************************************************************************************************
+  87:InterruptRoutines.c **** /*                                              CUSTOM TIMER ISR                                   
+  88:InterruptRoutines.c **** /**************************************************************************************************
+  89:InterruptRoutines.c **** 
+  90:InterruptRoutines.c **** CY_ISR(Custom_TIMER_ISR)
+  91:InterruptRoutines.c **** {
+ 151              		.loc 1 91 0
+ 152              		.cfi_startproc
+ 153              		@ args = 0, pretend = 0, frame = 0
+ 154              		@ frame_needed = 0, uses_anonymous_args = 0
+ 155 0000 38B5     		push	{r3, r4, r5, lr}
+ 156              		.cfi_def_cfa_offset 16
+ 157              		.cfi_offset 3, -16
+ 158              		.cfi_offset 4, -12
+ 159              		.cfi_offset 5, -8
+ 160              		.cfi_offset 14, -4
+  92:InterruptRoutines.c ****     Timer_sensor_ReadStatusRegister();          // restart the timer
+ 161              		.loc 1 92 0
+ 162 0002 FFF7FEFF 		bl	Timer_sensor_ReadStatusRegister
+ 163              	.LVL15:
+  93:InterruptRoutines.c ****     
+  94:InterruptRoutines.c ****     if(counter_timer<(SENSOR_DATA_DIM)){
+ 164              		.loc 1 94 0
+ 165 0006 234B     		ldr	r3, .L20
+ 166 0008 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 167 000a DBB2     		uxtb	r3, r3
+ 168 000c 1F2B     		cmp	r3, #31
+ 169 000e 29D8     		bhi	.L14
+  95:InterruptRoutines.c ****         
+  96:InterruptRoutines.c ****         SensData[counter_timer]= ADC_Read32();  // read data from ADC
+ 170              		.loc 1 96 0
+ 171 0010 204C     		ldr	r4, .L20
+ 172 0012 2578     		ldrb	r5, [r4]	@ zero_extendqisi2
+ 173 0014 EDB2     		uxtb	r5, r5
+ 174 0016 FFF7FEFF 		bl	ADC_Read32
+ 175              	.LVL16:
+ 176 001a 80B2     		uxth	r0, r0
+ 177 001c 1E4A     		ldr	r2, .L20+4
+ 178 001e 22F81500 		strh	r0, [r2, r5, lsl #1]	@ movhi
+  97:InterruptRoutines.c ****         
+  98:InterruptRoutines.c ****         /* verify the value */
+  99:InterruptRoutines.c ****         if (SensData[counter_timer] < 0)        SensData[counter_timer] = 0;
+ 179              		.loc 1 99 0
+ 180 0022 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 181 0024 DBB2     		uxtb	r3, r3
+ 182 0026 32F81330 		ldrh	r3, [r2, r3, lsl #1]
+ 100:InterruptRoutines.c ****         if (SensData[counter_timer] > 65535)    SensData[counter_timer] = 65535;
+ 183              		.loc 1 100 0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 6
+
+
+ 184 002a 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 185 002c DBB2     		uxtb	r3, r3
+ 186 002e 32F81330 		ldrh	r3, [r2, r3, lsl #1]
+ 101:InterruptRoutines.c ****         
+ 102:InterruptRoutines.c ****         SensBytes[2*counter_timer]     = (uint8_t)(SensData[counter_timer] & 0xFF);  //LSB
+ 187              		.loc 1 102 0
+ 188 0032 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 189 0034 DBB2     		uxtb	r3, r3
+ 190 0036 2178     		ldrb	r1, [r4]	@ zero_extendqisi2
+ 191 0038 C9B2     		uxtb	r1, r1
+ 192 003a 32F81110 		ldrh	r1, [r2, r1, lsl #1]
+ 193 003e C9B2     		uxtb	r1, r1
+ 194 0040 1648     		ldr	r0, .L20+8
+ 195 0042 00F81310 		strb	r1, [r0, r3, lsl #1]
+ 103:InterruptRoutines.c ****         SensBytes[2*counter_timer + 1] = (uint8_t)(SensData[counter_timer] >> 8);    //MSB
+ 196              		.loc 1 103 0
+ 197 0046 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 198 0048 5B00     		lsls	r3, r3, #1
+ 199 004a 0133     		adds	r3, r3, #1
+ 200 004c 2178     		ldrb	r1, [r4]	@ zero_extendqisi2
+ 201 004e C9B2     		uxtb	r1, r1
+ 202 0050 32F81120 		ldrh	r2, [r2, r1, lsl #1]
+ 203 0054 C2F30722 		ubfx	r2, r2, #8, #8
+ 204 0058 C254     		strb	r2, [r0, r3]
+ 104:InterruptRoutines.c ****         
+ 105:InterruptRoutines.c ****         counter_timer ++;
+ 205              		.loc 1 105 0
+ 206 005a 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 207 005c 0133     		adds	r3, r3, #1
+ 208 005e DBB2     		uxtb	r3, r3
+ 209 0060 2370     		strb	r3, [r4]
+ 210 0062 38BD     		pop	{r3, r4, r5, pc}
+ 211              	.L14:
+ 106:InterruptRoutines.c ****     }
+ 107:InterruptRoutines.c ****     
+ 108:InterruptRoutines.c ****     else if(counter_timer == (SENSOR_DATA_DIM)){
+ 212              		.loc 1 108 0
+ 213 0064 0B4B     		ldr	r3, .L20
+ 214 0066 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 215 0068 DBB2     		uxtb	r3, r3
+ 216 006a 202B     		cmp	r3, #32
+ 217 006c 10D1     		bne	.L13
+ 218 006e 06E0     		b	.L18
+ 219              	.LVL17:
+ 220              	.L17:
+ 221              	.LBB4:
+ 109:InterruptRoutines.c ****         
+ 110:InterruptRoutines.c ****         int i=0;
+ 111:InterruptRoutines.c ****         for(i=0;i<SENSOR_DATA_DIM*2;i++)
+ 112:InterruptRoutines.c ****         {
+ 113:InterruptRoutines.c ****             SensBytes_old[i]=SensBytes[i];
+ 222              		.loc 1 113 0 discriminator 3
+ 223 0070 0A4A     		ldr	r2, .L20+8
+ 224 0072 D25C     		ldrb	r2, [r2, r3]	@ zero_extendqisi2
+ 225 0074 D2B2     		uxtb	r2, r2
+ 226 0076 0A49     		ldr	r1, .L20+12
+ 227 0078 CA54     		strb	r2, [r1, r3]
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 7
+
+
+ 111:InterruptRoutines.c ****         {
+ 228              		.loc 1 111 0 discriminator 3
+ 229 007a 0133     		adds	r3, r3, #1
+ 230              	.LVL18:
+ 231 007c 00E0     		b	.L16
+ 232              	.LVL19:
+ 233              	.L18:
+ 234              	.LBE4:
+ 235 007e 0023     		movs	r3, #0
+ 236              	.L16:
+ 237              	.LVL20:
+ 238              	.LBB5:
+ 111:InterruptRoutines.c ****         {
+ 239              		.loc 1 111 0 is_stmt 0 discriminator 1
+ 240 0080 3F2B     		cmp	r3, #63
+ 241 0082 F5DD     		ble	.L17
+ 114:InterruptRoutines.c ****         }
+ 115:InterruptRoutines.c ****         counter_timer   = 0;
+ 242              		.loc 1 115 0 is_stmt 1
+ 243 0084 0022     		movs	r2, #0
+ 244 0086 034B     		ldr	r3, .L20
+ 245              	.LVL21:
+ 246 0088 1A70     		strb	r2, [r3]
+ 116:InterruptRoutines.c ****         SensorDataReady = 1;
+ 247              		.loc 1 116 0
+ 248 008a 0122     		movs	r2, #1
+ 249 008c 054B     		ldr	r3, .L20+16
+ 250 008e 1A70     		strb	r2, [r3]
+ 251              	.L13:
+ 252 0090 38BD     		pop	{r3, r4, r5, pc}
+ 253              	.L21:
+ 254 0092 00BF     		.align	2
+ 255              	.L20:
+ 256 0094 00000000 		.word	counter_timer
+ 257 0098 00000000 		.word	SensData
+ 258 009c 00000000 		.word	SensBytes
+ 259 00a0 00000000 		.word	SensBytes_old
+ 260 00a4 00000000 		.word	SensorDataReady
+ 261              	.LBE5:
+ 262              		.cfi_endproc
+ 263              	.LFE66:
+ 264              		.size	Custom_TIMER_ISR, .-Custom_TIMER_ISR
+ 265              		.section	.text.LED_ACQUISITION_ON_TOGGLE,"ax",%progbits
+ 266              		.align	2
+ 267              		.global	LED_ACQUISITION_ON_TOGGLE
+ 268              		.thumb
+ 269              		.thumb_func
+ 270              		.type	LED_ACQUISITION_ON_TOGGLE, %function
+ 271              	LED_ACQUISITION_ON_TOGGLE:
+ 272              	.LFB67:
+ 117:InterruptRoutines.c ****     }
+ 118:InterruptRoutines.c ****        
+ 119:InterruptRoutines.c **** }
+ 120:InterruptRoutines.c **** 
+ 121:InterruptRoutines.c **** /**************************************************************************************************
+ 122:InterruptRoutines.c **** /*                                                TOGGLING MODES                                   
+ 123:InterruptRoutines.c **** /**************************************************************************************************
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 8
+
+
+ 124:InterruptRoutines.c **** 
+ 125:InterruptRoutines.c **** void LED_ACQUISITION_ON_TOGGLE(void){
+ 273              		.loc 1 125 0
+ 274              		.cfi_startproc
+ 275              		@ args = 0, pretend = 0, frame = 0
+ 276              		@ frame_needed = 0, uses_anonymous_args = 0
+ 277 0000 08B5     		push	{r3, lr}
+ 278              		.cfi_def_cfa_offset 8
+ 279              		.cfi_offset 3, -8
+ 280              		.cfi_offset 14, -4
+ 126:InterruptRoutines.c ****     PWM_WritePeriod(LED_ACQUISITION_ON.Period);
+ 281              		.loc 1 126 0
+ 282 0002 C720     		movs	r0, #199
+ 283 0004 FFF7FEFF 		bl	PWM_WritePeriod
+ 284              	.LVL22:
+ 127:InterruptRoutines.c ****     PWM_WriteCompare(LED_ACQUISITION_ON.CMP);
+ 285              		.loc 1 127 0
+ 286 0008 6420     		movs	r0, #100
+ 287 000a FFF7FEFF 		bl	PWM_WriteCompare
+ 288              	.LVL23:
+ 289 000e 08BD     		pop	{r3, pc}
+ 290              		.cfi_endproc
+ 291              	.LFE67:
+ 292              		.size	LED_ACQUISITION_ON_TOGGLE, .-LED_ACQUISITION_ON_TOGGLE
+ 293              		.section	.text.LED_EEPROM_FULL_TOGGLE,"ax",%progbits
+ 294              		.align	2
+ 295              		.global	LED_EEPROM_FULL_TOGGLE
+ 296              		.thumb
+ 297              		.thumb_func
+ 298              		.type	LED_EEPROM_FULL_TOGGLE, %function
+ 299              	LED_EEPROM_FULL_TOGGLE:
+ 300              	.LFB68:
+ 128:InterruptRoutines.c **** }
+ 129:InterruptRoutines.c **** 
+ 130:InterruptRoutines.c **** void LED_EEPROM_FULL_TOGGLE(void){
+ 301              		.loc 1 130 0
+ 302              		.cfi_startproc
+ 303              		@ args = 0, pretend = 0, frame = 0
+ 304              		@ frame_needed = 0, uses_anonymous_args = 0
+ 305 0000 08B5     		push	{r3, lr}
+ 306              		.cfi_def_cfa_offset 8
+ 307              		.cfi_offset 3, -8
+ 308              		.cfi_offset 14, -4
+ 131:InterruptRoutines.c ****     PWM_WritePeriod(LED_EEPROM_FULL.Period);
+ 309              		.loc 1 131 0
+ 310 0002 3120     		movs	r0, #49
+ 311 0004 FFF7FEFF 		bl	PWM_WritePeriod
+ 312              	.LVL24:
+ 132:InterruptRoutines.c ****     PWM_WriteCompare(LED_EEPROM_FULL.CMP);
+ 313              		.loc 1 132 0
+ 314 0008 1820     		movs	r0, #24
+ 315 000a FFF7FEFF 		bl	PWM_WriteCompare
+ 316              	.LVL25:
+ 317 000e 08BD     		pop	{r3, pc}
+ 318              		.cfi_endproc
+ 319              	.LFE68:
+ 320              		.size	LED_EEPROM_FULL_TOGGLE, .-LED_EEPROM_FULL_TOGGLE
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 9
+
+
+ 321              		.section	.text.Custom_ISR_RX,"ax",%progbits
+ 322              		.align	2
+ 323              		.global	Custom_ISR_RX
+ 324              		.thumb
+ 325              		.thumb_func
+ 326              		.type	Custom_ISR_RX, %function
+ 327              	Custom_ISR_RX:
+ 328              	.LFB69:
+ 133:InterruptRoutines.c **** }
+ 134:InterruptRoutines.c **** 
+ 135:InterruptRoutines.c **** 
+ 136:InterruptRoutines.c **** /**************************************************************************************************
+ 137:InterruptRoutines.c **** /*                                              UART RX INTERRUPT                                  
+ 138:InterruptRoutines.c **** /**************************************************************************************************
+ 139:InterruptRoutines.c **** 
+ 140:InterruptRoutines.c **** CY_ISR(Custom_ISR_RX)
+ 141:InterruptRoutines.c **** {
+ 329              		.loc 1 141 0
+ 330              		.cfi_startproc
+ 331              		@ args = 0, pretend = 0, frame = 0
+ 332              		@ frame_needed = 0, uses_anonymous_args = 0
+ 333 0000 70B5     		push	{r4, r5, r6, lr}
+ 334              		.cfi_def_cfa_offset 16
+ 335              		.cfi_offset 4, -16
+ 336              		.cfi_offset 5, -12
+ 337              		.cfi_offset 6, -8
+ 338              		.cfi_offset 14, -4
+ 142:InterruptRoutines.c ****     /*******************************/
+ 143:InterruptRoutines.c ****     /*         INPUT CHECK         */
+ 144:InterruptRoutines.c ****     /*******************************/
+ 145:InterruptRoutines.c ****     
+ 146:InterruptRoutines.c ****     // Non-blocking call to get the latest data recieved
+ 147:InterruptRoutines.c ****     ch_receveid = UART_GetChar();
+ 339              		.loc 1 147 0
+ 340 0002 FFF7FEFF 		bl	UART_GetChar
+ 341              	.LVL26:
+ 342 0006 894B     		ldr	r3, .L55
+ 343 0008 1870     		strb	r0, [r3]
+ 148:InterruptRoutines.c ****         
+ 149:InterruptRoutines.c ****     // Set flags based on UART command
+ 150:InterruptRoutines.c ****     switch(ch_receveid){
+ 344              		.loc 1 150 0
+ 345 000a 3038     		subs	r0, r0, #48
+ 346 000c 4628     		cmp	r0, #70
+ 347 000e 00F22B82 		bhi	.L27
+ 348 0012 DFE810F0 		tbh	[pc, r0, lsl #1]
+ 349              	.L29:
+ 350 0016 F900     		.2byte	(.L28-.L29)/2
+ 351 0018 2901     		.2byte	(.L30-.L29)/2
+ 352 001a 8201     		.2byte	(.L31-.L29)/2
+ 353 001c C001     		.2byte	(.L32-.L29)/2
+ 354 001e F301     		.2byte	(.L33-.L29)/2
+ 355 0020 2902     		.2byte	(.L27-.L29)/2
+ 356 0022 2902     		.2byte	(.L27-.L29)/2
+ 357 0024 2902     		.2byte	(.L27-.L29)/2
+ 358 0026 2902     		.2byte	(.L27-.L29)/2
+ 359 0028 2902     		.2byte	(.L27-.L29)/2
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 10
+
+
+ 360 002a 2902     		.2byte	(.L27-.L29)/2
+ 361 002c 2902     		.2byte	(.L27-.L29)/2
+ 362 002e 2902     		.2byte	(.L27-.L29)/2
+ 363 0030 2902     		.2byte	(.L27-.L29)/2
+ 364 0032 2902     		.2byte	(.L27-.L29)/2
+ 365 0034 4700     		.2byte	(.L34-.L29)/2
+ 366 0036 2902     		.2byte	(.L27-.L29)/2
+ 367 0038 2902     		.2byte	(.L27-.L29)/2
+ 368 003a 4D00     		.2byte	(.L35-.L29)/2
+ 369 003c 2902     		.2byte	(.L27-.L29)/2
+ 370 003e 2902     		.2byte	(.L27-.L29)/2
+ 371 0040 2902     		.2byte	(.L27-.L29)/2
+ 372 0042 B500     		.2byte	(.L36-.L29)/2
+ 373 0044 2902     		.2byte	(.L27-.L29)/2
+ 374 0046 2902     		.2byte	(.L27-.L29)/2
+ 375 0048 2902     		.2byte	(.L27-.L29)/2
+ 376 004a 2902     		.2byte	(.L27-.L29)/2
+ 377 004c 2902     		.2byte	(.L27-.L29)/2
+ 378 004e BD00     		.2byte	(.L37-.L29)/2
+ 379 0050 2902     		.2byte	(.L27-.L29)/2
+ 380 0052 2902     		.2byte	(.L27-.L29)/2
+ 381 0054 2602     		.2byte	(.L38-.L29)/2
+ 382 0056 B900     		.2byte	(.L39-.L29)/2
+ 383 0058 2902     		.2byte	(.L27-.L29)/2
+ 384 005a 2902     		.2byte	(.L27-.L29)/2
+ 385 005c 8800     		.2byte	(.L40-.L29)/2
+ 386 005e 2902     		.2byte	(.L27-.L29)/2
+ 387 0060 EC00     		.2byte	(.L41-.L29)/2
+ 388 0062 C100     		.2byte	(.L42-.L29)/2
+ 389 0064 2902     		.2byte	(.L27-.L29)/2
+ 390 0066 2902     		.2byte	(.L27-.L29)/2
+ 391 0068 2902     		.2byte	(.L27-.L29)/2
+ 392 006a 2902     		.2byte	(.L27-.L29)/2
+ 393 006c 2902     		.2byte	(.L27-.L29)/2
+ 394 006e 2902     		.2byte	(.L27-.L29)/2
+ 395 0070 2902     		.2byte	(.L27-.L29)/2
+ 396 0072 2902     		.2byte	(.L27-.L29)/2
+ 397 0074 2902     		.2byte	(.L27-.L29)/2
+ 398 0076 2902     		.2byte	(.L27-.L29)/2
+ 399 0078 2902     		.2byte	(.L27-.L29)/2
+ 400 007a 4D00     		.2byte	(.L35-.L29)/2
+ 401 007c 2902     		.2byte	(.L27-.L29)/2
+ 402 007e 2902     		.2byte	(.L27-.L29)/2
+ 403 0080 2902     		.2byte	(.L27-.L29)/2
+ 404 0082 B500     		.2byte	(.L36-.L29)/2
+ 405 0084 2902     		.2byte	(.L27-.L29)/2
+ 406 0086 2902     		.2byte	(.L27-.L29)/2
+ 407 0088 2902     		.2byte	(.L27-.L29)/2
+ 408 008a 2902     		.2byte	(.L27-.L29)/2
+ 409 008c 2902     		.2byte	(.L27-.L29)/2
+ 410 008e BD00     		.2byte	(.L37-.L29)/2
+ 411 0090 2902     		.2byte	(.L27-.L29)/2
+ 412 0092 2902     		.2byte	(.L27-.L29)/2
+ 413 0094 2602     		.2byte	(.L38-.L29)/2
+ 414 0096 B900     		.2byte	(.L39-.L29)/2
+ 415 0098 2902     		.2byte	(.L27-.L29)/2
+ 416 009a 2902     		.2byte	(.L27-.L29)/2
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 11
+
+
+ 417 009c 8800     		.2byte	(.L40-.L29)/2
+ 418 009e 2902     		.2byte	(.L27-.L29)/2
+ 419 00a0 EC00     		.2byte	(.L41-.L29)/2
+ 420 00a2 C100     		.2byte	(.L42-.L29)/2
+ 421              		.p2align 1
+ 422              	.L34:
+ 151:InterruptRoutines.c ****         
+ 152:InterruptRoutines.c ****         case '?':
+ 153:InterruptRoutines.c ****             StartStream_flag = 0;
+ 423              		.loc 1 153 0
+ 424 00a4 0022     		movs	r2, #0
+ 425 00a6 624B     		ldr	r3, .L55+4
+ 426 00a8 1A70     		strb	r2, [r3]
+ 154:InterruptRoutines.c ****             WELCOME();
+ 427              		.loc 1 154 0
+ 428 00aa FFF7FEFF 		bl	WELCOME
+ 429              	.LVL27:
+ 155:InterruptRoutines.c ****             break;
+ 430              		.loc 1 155 0
+ 431 00ae DBE1     		b	.L27
+ 432              	.L35:
+ 156:InterruptRoutines.c ****         
+ 157:InterruptRoutines.c ****         case 'B':
+ 158:InterruptRoutines.c ****         case 'b':
+ 159:InterruptRoutines.c ****             StartAcquisition_flag = 1;
+ 433              		.loc 1 159 0
+ 434 00b0 0123     		movs	r3, #1
+ 435 00b2 604A     		ldr	r2, .L55+8
+ 436 00b4 1370     		strb	r3, [r2]
+ 160:InterruptRoutines.c ****             FLAG_BS = 1;
+ 437              		.loc 1 160 0
+ 438 00b6 604A     		ldr	r2, .L55+12
+ 439 00b8 1370     		strb	r3, [r2]
+ 161:InterruptRoutines.c ****             SETUP_BS_CHANGED = 1;
+ 440              		.loc 1 161 0
+ 441 00ba 604A     		ldr	r2, .L55+16
+ 442 00bc 1370     		strb	r3, [r2]
+ 162:InterruptRoutines.c ****             Timer_sensor_ReadStatusRegister();
+ 443              		.loc 1 162 0
+ 444 00be FFF7FEFF 		bl	Timer_sensor_ReadStatusRegister
+ 445              	.LVL28:
+ 163:InterruptRoutines.c ****             Timer_sensor_Start();
+ 446              		.loc 1 163 0
+ 447 00c2 FFF7FEFF 		bl	Timer_sensor_Start
+ 448              	.LVL29:
+ 164:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ 449              		.loc 1 164 0
+ 450 00c6 0222     		movs	r2, #2
+ 451 00c8 2221     		movs	r1, #34
+ 452 00ca 1820     		movs	r0, #24
+ 453 00cc FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 454              	.LVL30:
+ 455 00d0 5B4C     		ldr	r4, .L55+20
+ 456 00d2 2070     		strb	r0, [r4]
+ 165:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG3,
+ 166:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG3_INT_ENABLE);
+ 167:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 12
+
+
+ 457              		.loc 1 167 0
+ 458 00d4 4022     		movs	r2, #64
+ 459 00d6 2E21     		movs	r1, #46
+ 460 00d8 1820     		movs	r0, #24
+ 461 00da FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 462              	.LVL31:
+ 463 00de 2070     		strb	r0, [r4]
+ 168:InterruptRoutines.c ****                                                  LIS3DH_FIFO_CTRL_REG,
+ 169:InterruptRoutines.c ****                                                  LIS3DH_FIFO_CTRL_REG_FIFO_MODE);
+ 170:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ 464              		.loc 1 170 0
+ 465 00e0 4022     		movs	r2, #64
+ 466 00e2 2421     		movs	r1, #36
+ 467 00e4 1820     		movs	r0, #24
+ 468 00e6 FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 469              	.LVL32:
+ 470 00ea 2070     		strb	r0, [r4]
+ 171:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG5,
+ 172:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG5_FIFO_ENABLE);
+ 173:InterruptRoutines.c ****             UART_PutString("\r\n");
+ 471              		.loc 1 173 0
+ 472 00ec 5548     		ldr	r0, .L55+24
+ 473 00ee FFF7FEFF 		bl	UART_PutString
+ 474              	.LVL33:
+ 174:InterruptRoutines.c ****             if (error == NO_ERROR){UART_PutString("     Acquisition begun\r\n");}
+ 475              		.loc 1 174 0
+ 476 00f2 2378     		ldrb	r3, [r4]	@ zero_extendqisi2
+ 477 00f4 13B9     		cbnz	r3, .L43
+ 478              		.loc 1 174 0 is_stmt 0 discriminator 1
+ 479 00f6 5448     		ldr	r0, .L55+28
+ 480 00f8 FFF7FEFF 		bl	UART_PutString
+ 481              	.LVL34:
+ 482              	.L43:
+ 175:InterruptRoutines.c ****             UART_PutString("\r\n");
+ 483              		.loc 1 175 0 is_stmt 1
+ 484 00fc 5148     		ldr	r0, .L55+24
+ 485 00fe FFF7FEFF 		bl	UART_PutString
+ 486              	.LVL35:
+ 176:InterruptRoutines.c ****             PWM_Start();
+ 487              		.loc 1 176 0
+ 488 0102 FFF7FEFF 		bl	PWM_Start
+ 489              	.LVL36:
+ 177:InterruptRoutines.c ****             if(full_or_empty ==0) LED_ACQUISITION_ON_TOGGLE(); 
+ 490              		.loc 1 177 0
+ 491 0106 514B     		ldr	r3, .L55+32
+ 492 0108 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 493 010a 13F0FF0F 		tst	r3, #255
+ 494 010e 01D1     		bne	.L44
+ 495              		.loc 1 177 0 is_stmt 0 discriminator 1
+ 496 0110 FFF7FEFF 		bl	LED_ACQUISITION_ON_TOGGLE
+ 497              	.LVL37:
+ 498              	.L44:
+ 178:InterruptRoutines.c ****             if(full_or_empty == 1) LED_EEPROM_FULL_TOGGLE(); 
+ 499              		.loc 1 178 0 is_stmt 1
+ 500 0114 4D4B     		ldr	r3, .L55+32
+ 501 0116 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 502 0118 DBB2     		uxtb	r3, r3
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 13
+
+
+ 503 011a 012B     		cmp	r3, #1
+ 504 011c 40F0A481 		bne	.L27
+ 505              		.loc 1 178 0 is_stmt 0 discriminator 1
+ 506 0120 FFF7FEFF 		bl	LED_EEPROM_FULL_TOGGLE
+ 507              	.LVL38:
+ 508 0124 A0E1     		b	.L27
+ 509              	.L40:
+ 179:InterruptRoutines.c ****             break;
+ 180:InterruptRoutines.c ****             
+ 181:InterruptRoutines.c ****         case 'S':
+ 182:InterruptRoutines.c ****         case 's':
+ 183:InterruptRoutines.c ****             StartAcquisition_flag   = 0;
+ 510              		.loc 1 183 0 is_stmt 1
+ 511 0126 0024     		movs	r4, #0
+ 512 0128 424B     		ldr	r3, .L55+8
+ 513 012a 1C70     		strb	r4, [r3]
+ 184:InterruptRoutines.c ****             FLAG_BS                 = 0;
+ 514              		.loc 1 184 0
+ 515 012c 424B     		ldr	r3, .L55+12
+ 516 012e 1C70     		strb	r4, [r3]
+ 185:InterruptRoutines.c ****             SETUP_BS_CHANGED        = 1;
+ 517              		.loc 1 185 0
+ 518 0130 0122     		movs	r2, #1
+ 519 0132 424B     		ldr	r3, .L55+16
+ 520 0134 1A70     		strb	r2, [r3]
+ 186:InterruptRoutines.c ****             Timer_sensor_Stop();
+ 521              		.loc 1 186 0
+ 522 0136 FFF7FEFF 		bl	Timer_sensor_Stop
+ 523              	.LVL39:
+ 187:InterruptRoutines.c ****             Timer_sensor_ReadStatusRegister();
+ 524              		.loc 1 187 0
+ 525 013a FFF7FEFF 		bl	Timer_sensor_ReadStatusRegister
+ 526              	.LVL40:
+ 188:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ 527              		.loc 1 188 0
+ 528 013e 2246     		mov	r2, r4
+ 529 0140 2221     		movs	r1, #34
+ 530 0142 1820     		movs	r0, #24
+ 531 0144 FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 532              	.LVL41:
+ 533 0148 3D4D     		ldr	r5, .L55+20
+ 534 014a 2870     		strb	r0, [r5]
+ 189:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG3,
+ 190:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG3_INT_DISABLED);
+ 191:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ 535              		.loc 1 191 0
+ 536 014c 2246     		mov	r2, r4
+ 537 014e 2E21     		movs	r1, #46
+ 538 0150 1820     		movs	r0, #24
+ 539 0152 FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 540              	.LVL42:
+ 541 0156 2870     		strb	r0, [r5]
+ 192:InterruptRoutines.c ****                                                  LIS3DH_FIFO_CTRL_REG,
+ 193:InterruptRoutines.c ****                                                  LIS3DH_FIFO_CTRL_REG_BYPASS_MODE);
+ 194:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ 542              		.loc 1 194 0
+ 543 0158 2246     		mov	r2, r4
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 14
+
+
+ 544 015a 2421     		movs	r1, #36
+ 545 015c 1820     		movs	r0, #24
+ 546 015e FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 547              	.LVL43:
+ 548 0162 2870     		strb	r0, [r5]
+ 195:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG5,
+ 196:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG5_FIFO_DISABLE);
+ 197:InterruptRoutines.c ****             UART_PutString("\r\n");
+ 549              		.loc 1 197 0
+ 550 0164 3748     		ldr	r0, .L55+24
+ 551 0166 FFF7FEFF 		bl	UART_PutString
+ 552              	.LVL44:
+ 198:InterruptRoutines.c ****             if (error == NO_ERROR){UART_PutString("     Acquisition stopped\r\n");}
+ 553              		.loc 1 198 0
+ 554 016a 2B78     		ldrb	r3, [r5]	@ zero_extendqisi2
+ 555 016c 13B9     		cbnz	r3, .L45
+ 556              		.loc 1 198 0 is_stmt 0 discriminator 1
+ 557 016e 3848     		ldr	r0, .L55+36
+ 558 0170 FFF7FEFF 		bl	UART_PutString
+ 559              	.LVL45:
+ 560              	.L45:
+ 199:InterruptRoutines.c ****             UART_PutString("\r\n");
+ 561              		.loc 1 199 0 is_stmt 1
+ 562 0174 3348     		ldr	r0, .L55+24
+ 563 0176 FFF7FEFF 		bl	UART_PutString
+ 564              	.LVL46:
+ 200:InterruptRoutines.c ****             PWM_Stop();
+ 565              		.loc 1 200 0
+ 566 017a FFF7FEFF 		bl	PWM_Stop
+ 567              	.LVL47:
+ 201:InterruptRoutines.c ****             break;
+ 568              		.loc 1 201 0
+ 569 017e 73E1     		b	.L27
+ 570              	.L36:
+ 202:InterruptRoutines.c ****             
+ 203:InterruptRoutines.c ****         case 'F':
+ 204:InterruptRoutines.c ****         case 'f':
+ 205:InterruptRoutines.c ****             FLAG_FSR = 1;
+ 571              		.loc 1 205 0
+ 572 0180 0122     		movs	r2, #1
+ 573 0182 344B     		ldr	r3, .L55+40
+ 574 0184 1A70     		strb	r2, [r3]
+ 206:InterruptRoutines.c ****             break;
+ 575              		.loc 1 206 0
+ 576 0186 6FE1     		b	.L27
+ 577              	.L39:
+ 207:InterruptRoutines.c ****             
+ 208:InterruptRoutines.c ****         case 'P':
+ 209:InterruptRoutines.c ****         case 'p':
+ 210:InterruptRoutines.c ****             FLAG_SF = 1;
+ 578              		.loc 1 210 0
+ 579 0188 0122     		movs	r2, #1
+ 580 018a 334B     		ldr	r3, .L55+44
+ 581 018c 1A70     		strb	r2, [r3]
+ 211:InterruptRoutines.c ****             break;
+ 582              		.loc 1 211 0
+ 583 018e 6BE1     		b	.L27
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 15
+
+
+ 584              	.L37:
+ 212:InterruptRoutines.c ****             
+ 213:InterruptRoutines.c ****         case 'L':
+ 214:InterruptRoutines.c ****         case 'l':
+ 215:InterruptRoutines.c ****             FLAG_AS = 1;
+ 585              		.loc 1 215 0
+ 586 0190 0122     		movs	r2, #1
+ 587 0192 324B     		ldr	r3, .L55+48
+ 588 0194 1A70     		strb	r2, [r3]
+ 216:InterruptRoutines.c ****             break;
+ 589              		.loc 1 216 0
+ 590 0196 67E1     		b	.L27
+ 591              	.L42:
+ 217:InterruptRoutines.c ****         
+ 218:InterruptRoutines.c ****         case 'V':
+ 219:InterruptRoutines.c ****         case 'v':
+ 220:InterruptRoutines.c ****             StartAcquisition_flag   = 0;        // Flow flag for acquisition
+ 592              		.loc 1 220 0
+ 593 0198 0024     		movs	r4, #0
+ 594 019a 264B     		ldr	r3, .L55+8
+ 595 019c 1C70     		strb	r4, [r3]
+ 221:InterruptRoutines.c ****             StartStream_flag        = 1;        // Flow flag for streaming
+ 596              		.loc 1 221 0
+ 597 019e 0126     		movs	r6, #1
+ 598 01a0 234B     		ldr	r3, .L55+4
+ 599 01a2 1E70     		strb	r6, [r3]
+ 222:InterruptRoutines.c ****             
+ 223:InterruptRoutines.c ****             FLAG_BS                 = 0;        // Start/Stop Condition for summary and setup
+ 600              		.loc 1 223 0
+ 601 01a4 244B     		ldr	r3, .L55+12
+ 602 01a6 1C70     		strb	r4, [r3]
+ 224:InterruptRoutines.c ****             Timer_sensor_Stop();                // Stop the timer's sensor
+ 603              		.loc 1 224 0
+ 604 01a8 FFF7FEFF 		bl	Timer_sensor_Stop
+ 605              	.LVL48:
+ 225:InterruptRoutines.c ****             
+ 226:InterruptRoutines.c ****             Timer_sensor_ReadStatusRegister();  // Reset the timer's sensor
+ 606              		.loc 1 226 0
+ 607 01ac FFF7FEFF 		bl	Timer_sensor_ReadStatusRegister
+ 608              	.LVL49:
+ 227:InterruptRoutines.c ****             ADC_Stop();                         // Stop ADC
+ 609              		.loc 1 227 0
+ 610 01b0 FFF7FEFF 		bl	ADC_Stop
+ 611              	.LVL50:
+ 228:InterruptRoutines.c ****             ISR_PB_LOW_Disable();               // Disable ISR_PB_LOW
+ 612              		.loc 1 228 0
+ 613 01b4 FFF7FEFF 		bl	ISR_PB_LOW_Disable
+ 614              	.LVL51:
+ 229:InterruptRoutines.c ****             ISR_PB_HIGH_Disable();              // Disable ISR_PB_HIGH
+ 615              		.loc 1 229 0
+ 616 01b8 FFF7FEFF 		bl	ISR_PB_HIGH_Disable
+ 617              	.LVL52:
+ 230:InterruptRoutines.c ****             
+ 231:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ 618              		.loc 1 231 0
+ 619 01bc 2246     		mov	r2, r4
+ 620 01be 2221     		movs	r1, #34
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 16
+
+
+ 621 01c0 1820     		movs	r0, #24
+ 622 01c2 FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 623              	.LVL53:
+ 624 01c6 1E4D     		ldr	r5, .L55+20
+ 625 01c8 2870     		strb	r0, [r5]
+ 232:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG3,
+ 233:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG3_INT_DISABLED);
+ 234:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ 626              		.loc 1 234 0
+ 627 01ca 2246     		mov	r2, r4
+ 628 01cc 2E21     		movs	r1, #46
+ 629 01ce 1820     		movs	r0, #24
+ 630 01d0 FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 631              	.LVL54:
+ 632 01d4 2870     		strb	r0, [r5]
+ 235:InterruptRoutines.c ****                                                  LIS3DH_FIFO_CTRL_REG,
+ 236:InterruptRoutines.c ****                                                  LIS3DH_FIFO_CTRL_REG_BYPASS_MODE);
+ 237:InterruptRoutines.c ****             error = I2C_Peripheral_WriteRegister(LIS3DH_DEVICE_ADDRESS,
+ 633              		.loc 1 237 0
+ 634 01d6 2246     		mov	r2, r4
+ 635 01d8 2421     		movs	r1, #36
+ 636 01da 1820     		movs	r0, #24
+ 637 01dc FFF7FEFF 		bl	I2C_Peripheral_WriteRegister
+ 638              	.LVL55:
+ 639 01e0 2870     		strb	r0, [r5]
+ 238:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG5,
+ 239:InterruptRoutines.c ****                                                  LIS3DH_CTRL_REG5_FIFO_DISABLE);
+ 240:InterruptRoutines.c ****             pin_LED_EXT_Write(LED_EXT_ON);
+ 640              		.loc 1 240 0
+ 641 01e2 3046     		mov	r0, r6
+ 642 01e4 FFF7FEFF 		bl	pin_LED_EXT_Write
+ 643              	.LVL56:
+ 241:InterruptRoutines.c ****             PWM_Stop();
+ 644              		.loc 1 241 0
+ 645 01e8 FFF7FEFF 		bl	PWM_Stop
+ 646              	.LVL57:
+ 242:InterruptRoutines.c ****             break;
+ 647              		.loc 1 242 0
+ 648 01ec 3CE1     		b	.L27
+ 649              	.L41:
+ 243:InterruptRoutines.c ****             
+ 244:InterruptRoutines.c ****         case 'U':
+ 245:InterruptRoutines.c ****         case 'u':
+ 246:InterruptRoutines.c ****             StartStream_flag  = 0;              // Flow flag for streaming
+ 650              		.loc 1 246 0
+ 651 01ee 0024     		movs	r4, #0
+ 652 01f0 0F4B     		ldr	r3, .L55+4
+ 653 01f2 1C70     		strb	r4, [r3]
+ 247:InterruptRoutines.c ****             ADC_Start();                        // Start ADC
+ 654              		.loc 1 247 0
+ 655 01f4 FFF7FEFF 		bl	ADC_Start
+ 656              	.LVL58:
+ 248:InterruptRoutines.c ****             ISR_PB_LOW_Enable();                // Enable ISR_PB_LOW
+ 657              		.loc 1 248 0
+ 658 01f8 FFF7FEFF 		bl	ISR_PB_LOW_Enable
+ 659              	.LVL59:
+ 249:InterruptRoutines.c ****             ISR_PB_HIGH_Enable();               // Enable ISR_PB_HIGH
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 17
+
+
+ 660              		.loc 1 249 0
+ 661 01fc FFF7FEFF 		bl	ISR_PB_HIGH_Enable
+ 662              	.LVL60:
+ 250:InterruptRoutines.c ****             pin_LED_EXT_Write(LED_EXT_OFF); 
+ 663              		.loc 1 250 0
+ 664 0200 2046     		mov	r0, r4
+ 665 0202 FFF7FEFF 		bl	pin_LED_EXT_Write
+ 666              	.LVL61:
+ 251:InterruptRoutines.c ****             break;
+ 667              		.loc 1 251 0
+ 668 0206 2FE1     		b	.L27
+ 669              	.L28:
+ 252:InterruptRoutines.c ****         
+ 253:InterruptRoutines.c ****         case '0':
+ 254:InterruptRoutines.c ****             if(FLAG_AS==1){
+ 670              		.loc 1 254 0
+ 671 0208 144B     		ldr	r3, .L55+48
+ 672 020a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 673 020c DBB2     		uxtb	r3, r3
+ 674 020e 012B     		cmp	r3, #1
+ 675 0210 40F02A81 		bne	.L27
+ 255:InterruptRoutines.c ****                 FLAG_AS          = 0;
+ 676              		.loc 1 255 0
+ 677 0214 0022     		movs	r2, #0
+ 678 0216 114B     		ldr	r3, .L55+48
+ 679 0218 1A70     		strb	r2, [r3]
+ 256:InterruptRoutines.c ****                 OPTION_AS        = 1;
+ 680              		.loc 1 256 0
+ 681 021a 0120     		movs	r0, #1
+ 682 021c 104B     		ldr	r3, .L55+52
+ 683 021e 1870     		strb	r0, [r3]
+ 257:InterruptRoutines.c ****                 SETUP_AS_CHANGED = 1;
+ 684              		.loc 1 257 0
+ 685 0220 104B     		ldr	r3, .L55+56
+ 686 0222 1870     		strb	r0, [r3]
+ 258:InterruptRoutines.c ****                 AMux_Select(1);                 // Multiplexer set on LDR sensor               
+ 687              		.loc 1 258 0
+ 688 0224 FFF7FEFF 		bl	AMux_Select
+ 689              	.LVL62:
+ 690 0228 1EE1     		b	.L27
+ 691              	.L56:
+ 692 022a 00BF     		.align	2
+ 693              	.L55:
+ 694 022c 00000000 		.word	ch_receveid
+ 695 0230 00000000 		.word	StartStream_flag
+ 696 0234 00000000 		.word	StartAcquisition_flag
+ 697 0238 00000000 		.word	FLAG_BS
+ 698 023c 00000000 		.word	SETUP_BS_CHANGED
+ 699 0240 00000000 		.word	error
+ 700 0244 00000000 		.word	.LC0
+ 701 0248 04000000 		.word	.LC1
+ 702 024c 00000000 		.word	full_or_empty
+ 703 0250 20000000 		.word	.LC2
+ 704 0254 00000000 		.word	FLAG_FSR
+ 705 0258 00000000 		.word	FLAG_SF
+ 706 025c 00000000 		.word	FLAG_AS
+ 707 0260 00000000 		.word	OPTION_AS
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 18
+
+
+ 708 0264 00000000 		.word	SETUP_AS_CHANGED
+ 709              	.L30:
+ 259:InterruptRoutines.c ****             }
+ 260:InterruptRoutines.c ****             break;
+ 261:InterruptRoutines.c ****             
+ 262:InterruptRoutines.c ****         case '1':
+ 263:InterruptRoutines.c ****             if(FLAG_FSR==1 && FLAG_SF==0 && FLAG_AS==0){
+ 710              		.loc 1 263 0
+ 711 0268 964B     		ldr	r3, .L57
+ 712 026a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 713 026c DBB2     		uxtb	r3, r3
+ 714 026e 012B     		cmp	r3, #1
+ 715 0270 17D1     		bne	.L46
+ 716              		.loc 1 263 0 is_stmt 0 discriminator 1
+ 717 0272 954B     		ldr	r3, .L57+4
+ 718 0274 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 719 0276 13F0FF0F 		tst	r3, #255
+ 720 027a 12D1     		bne	.L46
+ 721              		.loc 1 263 0 discriminator 2
+ 722 027c 934B     		ldr	r3, .L57+8
+ 723 027e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 724 0280 13F0FF0F 		tst	r3, #255
+ 725 0284 0DD1     		bne	.L46
+ 264:InterruptRoutines.c ****                 FLAG_FSR            = 0;
+ 726              		.loc 1 264 0 is_stmt 1
+ 727 0286 0022     		movs	r2, #0
+ 728 0288 8E4B     		ldr	r3, .L57
+ 729 028a 1A70     		strb	r2, [r3]
+ 265:InterruptRoutines.c ****                 OPTION_FSR          = 1;
+ 730              		.loc 1 265 0
+ 731 028c 0123     		movs	r3, #1
+ 732 028e 904A     		ldr	r2, .L57+12
+ 733 0290 1370     		strb	r3, [r2]
+ 266:InterruptRoutines.c ****                 SETUP_FSR           = LIS3DH_CTRL_REG4_FSR_2G;
+ 734              		.loc 1 266 0
+ 735 0292 8021     		movs	r1, #128
+ 736 0294 8F4A     		ldr	r2, .L57+16
+ 737 0296 1170     		strb	r1, [r2]
+ 267:InterruptRoutines.c ****                 SETUP_FSR_CHANGED   = 1;
+ 738              		.loc 1 267 0
+ 739 0298 8F4A     		ldr	r2, .L57+20
+ 740 029a 1370     		strb	r3, [r2]
+ 268:InterruptRoutines.c ****                 Sensitivity         = 4;
+ 741              		.loc 1 268 0
+ 742 029c 0422     		movs	r2, #4
+ 743 029e 8F4B     		ldr	r3, .L57+24
+ 744 02a0 1A80     		strh	r2, [r3]	@ movhi
+ 745              	.L46:
+ 269:InterruptRoutines.c ****             }
+ 270:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==1 && FLAG_AS==0){
+ 746              		.loc 1 270 0
+ 747 02a2 884B     		ldr	r3, .L57
+ 748 02a4 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 749 02a6 13F0FF0F 		tst	r3, #255
+ 750 02aa 18D1     		bne	.L47
+ 751              		.loc 1 270 0 is_stmt 0 discriminator 1
+ 752 02ac 864B     		ldr	r3, .L57+4
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 19
+
+
+ 753 02ae 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 754 02b0 DBB2     		uxtb	r3, r3
+ 755 02b2 012B     		cmp	r3, #1
+ 756 02b4 13D1     		bne	.L47
+ 757              		.loc 1 270 0 discriminator 2
+ 758 02b6 854B     		ldr	r3, .L57+8
+ 759 02b8 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 760 02ba 13F0FF0F 		tst	r3, #255
+ 761 02be 0ED1     		bne	.L47
+ 271:InterruptRoutines.c ****                 FLAG_SF            = 0;
+ 762              		.loc 1 271 0 is_stmt 1
+ 763 02c0 0022     		movs	r2, #0
+ 764 02c2 814B     		ldr	r3, .L57+4
+ 765 02c4 1A70     		strb	r2, [r3]
+ 272:InterruptRoutines.c ****                 OPTION_SF          = 1;
+ 766              		.loc 1 272 0
+ 767 02c6 0123     		movs	r3, #1
+ 768 02c8 854A     		ldr	r2, .L57+28
+ 769 02ca 1370     		strb	r3, [r2]
+ 273:InterruptRoutines.c ****                 SETUP_SF           = LIS3DH_CTRL_REG1_SF_1HZ;    
+ 770              		.loc 1 273 0
+ 771 02cc 1721     		movs	r1, #23
+ 772 02ce 854A     		ldr	r2, .L57+32
+ 773 02d0 1170     		strb	r1, [r2]
+ 274:InterruptRoutines.c ****                 SETUP_SF_CHANGED   = 1;
+ 774              		.loc 1 274 0
+ 775 02d2 854A     		ldr	r2, .L57+36
+ 776 02d4 1370     		strb	r3, [r2]
+ 275:InterruptRoutines.c ****                 CHANGE_ADC_SF(1000);
+ 777              		.loc 1 275 0
+ 778 02d6 4FF47A70 		mov	r0, #1000
+ 779 02da FFF7FEFF 		bl	CHANGE_ADC_SF
+ 780              	.LVL63:
+ 781              	.L47:
+ 276:InterruptRoutines.c ****             }
+ 277:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==0 && FLAG_AS==1){ 
+ 782              		.loc 1 277 0
+ 783 02de 794B     		ldr	r3, .L57
+ 784 02e0 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 785 02e2 13F0FF0F 		tst	r3, #255
+ 786 02e6 40F0BF80 		bne	.L27
+ 787              		.loc 1 277 0 is_stmt 0 discriminator 1
+ 788 02ea 774B     		ldr	r3, .L57+4
+ 789 02ec 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 790 02ee 13F0FF0F 		tst	r3, #255
+ 791 02f2 40F0B980 		bne	.L27
+ 792              		.loc 1 277 0 discriminator 2
+ 793 02f6 754B     		ldr	r3, .L57+8
+ 794 02f8 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 795 02fa DBB2     		uxtb	r3, r3
+ 796 02fc 012B     		cmp	r3, #1
+ 797 02fe 40F0B380 		bne	.L27
+ 278:InterruptRoutines.c ****                 FLAG_AS   = 0;
+ 798              		.loc 1 278 0 is_stmt 1
+ 799 0302 0020     		movs	r0, #0
+ 800 0304 714B     		ldr	r3, .L57+8
+ 801 0306 1870     		strb	r0, [r3]
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 20
+
+
+ 279:InterruptRoutines.c ****                 OPTION_AS = 2;
+ 802              		.loc 1 279 0
+ 803 0308 0222     		movs	r2, #2
+ 804 030a 784B     		ldr	r3, .L57+40
+ 805 030c 1A70     		strb	r2, [r3]
+ 280:InterruptRoutines.c ****                 SETUP_AS_CHANGED = 1;
+ 806              		.loc 1 280 0
+ 807 030e 0122     		movs	r2, #1
+ 808 0310 774B     		ldr	r3, .L57+44
+ 809 0312 1A70     		strb	r2, [r3]
+ 281:InterruptRoutines.c ****                 AMux_Select(0);   // POT      
+ 810              		.loc 1 281 0
+ 811 0314 FFF7FEFF 		bl	AMux_Select
+ 812              	.LVL64:
+ 813 0318 A6E0     		b	.L27
+ 814              	.L31:
+ 282:InterruptRoutines.c ****             }
+ 283:InterruptRoutines.c ****             break;
+ 284:InterruptRoutines.c ****         
+ 285:InterruptRoutines.c ****         case '2':
+ 286:InterruptRoutines.c ****             if(FLAG_FSR==1 && FLAG_SF==0 && FLAG_AS==0){
+ 815              		.loc 1 286 0
+ 816 031a 6A4B     		ldr	r3, .L57
+ 817 031c 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 818 031e DBB2     		uxtb	r3, r3
+ 819 0320 012B     		cmp	r3, #1
+ 820 0322 18D1     		bne	.L48
+ 821              		.loc 1 286 0 is_stmt 0 discriminator 1
+ 822 0324 684B     		ldr	r3, .L57+4
+ 823 0326 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 824 0328 13F0FF0F 		tst	r3, #255
+ 825 032c 13D1     		bne	.L48
+ 826              		.loc 1 286 0 discriminator 2
+ 827 032e 674B     		ldr	r3, .L57+8
+ 828 0330 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 829 0332 13F0FF0F 		tst	r3, #255
+ 830 0336 0ED1     		bne	.L48
+ 287:InterruptRoutines.c ****                 FLAG_FSR            = 0;
+ 831              		.loc 1 287 0 is_stmt 1
+ 832 0338 0022     		movs	r2, #0
+ 833 033a 624B     		ldr	r3, .L57
+ 834 033c 1A70     		strb	r2, [r3]
+ 288:InterruptRoutines.c ****                 OPTION_FSR          = 2;
+ 835              		.loc 1 288 0
+ 836 033e 0222     		movs	r2, #2
+ 837 0340 634B     		ldr	r3, .L57+12
+ 838 0342 1A70     		strb	r2, [r3]
+ 289:InterruptRoutines.c ****                 SETUP_FSR           = LIS3DH_CTRL_REG4_FSR_4G;
+ 839              		.loc 1 289 0
+ 840 0344 9022     		movs	r2, #144
+ 841 0346 634B     		ldr	r3, .L57+16
+ 842 0348 1A70     		strb	r2, [r3]
+ 290:InterruptRoutines.c ****                 SETUP_FSR_CHANGED   = 1;
+ 843              		.loc 1 290 0
+ 844 034a 0122     		movs	r2, #1
+ 845 034c 624B     		ldr	r3, .L57+20
+ 846 034e 1A70     		strb	r2, [r3]
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 21
+
+
+ 291:InterruptRoutines.c ****                 Sensitivity         = 8;
+ 847              		.loc 1 291 0
+ 848 0350 0822     		movs	r2, #8
+ 849 0352 624B     		ldr	r3, .L57+24
+ 850 0354 1A80     		strh	r2, [r3]	@ movhi
+ 851              	.L48:
+ 292:InterruptRoutines.c ****             }
+ 293:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==1 && FLAG_AS==0){
+ 852              		.loc 1 293 0
+ 853 0356 5B4B     		ldr	r3, .L57
+ 854 0358 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 855 035a 13F0FF0F 		tst	r3, #255
+ 856 035e 40F08380 		bne	.L27
+ 857              		.loc 1 293 0 is_stmt 0 discriminator 1
+ 858 0362 594B     		ldr	r3, .L57+4
+ 859 0364 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 860 0366 DBB2     		uxtb	r3, r3
+ 861 0368 012B     		cmp	r3, #1
+ 862 036a 7DD1     		bne	.L27
+ 863              		.loc 1 293 0 discriminator 2
+ 864 036c 574B     		ldr	r3, .L57+8
+ 865 036e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 866 0370 13F0FF0F 		tst	r3, #255
+ 867 0374 78D1     		bne	.L27
+ 294:InterruptRoutines.c ****                 FLAG_SF            = 0;
+ 868              		.loc 1 294 0 is_stmt 1
+ 869 0376 0022     		movs	r2, #0
+ 870 0378 534B     		ldr	r3, .L57+4
+ 871 037a 1A70     		strb	r2, [r3]
+ 295:InterruptRoutines.c ****                 OPTION_SF          = 2;
+ 872              		.loc 1 295 0
+ 873 037c 0222     		movs	r2, #2
+ 874 037e 584B     		ldr	r3, .L57+28
+ 875 0380 1A70     		strb	r2, [r3]
+ 296:InterruptRoutines.c ****                 SETUP_SF           = LIS3DH_CTRL_REG1_SF_10HZ;
+ 876              		.loc 1 296 0
+ 877 0382 2722     		movs	r2, #39
+ 878 0384 574B     		ldr	r3, .L57+32
+ 879 0386 1A70     		strb	r2, [r3]
+ 297:InterruptRoutines.c ****                 SETUP_SF_CHANGED   = 1;
+ 880              		.loc 1 297 0
+ 881 0388 0122     		movs	r2, #1
+ 882 038a 574B     		ldr	r3, .L57+36
+ 883 038c 1A70     		strb	r2, [r3]
+ 298:InterruptRoutines.c ****                 CHANGE_ADC_SF(100);
+ 884              		.loc 1 298 0
+ 885 038e 6420     		movs	r0, #100
+ 886 0390 FFF7FEFF 		bl	CHANGE_ADC_SF
+ 887              	.LVL65:
+ 888 0394 68E0     		b	.L27
+ 889              	.L32:
+ 299:InterruptRoutines.c ****             }
+ 300:InterruptRoutines.c ****             break;
+ 301:InterruptRoutines.c ****             
+ 302:InterruptRoutines.c ****         case '3':
+ 303:InterruptRoutines.c ****             if(FLAG_FSR==1 && FLAG_SF==0){
+ 890              		.loc 1 303 0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 22
+
+
+ 891 0396 4B4B     		ldr	r3, .L57
+ 892 0398 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 893 039a DBB2     		uxtb	r3, r3
+ 894 039c 012B     		cmp	r3, #1
+ 895 039e 13D1     		bne	.L49
+ 896              		.loc 1 303 0 is_stmt 0 discriminator 1
+ 897 03a0 494B     		ldr	r3, .L57+4
+ 898 03a2 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 899 03a4 13F0FF0F 		tst	r3, #255
+ 900 03a8 0ED1     		bne	.L49
+ 304:InterruptRoutines.c ****                 FLAG_FSR            = 0;
+ 901              		.loc 1 304 0 is_stmt 1
+ 902 03aa 0022     		movs	r2, #0
+ 903 03ac 454B     		ldr	r3, .L57
+ 904 03ae 1A70     		strb	r2, [r3]
+ 305:InterruptRoutines.c ****                 OPTION_FSR          = 3;
+ 905              		.loc 1 305 0
+ 906 03b0 0322     		movs	r2, #3
+ 907 03b2 474B     		ldr	r3, .L57+12
+ 908 03b4 1A70     		strb	r2, [r3]
+ 306:InterruptRoutines.c ****                 SETUP_FSR           = LIS3DH_CTRL_REG4_FSR_8G;
+ 909              		.loc 1 306 0
+ 910 03b6 A022     		movs	r2, #160
+ 911 03b8 464B     		ldr	r3, .L57+16
+ 912 03ba 1A70     		strb	r2, [r3]
+ 307:InterruptRoutines.c ****                 SETUP_FSR_CHANGED   = 1;
+ 913              		.loc 1 307 0
+ 914 03bc 0122     		movs	r2, #1
+ 915 03be 464B     		ldr	r3, .L57+20
+ 916 03c0 1A70     		strb	r2, [r3]
+ 308:InterruptRoutines.c ****                 Sensitivity         = 16;
+ 917              		.loc 1 308 0
+ 918 03c2 1022     		movs	r2, #16
+ 919 03c4 454B     		ldr	r3, .L57+24
+ 920 03c6 1A80     		strh	r2, [r3]	@ movhi
+ 921              	.L49:
+ 309:InterruptRoutines.c ****             }
+ 310:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==1){
+ 922              		.loc 1 310 0
+ 923 03c8 3E4B     		ldr	r3, .L57
+ 924 03ca 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 925 03cc 13F0FF0F 		tst	r3, #255
+ 926 03d0 4AD1     		bne	.L27
+ 927              		.loc 1 310 0 is_stmt 0 discriminator 1
+ 928 03d2 3D4B     		ldr	r3, .L57+4
+ 929 03d4 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 930 03d6 DBB2     		uxtb	r3, r3
+ 931 03d8 012B     		cmp	r3, #1
+ 932 03da 45D1     		bne	.L27
+ 311:InterruptRoutines.c ****                 FLAG_SF            = 0;
+ 933              		.loc 1 311 0 is_stmt 1
+ 934 03dc 0022     		movs	r2, #0
+ 935 03de 3A4B     		ldr	r3, .L57+4
+ 936 03e0 1A70     		strb	r2, [r3]
+ 312:InterruptRoutines.c ****                 OPTION_SF          = 3;
+ 937              		.loc 1 312 0
+ 938 03e2 0322     		movs	r2, #3
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 23
+
+
+ 939 03e4 3E4B     		ldr	r3, .L57+28
+ 940 03e6 1A70     		strb	r2, [r3]
+ 313:InterruptRoutines.c ****                 SETUP_SF           = LIS3DH_CTRL_REG1_SF_25HZ;
+ 941              		.loc 1 313 0
+ 942 03e8 3722     		movs	r2, #55
+ 943 03ea 3E4B     		ldr	r3, .L57+32
+ 944 03ec 1A70     		strb	r2, [r3]
+ 314:InterruptRoutines.c ****                 SETUP_SF_CHANGED   = 1;
+ 945              		.loc 1 314 0
+ 946 03ee 0122     		movs	r2, #1
+ 947 03f0 3D4B     		ldr	r3, .L57+36
+ 948 03f2 1A70     		strb	r2, [r3]
+ 315:InterruptRoutines.c ****                 CHANGE_ADC_SF(40);
+ 949              		.loc 1 315 0
+ 950 03f4 2820     		movs	r0, #40
+ 951 03f6 FFF7FEFF 		bl	CHANGE_ADC_SF
+ 952              	.LVL66:
+ 953 03fa 35E0     		b	.L27
+ 954              	.L33:
+ 316:InterruptRoutines.c ****             }
+ 317:InterruptRoutines.c ****             break;
+ 318:InterruptRoutines.c ****             
+ 319:InterruptRoutines.c ****         case '4':
+ 320:InterruptRoutines.c ****             if(FLAG_FSR==1 && FLAG_SF==0){ 
+ 955              		.loc 1 320 0
+ 956 03fc 314B     		ldr	r3, .L57
+ 957 03fe 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 958 0400 DBB2     		uxtb	r3, r3
+ 959 0402 012B     		cmp	r3, #1
+ 960 0404 13D1     		bne	.L50
+ 961              		.loc 1 320 0 is_stmt 0 discriminator 1
+ 962 0406 304B     		ldr	r3, .L57+4
+ 963 0408 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 964 040a 13F0FF0F 		tst	r3, #255
+ 965 040e 0ED1     		bne	.L50
+ 321:InterruptRoutines.c ****                 FLAG_FSR            = 0;
+ 966              		.loc 1 321 0 is_stmt 1
+ 967 0410 0022     		movs	r2, #0
+ 968 0412 2C4B     		ldr	r3, .L57
+ 969 0414 1A70     		strb	r2, [r3]
+ 322:InterruptRoutines.c ****                 OPTION_FSR          = 4;
+ 970              		.loc 1 322 0
+ 971 0416 0422     		movs	r2, #4
+ 972 0418 2D4B     		ldr	r3, .L57+12
+ 973 041a 1A70     		strb	r2, [r3]
+ 323:InterruptRoutines.c ****                 SETUP_FSR           = LIS3DH_CTRL_REG4_FSR_16G;
+ 974              		.loc 1 323 0
+ 975 041c B022     		movs	r2, #176
+ 976 041e 2D4B     		ldr	r3, .L57+16
+ 977 0420 1A70     		strb	r2, [r3]
+ 324:InterruptRoutines.c ****                 SETUP_FSR_CHANGED   = 1;
+ 978              		.loc 1 324 0
+ 979 0422 0122     		movs	r2, #1
+ 980 0424 2C4B     		ldr	r3, .L57+20
+ 981 0426 1A70     		strb	r2, [r3]
+ 325:InterruptRoutines.c ****                 Sensitivity         = 48;
+ 982              		.loc 1 325 0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 24
+
+
+ 983 0428 3022     		movs	r2, #48
+ 984 042a 2C4B     		ldr	r3, .L57+24
+ 985 042c 1A80     		strh	r2, [r3]	@ movhi
+ 986              	.L50:
+ 326:InterruptRoutines.c ****             }
+ 327:InterruptRoutines.c ****             if(FLAG_FSR==0 && FLAG_SF==1){ 
+ 987              		.loc 1 327 0
+ 988 042e 254B     		ldr	r3, .L57
+ 989 0430 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 990 0432 13F0FF0F 		tst	r3, #255
+ 991 0436 17D1     		bne	.L27
+ 992              		.loc 1 327 0 is_stmt 0 discriminator 1
+ 993 0438 234B     		ldr	r3, .L57+4
+ 994 043a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 995 043c DBB2     		uxtb	r3, r3
+ 996 043e 012B     		cmp	r3, #1
+ 997 0440 12D1     		bne	.L27
+ 328:InterruptRoutines.c ****                 FLAG_SF            = 0;
+ 998              		.loc 1 328 0 is_stmt 1
+ 999 0442 0022     		movs	r2, #0
+ 1000 0444 204B     		ldr	r3, .L57+4
+ 1001 0446 1A70     		strb	r2, [r3]
+ 329:InterruptRoutines.c ****                 OPTION_SF          = 4;
+ 1002              		.loc 1 329 0
+ 1003 0448 0422     		movs	r2, #4
+ 1004 044a 254B     		ldr	r3, .L57+28
+ 1005 044c 1A70     		strb	r2, [r3]
+ 330:InterruptRoutines.c ****                 SETUP_SF           = LIS3DH_CTRL_REG1_SF_50HZ;
+ 1006              		.loc 1 330 0
+ 1007 044e 4722     		movs	r2, #71
+ 1008 0450 244B     		ldr	r3, .L57+32
+ 1009 0452 1A70     		strb	r2, [r3]
+ 331:InterruptRoutines.c ****                 SETUP_SF_CHANGED   = 1;
+ 1010              		.loc 1 331 0
+ 1011 0454 0122     		movs	r2, #1
+ 1012 0456 244B     		ldr	r3, .L57+36
+ 1013 0458 1A70     		strb	r2, [r3]
+ 332:InterruptRoutines.c ****                 CHANGE_ADC_SF(20);
+ 1014              		.loc 1 332 0
+ 1015 045a 1420     		movs	r0, #20
+ 1016 045c FFF7FEFF 		bl	CHANGE_ADC_SF
+ 1017              	.LVL67:
+ 1018 0460 02E0     		b	.L27
+ 1019              	.L38:
+ 333:InterruptRoutines.c ****             }
+ 334:InterruptRoutines.c ****             break;
+ 335:InterruptRoutines.c ****          
+ 336:InterruptRoutines.c ****         case 'O':
+ 337:InterruptRoutines.c ****         case 'o':
+ 338:InterruptRoutines.c ****             summary_ready = 1;
+ 1020              		.loc 1 338 0
+ 1021 0462 0122     		movs	r2, #1
+ 1022 0464 234B     		ldr	r3, .L57+48
+ 1023 0466 1A70     		strb	r2, [r3]
+ 1024              	.L27:
+ 339:InterruptRoutines.c ****             break;
+ 340:InterruptRoutines.c ****             
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 25
+
+
+ 341:InterruptRoutines.c ****         default:
+ 342:InterruptRoutines.c ****             break;    
+ 343:InterruptRoutines.c ****     }
+ 344:InterruptRoutines.c ****     
+ 345:InterruptRoutines.c ****     /*******************************/
+ 346:InterruptRoutines.c ****     /*     INTEGRITY CONTROL       */
+ 347:InterruptRoutines.c ****     /*******************************/
+ 348:InterruptRoutines.c ****     
+ 349:InterruptRoutines.c ****     if(FLAG_FSR==1 && FLAG_SF==1){
+ 1025              		.loc 1 349 0
+ 1026 0468 164B     		ldr	r3, .L57
+ 1027 046a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1028 046c DBB2     		uxtb	r3, r3
+ 1029 046e 012B     		cmp	r3, #1
+ 1030 0470 09D1     		bne	.L51
+ 1031              		.loc 1 349 0 is_stmt 0 discriminator 1
+ 1032 0472 154B     		ldr	r3, .L57+4
+ 1033 0474 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1034 0476 DBB2     		uxtb	r3, r3
+ 1035 0478 012B     		cmp	r3, #1
+ 1036 047a 04D1     		bne	.L51
+ 350:InterruptRoutines.c ****         FLAG_FSR=0;
+ 1037              		.loc 1 350 0 is_stmt 1
+ 1038 047c 0023     		movs	r3, #0
+ 1039 047e 114A     		ldr	r2, .L57
+ 1040 0480 1370     		strb	r3, [r2]
+ 351:InterruptRoutines.c ****         FLAG_SF=0;
+ 1041              		.loc 1 351 0
+ 1042 0482 114A     		ldr	r2, .L57+4
+ 1043 0484 1370     		strb	r3, [r2]
+ 1044              	.L51:
+ 352:InterruptRoutines.c ****     }
+ 353:InterruptRoutines.c ****     
+ 354:InterruptRoutines.c ****     if(FLAG_AS==1 && FLAG_SF==1){
+ 1045              		.loc 1 354 0
+ 1046 0486 114B     		ldr	r3, .L57+8
+ 1047 0488 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1048 048a DBB2     		uxtb	r3, r3
+ 1049 048c 012B     		cmp	r3, #1
+ 1050 048e 09D1     		bne	.L52
+ 1051              		.loc 1 354 0 is_stmt 0 discriminator 1
+ 1052 0490 0D4B     		ldr	r3, .L57+4
+ 1053 0492 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1054 0494 DBB2     		uxtb	r3, r3
+ 1055 0496 012B     		cmp	r3, #1
+ 1056 0498 04D1     		bne	.L52
+ 355:InterruptRoutines.c ****         FLAG_AS=0;
+ 1057              		.loc 1 355 0 is_stmt 1
+ 1058 049a 0023     		movs	r3, #0
+ 1059 049c 0B4A     		ldr	r2, .L57+8
+ 1060 049e 1370     		strb	r3, [r2]
+ 356:InterruptRoutines.c ****         FLAG_SF=0;
+ 1061              		.loc 1 356 0
+ 1062 04a0 094A     		ldr	r2, .L57+4
+ 1063 04a2 1370     		strb	r3, [r2]
+ 1064              	.L52:
+ 357:InterruptRoutines.c ****     }
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 26
+
+
+ 358:InterruptRoutines.c ****     
+ 359:InterruptRoutines.c ****     if(FLAG_AS==1 && FLAG_FSR==1){
+ 1065              		.loc 1 359 0
+ 1066 04a4 094B     		ldr	r3, .L57+8
+ 1067 04a6 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1068 04a8 DBB2     		uxtb	r3, r3
+ 1069 04aa 012B     		cmp	r3, #1
+ 1070 04ac 09D1     		bne	.L26
+ 1071              		.loc 1 359 0 is_stmt 0 discriminator 1
+ 1072 04ae 054B     		ldr	r3, .L57
+ 1073 04b0 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1074 04b2 DBB2     		uxtb	r3, r3
+ 1075 04b4 012B     		cmp	r3, #1
+ 1076 04b6 04D1     		bne	.L26
+ 360:InterruptRoutines.c ****         FLAG_AS=0;
+ 1077              		.loc 1 360 0 is_stmt 1
+ 1078 04b8 0023     		movs	r3, #0
+ 1079 04ba 044A     		ldr	r2, .L57+8
+ 1080 04bc 1370     		strb	r3, [r2]
+ 361:InterruptRoutines.c ****         FLAG_FSR=0;
+ 1081              		.loc 1 361 0
+ 1082 04be 014A     		ldr	r2, .L57
+ 1083 04c0 1370     		strb	r3, [r2]
+ 1084              	.L26:
+ 1085 04c2 70BD     		pop	{r4, r5, r6, pc}
+ 1086              	.L58:
+ 1087              		.align	2
+ 1088              	.L57:
+ 1089 04c4 00000000 		.word	FLAG_FSR
+ 1090 04c8 00000000 		.word	FLAG_SF
+ 1091 04cc 00000000 		.word	FLAG_AS
+ 1092 04d0 00000000 		.word	OPTION_FSR
+ 1093 04d4 00000000 		.word	SETUP_FSR
+ 1094 04d8 00000000 		.word	SETUP_FSR_CHANGED
+ 1095 04dc 00000000 		.word	Sensitivity
+ 1096 04e0 00000000 		.word	OPTION_SF
+ 1097 04e4 00000000 		.word	SETUP_SF
+ 1098 04e8 00000000 		.word	SETUP_SF_CHANGED
+ 1099 04ec 00000000 		.word	OPTION_AS
+ 1100 04f0 00000000 		.word	SETUP_AS_CHANGED
+ 1101 04f4 00000000 		.word	summary_ready
+ 1102              		.cfi_endproc
+ 1103              	.LFE69:
+ 1104              		.size	Custom_ISR_RX, .-Custom_ISR_RX
+ 1105              		.section	.text.ISR_PB_LOW,"ax",%progbits
+ 1106              		.align	2
+ 1107              		.global	ISR_PB_LOW
+ 1108              		.thumb
+ 1109              		.thumb_func
+ 1110              		.type	ISR_PB_LOW, %function
+ 1111              	ISR_PB_LOW:
+ 1112              	.LFB70:
+ 362:InterruptRoutines.c ****     }
+ 363:InterruptRoutines.c ****     
+ 364:InterruptRoutines.c **** }
+ 365:InterruptRoutines.c **** 
+ 366:InterruptRoutines.c **** /**************************************************************************************************
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 27
+
+
+ 367:InterruptRoutines.c **** /*                                             PUSH BUTTON INTERRUPTs                              
+ 368:InterruptRoutines.c **** /**************************************************************************************************
+ 369:InterruptRoutines.c **** 
+ 370:InterruptRoutines.c **** CY_ISR(ISR_PB_LOW){  
+ 1113              		.loc 1 370 0
+ 1114              		.cfi_startproc
+ 1115              		@ args = 0, pretend = 0, frame = 0
+ 1116              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1117 0000 08B5     		push	{r3, lr}
+ 1118              		.cfi_def_cfa_offset 8
+ 1119              		.cfi_offset 3, -8
+ 1120              		.cfi_offset 14, -4
+ 371:InterruptRoutines.c ****     PB_PRESSED = 1;     // flag 1 if the button is pressed
+ 1121              		.loc 1 371 0
+ 1122 0002 0122     		movs	r2, #1
+ 1123 0004 024B     		ldr	r3, .L61
+ 1124 0006 1A70     		strb	r2, [r3]
+ 372:InterruptRoutines.c ****     Timer_PB_Start();   // timer start
+ 1125              		.loc 1 372 0
+ 1126 0008 FFF7FEFF 		bl	Timer_PB_Start
+ 1127              	.LVL68:
+ 1128 000c 08BD     		pop	{r3, pc}
+ 1129              	.L62:
+ 1130 000e 00BF     		.align	2
+ 1131              	.L61:
+ 1132 0010 00000000 		.word	.LANCHOR0
+ 1133              		.cfi_endproc
+ 1134              	.LFE70:
+ 1135              		.size	ISR_PB_LOW, .-ISR_PB_LOW
+ 1136              		.section	.text.ISR_PB_HIGH,"ax",%progbits
+ 1137              		.align	2
+ 1138              		.global	ISR_PB_HIGH
+ 1139              		.thumb
+ 1140              		.thumb_func
+ 1141              		.type	ISR_PB_HIGH, %function
+ 1142              	ISR_PB_HIGH:
+ 1143              	.LFB71:
+ 373:InterruptRoutines.c **** } 
+ 374:InterruptRoutines.c **** 
+ 375:InterruptRoutines.c **** CY_ISR(ISR_PB_HIGH){  
+ 1144              		.loc 1 375 0
+ 1145              		.cfi_startproc
+ 1146              		@ args = 0, pretend = 0, frame = 0
+ 1147              		@ frame_needed = 0, uses_anonymous_args = 0
+ 376:InterruptRoutines.c ****     if(PB_PRESSED == 1){                            // if the button has been pressed
+ 1148              		.loc 1 376 0
+ 1149 0000 1F4B     		ldr	r3, .L69
+ 1150 0002 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 1151 0004 012B     		cmp	r3, #1
+ 1152 0006 39D1     		bne	.L68
+ 375:InterruptRoutines.c ****     if(PB_PRESSED == 1){                            // if the button has been pressed
+ 1153              		.loc 1 375 0
+ 1154 0008 10B5     		push	{r4, lr}
+ 1155              		.cfi_def_cfa_offset 8
+ 1156              		.cfi_offset 4, -8
+ 1157              		.cfi_offset 14, -4
+ 377:InterruptRoutines.c ****         
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 28
+
+
+ 378:InterruptRoutines.c ****         TIMER_COUNTER = Timer_PB_ReadCounter();     // read the time elapsed
+ 1158              		.loc 1 378 0
+ 1159 000a FFF7FEFF 		bl	Timer_PB_ReadCounter
+ 1160              	.LVL69:
+ 1161 000e 1C4C     		ldr	r4, .L69
+ 1162 0010 6080     		strh	r0, [r4, #2]	@ movhi
+ 379:InterruptRoutines.c ****         Timer_PB_WriteCounter(0);                   // reset time elapsed
+ 1163              		.loc 1 379 0
+ 1164 0012 0020     		movs	r0, #0
+ 1165 0014 FFF7FEFF 		bl	Timer_PB_WriteCounter
+ 1166              	.LVL70:
+ 380:InterruptRoutines.c ****         PB_PRESSED = 0;          
+ 1167              		.loc 1 380 0
+ 1168 0018 0023     		movs	r3, #0
+ 1169 001a 2370     		strb	r3, [r4]
+ 381:InterruptRoutines.c ****         
+ 382:InterruptRoutines.c ****         // if 5 seconds have been elapsed
+ 383:InterruptRoutines.c ****         if(TIMER_COUNTER < 59000){ 
+ 1170              		.loc 1 383 0
+ 1171 001c 6388     		ldrh	r3, [r4, #2]
+ 1172 001e 4EF27762 		movw	r2, #58999
+ 1173 0022 9342     		cmp	r3, r2
+ 1174 0024 10D8     		bhi	.L65
+ 384:InterruptRoutines.c ****             push_button_event = 1;
+ 1175              		.loc 1 384 0
+ 1176 0026 0121     		movs	r1, #1
+ 1177 0028 164A     		ldr	r2, .L69+4
+ 1178 002a 1170     		strb	r1, [r2]
+ 385:InterruptRoutines.c ****             elapsed_time = 5*(60000-TIMER_COUNTER);
+ 1179              		.loc 1 385 0
+ 1180 002c C3F56A43 		rsb	r3, r3, #59904
+ 1181 0030 6033     		adds	r3, r3, #96
+ 1182 0032 03EB8303 		add	r3, r3, r3, lsl #2
+ 1183 0036 9BB2     		uxth	r3, r3
+ 1184 0038 134A     		ldr	r2, .L69+8
+ 1185 003a 1380     		strh	r3, [r2]	@ movhi
+ 386:InterruptRoutines.c ****             sprintf(elapsed_time_string, "     Elapsed time: %dms \r\n", elapsed_time);
+ 1186              		.loc 1 386 0
+ 1187 003c 1288     		ldrh	r2, [r2]
+ 1188 003e 92B2     		uxth	r2, r2
+ 1189 0040 1249     		ldr	r1, .L69+12
+ 1190 0042 1348     		ldr	r0, .L69+16
+ 1191 0044 FFF7FEFF 		bl	sprintf
+ 1192              	.LVL71:
+ 1193              	.L65:
+ 387:InterruptRoutines.c ****         }
+ 388:InterruptRoutines.c ****         
+ 389:InterruptRoutines.c ****         // if 5 seconds haven't been elapsed
+ 390:InterruptRoutines.c ****         if(TIMER_COUNTER > 59000){
+ 1194              		.loc 1 390 0
+ 1195 0048 0D4B     		ldr	r3, .L69
+ 1196 004a 5B88     		ldrh	r3, [r3, #2]
+ 1197 004c 4EF27862 		movw	r2, #59000
+ 1198 0050 9342     		cmp	r3, r2
+ 1199 0052 10D9     		bls	.L66
+ 391:InterruptRoutines.c ****             push_button_event = 2;
+ 1200              		.loc 1 391 0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 29
+
+
+ 1201 0054 0221     		movs	r1, #2
+ 1202 0056 0B4A     		ldr	r2, .L69+4
+ 1203 0058 1170     		strb	r1, [r2]
+ 392:InterruptRoutines.c ****             elapsed_time = 5*(60000-TIMER_COUNTER);
+ 1204              		.loc 1 392 0
+ 1205 005a C3F56A43 		rsb	r3, r3, #59904
+ 1206 005e 6033     		adds	r3, r3, #96
+ 1207 0060 03EB8303 		add	r3, r3, r3, lsl #2
+ 1208 0064 9BB2     		uxth	r3, r3
+ 1209 0066 084A     		ldr	r2, .L69+8
+ 1210 0068 1380     		strh	r3, [r2]	@ movhi
+ 393:InterruptRoutines.c ****             sprintf(elapsed_time_string, "     Elapsed time: %dms \r\n", elapsed_time);
+ 1211              		.loc 1 393 0
+ 1212 006a 1288     		ldrh	r2, [r2]
+ 1213 006c 92B2     		uxth	r2, r2
+ 1214 006e 0749     		ldr	r1, .L69+12
+ 1215 0070 0748     		ldr	r0, .L69+16
+ 1216 0072 FFF7FEFF 		bl	sprintf
+ 1217              	.LVL72:
+ 1218              	.L66:
+ 394:InterruptRoutines.c ****             
+ 395:InterruptRoutines.c ****         }
+ 396:InterruptRoutines.c ****         
+ 397:InterruptRoutines.c ****         Timer_PB_Stop();
+ 1219              		.loc 1 397 0
+ 1220 0076 FFF7FEFF 		bl	Timer_PB_Stop
+ 1221              	.LVL73:
+ 1222 007a 10BD     		pop	{r4, pc}
+ 1223              	.L68:
+ 1224              		.cfi_def_cfa_offset 0
+ 1225              		.cfi_restore 4
+ 1226              		.cfi_restore 14
+ 1227 007c 7047     		bx	lr
+ 1228              	.L70:
+ 1229 007e 00BF     		.align	2
+ 1230              	.L69:
+ 1231 0080 00000000 		.word	.LANCHOR0
+ 1232 0084 00000000 		.word	push_button_event
+ 1233 0088 00000000 		.word	elapsed_time
+ 1234 008c 3C000000 		.word	.LC3
+ 1235 0090 00000000 		.word	elapsed_time_string
+ 1236              		.cfi_endproc
+ 1237              	.LFE71:
+ 1238              		.size	ISR_PB_HIGH, .-ISR_PB_HIGH
+ 1239              		.global	LED_EEPROM_FULL
+ 1240              		.global	LED_ACQUISITION_ON
+ 1241              		.comm	error,1,1
+ 1242              		.global	TIMER_COUNTER
+ 1243              		.global	PB_PRESSED
+ 1244              		.comm	ch_receveid,1,1
+ 1245              		.comm	SETUP_SF,1,1
+ 1246              		.comm	SETUP_FSR,1,1
+ 1247              		.comm	SETUP_SF_CHANGED,1,1
+ 1248              		.comm	SETUP_FSR_CHANGED,1,1
+ 1249              		.comm	SETUP_AS_CHANGED,1,1
+ 1250              		.comm	SETUP_BS_CHANGED,1,1
+ 1251              		.comm	push_button_event,1,1
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 30
+
+
+ 1252              		.comm	summary_ready,1,1
+ 1253              		.comm	OPTION_AS,1,1
+ 1254              		.comm	OPTION_SF,1,1
+ 1255              		.comm	OPTION_FSR,1,1
+ 1256              		.comm	FLAG_BS,1,1
+ 1257              		.comm	FLAG_AS,1,1
+ 1258              		.comm	FLAG_SF,1,1
+ 1259              		.comm	FLAG_FSR,1,1
+ 1260              		.comm	StartStream_flag,1,1
+ 1261              		.comm	StartAcquisition_flag,1,1
+ 1262              		.comm	elapsed_time,2,2
+ 1263              		.comm	elapsed_time_string,64,4
+ 1264              		.comm	full_or_empty,1,1
+ 1265              		.comm	Sensitivity,2,2
+ 1266              		.comm	SensorDataReady,1,1
+ 1267              		.comm	SensBytes_old,64,4
+ 1268              		.comm	SensBytes,64,4
+ 1269              		.comm	SensData,64,4
+ 1270              		.comm	CountSensor,1,1
+ 1271              		.comm	counter_timer,1,1
+ 1272              		.comm	FlagFifo,1,1
+ 1273              		.comm	AccData2,192,4
+ 1274              		.comm	AccData,192,4
+ 1275              		.section	.rodata
+ 1276              		.align	2
+ 1277              		.type	LED_EEPROM_FULL, %object
+ 1278              		.size	LED_EEPROM_FULL, 4
+ 1279              	LED_EEPROM_FULL:
+ 1280 0000 3100     		.short	49
+ 1281 0002 1800     		.short	24
+ 1282              		.type	LED_ACQUISITION_ON, %object
+ 1283              		.size	LED_ACQUISITION_ON, 4
+ 1284              	LED_ACQUISITION_ON:
+ 1285 0004 C700     		.short	199
+ 1286 0006 6400     		.short	100
+ 1287              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 1288              		.align	2
+ 1289              	.LC0:
+ 1290 0000 0D0A00   		.ascii	"\015\012\000"
+ 1291 0003 00       		.space	1
+ 1292              	.LC1:
+ 1293 0004 20202020 		.ascii	"     Acquisition begun\015\012\000"
+ 1293      20416371 
+ 1293      75697369 
+ 1293      74696F6E 
+ 1293      20626567 
+ 1294 001d 000000   		.space	3
+ 1295              	.LC2:
+ 1296 0020 20202020 		.ascii	"     Acquisition stopped\015\012\000"
+ 1296      20416371 
+ 1296      75697369 
+ 1296      74696F6E 
+ 1296      2073746F 
+ 1297 003b 00       		.space	1
+ 1298              	.LC3:
+ 1299 003c 20202020 		.ascii	"     Elapsed time: %dms \015\012\000"
+ 1299      20456C61 
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 31
+
+
+ 1299      70736564 
+ 1299      2074696D 
+ 1299      653A2025 
+ 1300              		.bss
+ 1301              		.align	1
+ 1302              		.set	.LANCHOR0,. + 0
+ 1303              		.type	PB_PRESSED, %object
+ 1304              		.size	PB_PRESSED, 1
+ 1305              	PB_PRESSED:
+ 1306 0000 00       		.space	1
+ 1307 0001 00       		.space	1
+ 1308              		.type	TIMER_COUNTER, %object
+ 1309              		.size	TIMER_COUNTER, 2
+ 1310              	TIMER_COUNTER:
+ 1311 0002 0000     		.space	2
+ 1312              		.text
+ 1313              	.Letext0:
+ 1314              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\4.3\\psoc creator\\import\\gnu\\arm\\5.4.
+ 1315              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.3\\psoc creator\\import\\gnu\\arm\\5.4.
+ 1316              		.file 4 "Generated_Source\\PSoC5/cytypes.h"
+ 1317              		.file 5 "InterruptRoutines.h"
+ 1318              		.file 6 "ErrorCodes.h"
+ 1319              		.file 7 "Generated_Source\\PSoC5/core_cm3.h"
+ 1320              		.file 8 "Pages.h"
+ 1321              		.file 9 "Generated_Source\\PSoC5/Timer_sensor.h"
+ 1322              		.file 10 "I2C_Interface.h"
+ 1323              		.file 11 "Generated_Source\\PSoC5/ADC.h"
+ 1324              		.file 12 "Generated_Source\\PSoC5/PWM.h"
+ 1325              		.file 13 "Generated_Source\\PSoC5/UART.h"
+ 1326              		.file 14 "Generated_Source\\PSoC5/ISR_PB_LOW.h"
+ 1327              		.file 15 "Generated_Source\\PSoC5/ISR_PB_HIGH.h"
+ 1328              		.file 16 "Generated_Source\\PSoC5/pin_LED_EXT.h"
+ 1329              		.file 17 "Generated_Source\\PSoC5/AMux.h"
+ 1330              		.file 18 "Generated_Source\\PSoC5/Timer_PB.h"
+ 1331              		.file 19 "c:\\program files (x86)\\cypress\\psoc creator\\4.3\\psoc creator\\import\\gnu\\arm\\5.4
+ 1332              		.section	.debug_info,"",%progbits
+ 1333              	.Ldebug_info0:
+ 1334 0000 A40A0000 		.4byte	0xaa4
+ 1335 0004 0400     		.2byte	0x4
+ 1336 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 1337 000a 04       		.byte	0x4
+ 1338 000b 01       		.uleb128 0x1
+ 1339 000c 7D050000 		.4byte	.LASF100
+ 1340 0010 0C       		.byte	0xc
+ 1341 0011 C8010000 		.4byte	.LASF101
+ 1342 0015 E7030000 		.4byte	.LASF102
+ 1343 0019 30000000 		.4byte	.Ldebug_ranges0+0x30
+ 1344 001d 00000000 		.4byte	0
+ 1345 0021 00000000 		.4byte	.Ldebug_line0
+ 1346 0025 02       		.uleb128 0x2
+ 1347 0026 01       		.byte	0x1
+ 1348 0027 06       		.byte	0x6
+ 1349 0028 CD020000 		.4byte	.LASF0
+ 1350 002c 03       		.uleb128 0x3
+ 1351 002d 20020000 		.4byte	.LASF3
+ 1352 0031 02       		.byte	0x2
+ 1353 0032 1D       		.byte	0x1d
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 32
+
+
+ 1354 0033 37000000 		.4byte	0x37
+ 1355 0037 02       		.uleb128 0x2
+ 1356 0038 01       		.byte	0x1
+ 1357 0039 08       		.byte	0x8
+ 1358 003a 91020000 		.4byte	.LASF1
+ 1359 003e 02       		.uleb128 0x2
+ 1360 003f 02       		.byte	0x2
+ 1361 0040 05       		.byte	0x5
+ 1362 0041 6D000000 		.4byte	.LASF2
+ 1363 0045 03       		.uleb128 0x3
+ 1364 0046 D0000000 		.4byte	.LASF4
+ 1365 004a 02       		.byte	0x2
+ 1366 004b 2B       		.byte	0x2b
+ 1367 004c 50000000 		.4byte	0x50
+ 1368 0050 02       		.uleb128 0x2
+ 1369 0051 02       		.byte	0x2
+ 1370 0052 07       		.byte	0x7
+ 1371 0053 8E010000 		.4byte	.LASF5
+ 1372 0057 03       		.uleb128 0x3
+ 1373 0058 D1040000 		.4byte	.LASF6
+ 1374 005c 02       		.byte	0x2
+ 1375 005d 3F       		.byte	0x3f
+ 1376 005e 62000000 		.4byte	0x62
+ 1377 0062 02       		.uleb128 0x2
+ 1378 0063 04       		.byte	0x4
+ 1379 0064 05       		.byte	0x5
+ 1380 0065 E6010000 		.4byte	.LASF7
+ 1381 0069 02       		.uleb128 0x2
+ 1382 006a 04       		.byte	0x4
+ 1383 006b 07       		.byte	0x7
+ 1384 006c 6F040000 		.4byte	.LASF8
+ 1385 0070 02       		.uleb128 0x2
+ 1386 0071 08       		.byte	0x8
+ 1387 0072 05       		.byte	0x5
+ 1388 0073 A1010000 		.4byte	.LASF9
+ 1389 0077 02       		.uleb128 0x2
+ 1390 0078 08       		.byte	0x8
+ 1391 0079 07       		.byte	0x7
+ 1392 007a FA020000 		.4byte	.LASF10
+ 1393 007e 04       		.uleb128 0x4
+ 1394 007f 04       		.byte	0x4
+ 1395 0080 05       		.byte	0x5
+ 1396 0081 696E7400 		.ascii	"int\000"
+ 1397 0085 02       		.uleb128 0x2
+ 1398 0086 04       		.byte	0x4
+ 1399 0087 07       		.byte	0x7
+ 1400 0088 31030000 		.4byte	.LASF11
+ 1401 008c 03       		.uleb128 0x3
+ 1402 008d 1B010000 		.4byte	.LASF12
+ 1403 0091 03       		.byte	0x3
+ 1404 0092 18       		.byte	0x18
+ 1405 0093 2C000000 		.4byte	0x2c
+ 1406 0097 03       		.uleb128 0x3
+ 1407 0098 3E030000 		.4byte	.LASF13
+ 1408 009c 03       		.byte	0x3
+ 1409 009d 24       		.byte	0x24
+ 1410 009e 45000000 		.4byte	0x45
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 33
+
+
+ 1411 00a2 03       		.uleb128 0x3
+ 1412 00a3 AF030000 		.4byte	.LASF14
+ 1413 00a7 03       		.byte	0x3
+ 1414 00a8 2C       		.byte	0x2c
+ 1415 00a9 57000000 		.4byte	0x57
+ 1416 00ad 05       		.uleb128 0x5
+ 1417 00ae E1030000 		.4byte	.LASF15
+ 1418 00b2 04       		.byte	0x4
+ 1419 00b3 E401     		.2byte	0x1e4
+ 1420 00b5 37000000 		.4byte	0x37
+ 1421 00b9 05       		.uleb128 0x5
+ 1422 00ba 14010000 		.4byte	.LASF16
+ 1423 00be 04       		.byte	0x4
+ 1424 00bf E501     		.2byte	0x1e5
+ 1425 00c1 50000000 		.4byte	0x50
+ 1426 00c5 05       		.uleb128 0x5
+ 1427 00c6 23010000 		.4byte	.LASF17
+ 1428 00ca 04       		.byte	0x4
+ 1429 00cb E801     		.2byte	0x1e8
+ 1430 00cd 3E000000 		.4byte	0x3e
+ 1431 00d1 02       		.uleb128 0x2
+ 1432 00d2 04       		.byte	0x4
+ 1433 00d3 04       		.byte	0x4
+ 1434 00d4 7C010000 		.4byte	.LASF18
+ 1435 00d8 02       		.uleb128 0x2
+ 1436 00d9 08       		.byte	0x8
+ 1437 00da 04       		.byte	0x4
+ 1438 00db 39050000 		.4byte	.LASF19
+ 1439 00df 02       		.uleb128 0x2
+ 1440 00e0 01       		.byte	0x1
+ 1441 00e1 08       		.byte	0x8
+ 1442 00e2 85030000 		.4byte	.LASF20
+ 1443 00e6 06       		.uleb128 0x6
+ 1444 00e7 AD000000 		.4byte	0xad
+ 1445 00eb 06       		.uleb128 0x6
+ 1446 00ec B9000000 		.4byte	0xb9
+ 1447 00f0 02       		.uleb128 0x2
+ 1448 00f1 08       		.byte	0x8
+ 1449 00f2 04       		.byte	0x4
+ 1450 00f3 75020000 		.4byte	.LASF21
+ 1451 00f7 02       		.uleb128 0x2
+ 1452 00f8 04       		.byte	0x4
+ 1453 00f9 07       		.byte	0x7
+ 1454 00fa 85000000 		.4byte	.LASF22
+ 1455 00fe 07       		.uleb128 0x7
+ 1456 00ff 04       		.byte	0x4
+ 1457 0100 05       		.byte	0x5
+ 1458 0101 29       		.byte	0x29
+ 1459 0102 1F010000 		.4byte	0x11f
+ 1460 0106 08       		.uleb128 0x8
+ 1461 0107 69030000 		.4byte	.LASF23
+ 1462 010b 05       		.byte	0x5
+ 1463 010c 2A       		.byte	0x2a
+ 1464 010d 97000000 		.4byte	0x97
+ 1465 0111 00       		.byte	0
+ 1466 0112 09       		.uleb128 0x9
+ 1467 0113 434D5000 		.ascii	"CMP\000"
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 34
+
+
+ 1468 0117 05       		.byte	0x5
+ 1469 0118 2B       		.byte	0x2b
+ 1470 0119 97000000 		.4byte	0x97
+ 1471 011d 02       		.byte	0x2
+ 1472 011e 00       		.byte	0
+ 1473 011f 03       		.uleb128 0x3
+ 1474 0120 CB000000 		.4byte	.LASF24
+ 1475 0124 05       		.byte	0x5
+ 1476 0125 2C       		.byte	0x2c
+ 1477 0126 FE000000 		.4byte	0xfe
+ 1478 012a 0A       		.uleb128 0xa
+ 1479 012b 01       		.byte	0x1
+ 1480 012c 37000000 		.4byte	0x37
+ 1481 0130 06       		.byte	0x6
+ 1482 0131 15       		.byte	0x15
+ 1483 0132 43010000 		.4byte	0x143
+ 1484 0136 0B       		.uleb128 0xb
+ 1485 0137 74050000 		.4byte	.LASF25
+ 1486 013b 00       		.byte	0
+ 1487 013c 0B       		.uleb128 0xb
+ 1488 013d 3F020000 		.4byte	.LASF26
+ 1489 0141 01       		.byte	0x1
+ 1490 0142 00       		.byte	0
+ 1491 0143 03       		.uleb128 0x3
+ 1492 0144 1E060000 		.4byte	.LASF27
+ 1493 0148 06       		.byte	0x6
+ 1494 0149 18       		.byte	0x18
+ 1495 014a 2A010000 		.4byte	0x12a
+ 1496 014e 06       		.uleb128 0x6
+ 1497 014f 8C000000 		.4byte	0x8c
+ 1498 0153 06       		.uleb128 0x6
+ 1499 0154 97000000 		.4byte	0x97
+ 1500 0158 0C       		.uleb128 0xc
+ 1501 0159 4C000000 		.4byte	.LASF28
+ 1502 015d 01       		.byte	0x1
+ 1503 015e 2A       		.byte	0x2a
+ 1504 015f 00000000 		.4byte	.LFB64
+ 1505 0163 1C000000 		.4byte	.LFE64-.LFB64
+ 1506 0167 01       		.uleb128 0x1
+ 1507 0168 9C       		.byte	0x9c
+ 1508 0169 B5010000 		.4byte	0x1b5
+ 1509 016d 0D       		.uleb128 0xd
+ 1510 016e 07020000 		.4byte	.LASF103
+ 1511 0172 01       		.byte	0x1
+ 1512 0173 2A       		.byte	0x2a
+ 1513 0174 97000000 		.4byte	0x97
+ 1514 0178 00000000 		.4byte	.LLST0
+ 1515 017c 0E       		.uleb128 0xe
+ 1516 017d 08000000 		.4byte	.LVL1
+ 1517 0181 7E090000 		.4byte	0x97e
+ 1518 0185 0E       		.uleb128 0xe
+ 1519 0186 0C000000 		.4byte	.LVL2
+ 1520 018a 89090000 		.4byte	0x989
+ 1521 018e 0F       		.uleb128 0xf
+ 1522 018f 12000000 		.4byte	.LVL3
+ 1523 0193 94090000 		.4byte	0x994
+ 1524 0197 A2010000 		.4byte	0x1a2
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 35
+
+
+ 1525 019b 10       		.uleb128 0x10
+ 1526 019c 01       		.uleb128 0x1
+ 1527 019d 50       		.byte	0x50
+ 1528 019e 02       		.uleb128 0x2
+ 1529 019f 74       		.byte	0x74
+ 1530 01a0 00       		.sleb128 0
+ 1531 01a1 00       		.byte	0
+ 1532 01a2 0E       		.uleb128 0xe
+ 1533 01a3 16000000 		.4byte	.LVL4
+ 1534 01a7 89090000 		.4byte	0x989
+ 1535 01ab 0E       		.uleb128 0xe
+ 1536 01ac 1A000000 		.4byte	.LVL5
+ 1537 01b0 9F090000 		.4byte	0x99f
+ 1538 01b4 00       		.byte	0
+ 1539 01b5 0C       		.uleb128 0xc
+ 1540 01b6 81020000 		.4byte	.LASF29
+ 1541 01ba 01       		.byte	0x1
+ 1542 01bb 38       		.byte	0x38
+ 1543 01bc 00000000 		.4byte	.LFB65
+ 1544 01c0 54000000 		.4byte	.LFE65-.LFB65
+ 1545 01c4 01       		.uleb128 0x1
+ 1546 01c5 9C       		.byte	0x9c
+ 1547 01c6 52020000 		.4byte	0x252
+ 1548 01ca 11       		.uleb128 0x11
+ 1549 01cb 33050000 		.4byte	.LASF30
+ 1550 01cf 01       		.byte	0x1
+ 1551 01d0 3B       		.byte	0x3b
+ 1552 01d1 43010000 		.4byte	0x143
+ 1553 01d5 21000000 		.4byte	.LLST1
+ 1554 01d9 12       		.uleb128 0x12
+ 1555 01da 00000000 		.4byte	.Ldebug_ranges0+0
+ 1556 01de F0010000 		.4byte	0x1f0
+ 1557 01e2 13       		.uleb128 0x13
+ 1558 01e3 7400     		.ascii	"t\000"
+ 1559 01e5 01       		.byte	0x1
+ 1560 01e6 42       		.byte	0x42
+ 1561 01e7 7E000000 		.4byte	0x7e
+ 1562 01eb 3F000000 		.4byte	.LLST2
+ 1563 01ef 00       		.byte	0
+ 1564 01f0 0F       		.uleb128 0xf
+ 1565 01f1 0E000000 		.4byte	.LVL6
+ 1566 01f5 AA090000 		.4byte	0x9aa
+ 1567 01f9 18020000 		.4byte	0x218
+ 1568 01fd 10       		.uleb128 0x10
+ 1569 01fe 01       		.uleb128 0x1
+ 1570 01ff 50       		.byte	0x50
+ 1571 0200 01       		.uleb128 0x1
+ 1572 0201 48       		.byte	0x48
+ 1573 0202 10       		.uleb128 0x10
+ 1574 0203 01       		.uleb128 0x1
+ 1575 0204 51       		.byte	0x51
+ 1576 0205 02       		.uleb128 0x2
+ 1577 0206 08       		.byte	0x8
+ 1578 0207 28       		.byte	0x28
+ 1579 0208 10       		.uleb128 0x10
+ 1580 0209 01       		.uleb128 0x1
+ 1581 020a 52       		.byte	0x52
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 36
+
+
+ 1582 020b 02       		.uleb128 0x2
+ 1583 020c 09       		.byte	0x9
+ 1584 020d C0       		.byte	0xc0
+ 1585 020e 10       		.uleb128 0x10
+ 1586 020f 01       		.uleb128 0x1
+ 1587 0210 53       		.byte	0x53
+ 1588 0211 05       		.uleb128 0x5
+ 1589 0212 03       		.byte	0x3
+ 1590 0213 00000000 		.4byte	AccData2
+ 1591 0217 00       		.byte	0
+ 1592 0218 0F       		.uleb128 0xf
+ 1593 0219 32000000 		.4byte	.LVL12
+ 1594 021d B5090000 		.4byte	0x9b5
+ 1595 0221 36020000 		.4byte	0x236
+ 1596 0225 10       		.uleb128 0x10
+ 1597 0226 01       		.uleb128 0x1
+ 1598 0227 50       		.byte	0x50
+ 1599 0228 01       		.uleb128 0x1
+ 1600 0229 48       		.byte	0x48
+ 1601 022a 10       		.uleb128 0x10
+ 1602 022b 01       		.uleb128 0x1
+ 1603 022c 51       		.byte	0x51
+ 1604 022d 02       		.uleb128 0x2
+ 1605 022e 08       		.byte	0x8
+ 1606 022f 2E       		.byte	0x2e
+ 1607 0230 10       		.uleb128 0x10
+ 1608 0231 01       		.uleb128 0x1
+ 1609 0232 52       		.byte	0x52
+ 1610 0233 01       		.uleb128 0x1
+ 1611 0234 30       		.byte	0x30
+ 1612 0235 00       		.byte	0
+ 1613 0236 14       		.uleb128 0x14
+ 1614 0237 40000000 		.4byte	.LVL14
+ 1615 023b B5090000 		.4byte	0x9b5
+ 1616 023f 10       		.uleb128 0x10
+ 1617 0240 01       		.uleb128 0x1
+ 1618 0241 50       		.byte	0x50
+ 1619 0242 01       		.uleb128 0x1
+ 1620 0243 48       		.byte	0x48
+ 1621 0244 10       		.uleb128 0x10
+ 1622 0245 01       		.uleb128 0x1
+ 1623 0246 51       		.byte	0x51
+ 1624 0247 02       		.uleb128 0x2
+ 1625 0248 08       		.byte	0x8
+ 1626 0249 2E       		.byte	0x2e
+ 1627 024a 10       		.uleb128 0x10
+ 1628 024b 01       		.uleb128 0x1
+ 1629 024c 52       		.byte	0x52
+ 1630 024d 02       		.uleb128 0x2
+ 1631 024e 08       		.byte	0x8
+ 1632 024f 40       		.byte	0x40
+ 1633 0250 00       		.byte	0
+ 1634 0251 00       		.byte	0
+ 1635 0252 0C       		.uleb128 0xc
+ 1636 0253 40050000 		.4byte	.LASF31
+ 1637 0257 01       		.byte	0x1
+ 1638 0258 5A       		.byte	0x5a
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 37
+
+
+ 1639 0259 00000000 		.4byte	.LFB66
+ 1640 025d A8000000 		.4byte	.LFE66-.LFB66
+ 1641 0261 01       		.uleb128 0x1
+ 1642 0262 9C       		.byte	0x9c
+ 1643 0263 91020000 		.4byte	0x291
+ 1644 0267 12       		.uleb128 0x12
+ 1645 0268 18000000 		.4byte	.Ldebug_ranges0+0x18
+ 1646 026c 7E020000 		.4byte	0x27e
+ 1647 0270 13       		.uleb128 0x13
+ 1648 0271 6900     		.ascii	"i\000"
+ 1649 0273 01       		.byte	0x1
+ 1650 0274 6E       		.byte	0x6e
+ 1651 0275 7E000000 		.4byte	0x7e
+ 1652 0279 5D000000 		.4byte	.LLST3
+ 1653 027d 00       		.byte	0
+ 1654 027e 0E       		.uleb128 0xe
+ 1655 027f 06000000 		.4byte	.LVL15
+ 1656 0283 89090000 		.4byte	0x989
+ 1657 0287 0E       		.uleb128 0xe
+ 1658 0288 1A000000 		.4byte	.LVL16
+ 1659 028c C0090000 		.4byte	0x9c0
+ 1660 0290 00       		.byte	0
+ 1661 0291 0C       		.uleb128 0xc
+ 1662 0292 C7030000 		.4byte	.LASF32
+ 1663 0296 01       		.byte	0x1
+ 1664 0297 7D       		.byte	0x7d
+ 1665 0298 00000000 		.4byte	.LFB67
+ 1666 029c 10000000 		.4byte	.LFE67-.LFB67
+ 1667 02a0 01       		.uleb128 0x1
+ 1668 02a1 9C       		.byte	0x9c
+ 1669 02a2 CB020000 		.4byte	0x2cb
+ 1670 02a6 0F       		.uleb128 0xf
+ 1671 02a7 08000000 		.4byte	.LVL22
+ 1672 02ab CB090000 		.4byte	0x9cb
+ 1673 02af BA020000 		.4byte	0x2ba
+ 1674 02b3 10       		.uleb128 0x10
+ 1675 02b4 01       		.uleb128 0x1
+ 1676 02b5 50       		.byte	0x50
+ 1677 02b6 02       		.uleb128 0x2
+ 1678 02b7 09       		.byte	0x9
+ 1679 02b8 C7       		.byte	0xc7
+ 1680 02b9 00       		.byte	0
+ 1681 02ba 14       		.uleb128 0x14
+ 1682 02bb 0E000000 		.4byte	.LVL23
+ 1683 02bf D6090000 		.4byte	0x9d6
+ 1684 02c3 10       		.uleb128 0x10
+ 1685 02c4 01       		.uleb128 0x1
+ 1686 02c5 50       		.byte	0x50
+ 1687 02c6 02       		.uleb128 0x2
+ 1688 02c7 08       		.byte	0x8
+ 1689 02c8 64       		.byte	0x64
+ 1690 02c9 00       		.byte	0
+ 1691 02ca 00       		.byte	0
+ 1692 02cb 0C       		.uleb128 0xc
+ 1693 02cc 00000000 		.4byte	.LASF33
+ 1694 02d0 01       		.byte	0x1
+ 1695 02d1 82       		.byte	0x82
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 38
+
+
+ 1696 02d2 00000000 		.4byte	.LFB68
+ 1697 02d6 10000000 		.4byte	.LFE68-.LFB68
+ 1698 02da 01       		.uleb128 0x1
+ 1699 02db 9C       		.byte	0x9c
+ 1700 02dc 04030000 		.4byte	0x304
+ 1701 02e0 0F       		.uleb128 0xf
+ 1702 02e1 08000000 		.4byte	.LVL24
+ 1703 02e5 CB090000 		.4byte	0x9cb
+ 1704 02e9 F4020000 		.4byte	0x2f4
+ 1705 02ed 10       		.uleb128 0x10
+ 1706 02ee 01       		.uleb128 0x1
+ 1707 02ef 50       		.byte	0x50
+ 1708 02f0 02       		.uleb128 0x2
+ 1709 02f1 08       		.byte	0x8
+ 1710 02f2 31       		.byte	0x31
+ 1711 02f3 00       		.byte	0
+ 1712 02f4 14       		.uleb128 0x14
+ 1713 02f5 0E000000 		.4byte	.LVL25
+ 1714 02f9 D6090000 		.4byte	0x9d6
+ 1715 02fd 10       		.uleb128 0x10
+ 1716 02fe 01       		.uleb128 0x1
+ 1717 02ff 50       		.byte	0x50
+ 1718 0300 01       		.uleb128 0x1
+ 1719 0301 48       		.byte	0x48
+ 1720 0302 00       		.byte	0
+ 1721 0303 00       		.byte	0
+ 1722 0304 0C       		.uleb128 0xc
+ 1723 0305 77000000 		.4byte	.LASF34
+ 1724 0309 01       		.byte	0x1
+ 1725 030a 8C       		.byte	0x8c
+ 1726 030b 00000000 		.4byte	.LFB69
+ 1727 030f F8040000 		.4byte	.LFE69-.LFB69
+ 1728 0313 01       		.uleb128 0x1
+ 1729 0314 9C       		.byte	0x9c
+ 1730 0315 FF050000 		.4byte	0x5ff
+ 1731 0319 0E       		.uleb128 0xe
+ 1732 031a 06000000 		.4byte	.LVL26
+ 1733 031e E1090000 		.4byte	0x9e1
+ 1734 0322 0E       		.uleb128 0xe
+ 1735 0323 AE000000 		.4byte	.LVL27
+ 1736 0327 EC090000 		.4byte	0x9ec
+ 1737 032b 0E       		.uleb128 0xe
+ 1738 032c C2000000 		.4byte	.LVL28
+ 1739 0330 89090000 		.4byte	0x989
+ 1740 0334 0E       		.uleb128 0xe
+ 1741 0335 C6000000 		.4byte	.LVL29
+ 1742 0339 9F090000 		.4byte	0x99f
+ 1743 033d 0F       		.uleb128 0xf
+ 1744 033e D0000000 		.4byte	.LVL30
+ 1745 0342 B5090000 		.4byte	0x9b5
+ 1746 0346 5B030000 		.4byte	0x35b
+ 1747 034a 10       		.uleb128 0x10
+ 1748 034b 01       		.uleb128 0x1
+ 1749 034c 50       		.byte	0x50
+ 1750 034d 01       		.uleb128 0x1
+ 1751 034e 48       		.byte	0x48
+ 1752 034f 10       		.uleb128 0x10
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 39
+
+
+ 1753 0350 01       		.uleb128 0x1
+ 1754 0351 51       		.byte	0x51
+ 1755 0352 02       		.uleb128 0x2
+ 1756 0353 08       		.byte	0x8
+ 1757 0354 22       		.byte	0x22
+ 1758 0355 10       		.uleb128 0x10
+ 1759 0356 01       		.uleb128 0x1
+ 1760 0357 52       		.byte	0x52
+ 1761 0358 01       		.uleb128 0x1
+ 1762 0359 32       		.byte	0x32
+ 1763 035a 00       		.byte	0
+ 1764 035b 0F       		.uleb128 0xf
+ 1765 035c DE000000 		.4byte	.LVL31
+ 1766 0360 B5090000 		.4byte	0x9b5
+ 1767 0364 7A030000 		.4byte	0x37a
+ 1768 0368 10       		.uleb128 0x10
+ 1769 0369 01       		.uleb128 0x1
+ 1770 036a 50       		.byte	0x50
+ 1771 036b 01       		.uleb128 0x1
+ 1772 036c 48       		.byte	0x48
+ 1773 036d 10       		.uleb128 0x10
+ 1774 036e 01       		.uleb128 0x1
+ 1775 036f 51       		.byte	0x51
+ 1776 0370 02       		.uleb128 0x2
+ 1777 0371 08       		.byte	0x8
+ 1778 0372 2E       		.byte	0x2e
+ 1779 0373 10       		.uleb128 0x10
+ 1780 0374 01       		.uleb128 0x1
+ 1781 0375 52       		.byte	0x52
+ 1782 0376 02       		.uleb128 0x2
+ 1783 0377 08       		.byte	0x8
+ 1784 0378 40       		.byte	0x40
+ 1785 0379 00       		.byte	0
+ 1786 037a 0F       		.uleb128 0xf
+ 1787 037b EA000000 		.4byte	.LVL32
+ 1788 037f B5090000 		.4byte	0x9b5
+ 1789 0383 99030000 		.4byte	0x399
+ 1790 0387 10       		.uleb128 0x10
+ 1791 0388 01       		.uleb128 0x1
+ 1792 0389 50       		.byte	0x50
+ 1793 038a 01       		.uleb128 0x1
+ 1794 038b 48       		.byte	0x48
+ 1795 038c 10       		.uleb128 0x10
+ 1796 038d 01       		.uleb128 0x1
+ 1797 038e 51       		.byte	0x51
+ 1798 038f 02       		.uleb128 0x2
+ 1799 0390 08       		.byte	0x8
+ 1800 0391 24       		.byte	0x24
+ 1801 0392 10       		.uleb128 0x10
+ 1802 0393 01       		.uleb128 0x1
+ 1803 0394 52       		.byte	0x52
+ 1804 0395 02       		.uleb128 0x2
+ 1805 0396 08       		.byte	0x8
+ 1806 0397 40       		.byte	0x40
+ 1807 0398 00       		.byte	0
+ 1808 0399 0F       		.uleb128 0xf
+ 1809 039a F2000000 		.4byte	.LVL33
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 40
+
+
+ 1810 039e F7090000 		.4byte	0x9f7
+ 1811 03a2 B0030000 		.4byte	0x3b0
+ 1812 03a6 10       		.uleb128 0x10
+ 1813 03a7 01       		.uleb128 0x1
+ 1814 03a8 50       		.byte	0x50
+ 1815 03a9 05       		.uleb128 0x5
+ 1816 03aa 03       		.byte	0x3
+ 1817 03ab 00000000 		.4byte	.LC0
+ 1818 03af 00       		.byte	0
+ 1819 03b0 0F       		.uleb128 0xf
+ 1820 03b1 FC000000 		.4byte	.LVL34
+ 1821 03b5 F7090000 		.4byte	0x9f7
+ 1822 03b9 C7030000 		.4byte	0x3c7
+ 1823 03bd 10       		.uleb128 0x10
+ 1824 03be 01       		.uleb128 0x1
+ 1825 03bf 50       		.byte	0x50
+ 1826 03c0 05       		.uleb128 0x5
+ 1827 03c1 03       		.byte	0x3
+ 1828 03c2 04000000 		.4byte	.LC1
+ 1829 03c6 00       		.byte	0
+ 1830 03c7 0F       		.uleb128 0xf
+ 1831 03c8 02010000 		.4byte	.LVL35
+ 1832 03cc F7090000 		.4byte	0x9f7
+ 1833 03d0 DE030000 		.4byte	0x3de
+ 1834 03d4 10       		.uleb128 0x10
+ 1835 03d5 01       		.uleb128 0x1
+ 1836 03d6 50       		.byte	0x50
+ 1837 03d7 05       		.uleb128 0x5
+ 1838 03d8 03       		.byte	0x3
+ 1839 03d9 00000000 		.4byte	.LC0
+ 1840 03dd 00       		.byte	0
+ 1841 03de 0E       		.uleb128 0xe
+ 1842 03df 06010000 		.4byte	.LVL36
+ 1843 03e3 020A0000 		.4byte	0xa02
+ 1844 03e7 0E       		.uleb128 0xe
+ 1845 03e8 14010000 		.4byte	.LVL37
+ 1846 03ec 91020000 		.4byte	0x291
+ 1847 03f0 0E       		.uleb128 0xe
+ 1848 03f1 24010000 		.4byte	.LVL38
+ 1849 03f5 CB020000 		.4byte	0x2cb
+ 1850 03f9 0E       		.uleb128 0xe
+ 1851 03fa 3A010000 		.4byte	.LVL39
+ 1852 03fe 7E090000 		.4byte	0x97e
+ 1853 0402 0E       		.uleb128 0xe
+ 1854 0403 3E010000 		.4byte	.LVL40
+ 1855 0407 89090000 		.4byte	0x989
+ 1856 040b 0F       		.uleb128 0xf
+ 1857 040c 48010000 		.4byte	.LVL41
+ 1858 0410 B5090000 		.4byte	0x9b5
+ 1859 0414 2A040000 		.4byte	0x42a
+ 1860 0418 10       		.uleb128 0x10
+ 1861 0419 01       		.uleb128 0x1
+ 1862 041a 50       		.byte	0x50
+ 1863 041b 01       		.uleb128 0x1
+ 1864 041c 48       		.byte	0x48
+ 1865 041d 10       		.uleb128 0x10
+ 1866 041e 01       		.uleb128 0x1
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 41
+
+
+ 1867 041f 51       		.byte	0x51
+ 1868 0420 02       		.uleb128 0x2
+ 1869 0421 08       		.byte	0x8
+ 1870 0422 22       		.byte	0x22
+ 1871 0423 10       		.uleb128 0x10
+ 1872 0424 01       		.uleb128 0x1
+ 1873 0425 52       		.byte	0x52
+ 1874 0426 02       		.uleb128 0x2
+ 1875 0427 74       		.byte	0x74
+ 1876 0428 00       		.sleb128 0
+ 1877 0429 00       		.byte	0
+ 1878 042a 0F       		.uleb128 0xf
+ 1879 042b 56010000 		.4byte	.LVL42
+ 1880 042f B5090000 		.4byte	0x9b5
+ 1881 0433 49040000 		.4byte	0x449
+ 1882 0437 10       		.uleb128 0x10
+ 1883 0438 01       		.uleb128 0x1
+ 1884 0439 50       		.byte	0x50
+ 1885 043a 01       		.uleb128 0x1
+ 1886 043b 48       		.byte	0x48
+ 1887 043c 10       		.uleb128 0x10
+ 1888 043d 01       		.uleb128 0x1
+ 1889 043e 51       		.byte	0x51
+ 1890 043f 02       		.uleb128 0x2
+ 1891 0440 08       		.byte	0x8
+ 1892 0441 2E       		.byte	0x2e
+ 1893 0442 10       		.uleb128 0x10
+ 1894 0443 01       		.uleb128 0x1
+ 1895 0444 52       		.byte	0x52
+ 1896 0445 02       		.uleb128 0x2
+ 1897 0446 74       		.byte	0x74
+ 1898 0447 00       		.sleb128 0
+ 1899 0448 00       		.byte	0
+ 1900 0449 0F       		.uleb128 0xf
+ 1901 044a 62010000 		.4byte	.LVL43
+ 1902 044e B5090000 		.4byte	0x9b5
+ 1903 0452 68040000 		.4byte	0x468
+ 1904 0456 10       		.uleb128 0x10
+ 1905 0457 01       		.uleb128 0x1
+ 1906 0458 50       		.byte	0x50
+ 1907 0459 01       		.uleb128 0x1
+ 1908 045a 48       		.byte	0x48
+ 1909 045b 10       		.uleb128 0x10
+ 1910 045c 01       		.uleb128 0x1
+ 1911 045d 51       		.byte	0x51
+ 1912 045e 02       		.uleb128 0x2
+ 1913 045f 08       		.byte	0x8
+ 1914 0460 24       		.byte	0x24
+ 1915 0461 10       		.uleb128 0x10
+ 1916 0462 01       		.uleb128 0x1
+ 1917 0463 52       		.byte	0x52
+ 1918 0464 02       		.uleb128 0x2
+ 1919 0465 74       		.byte	0x74
+ 1920 0466 00       		.sleb128 0
+ 1921 0467 00       		.byte	0
+ 1922 0468 0F       		.uleb128 0xf
+ 1923 0469 6A010000 		.4byte	.LVL44
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 42
+
+
+ 1924 046d F7090000 		.4byte	0x9f7
+ 1925 0471 7F040000 		.4byte	0x47f
+ 1926 0475 10       		.uleb128 0x10
+ 1927 0476 01       		.uleb128 0x1
+ 1928 0477 50       		.byte	0x50
+ 1929 0478 05       		.uleb128 0x5
+ 1930 0479 03       		.byte	0x3
+ 1931 047a 00000000 		.4byte	.LC0
+ 1932 047e 00       		.byte	0
+ 1933 047f 0F       		.uleb128 0xf
+ 1934 0480 74010000 		.4byte	.LVL45
+ 1935 0484 F7090000 		.4byte	0x9f7
+ 1936 0488 96040000 		.4byte	0x496
+ 1937 048c 10       		.uleb128 0x10
+ 1938 048d 01       		.uleb128 0x1
+ 1939 048e 50       		.byte	0x50
+ 1940 048f 05       		.uleb128 0x5
+ 1941 0490 03       		.byte	0x3
+ 1942 0491 20000000 		.4byte	.LC2
+ 1943 0495 00       		.byte	0
+ 1944 0496 0F       		.uleb128 0xf
+ 1945 0497 7A010000 		.4byte	.LVL46
+ 1946 049b F7090000 		.4byte	0x9f7
+ 1947 049f AD040000 		.4byte	0x4ad
+ 1948 04a3 10       		.uleb128 0x10
+ 1949 04a4 01       		.uleb128 0x1
+ 1950 04a5 50       		.byte	0x50
+ 1951 04a6 05       		.uleb128 0x5
+ 1952 04a7 03       		.byte	0x3
+ 1953 04a8 00000000 		.4byte	.LC0
+ 1954 04ac 00       		.byte	0
+ 1955 04ad 0E       		.uleb128 0xe
+ 1956 04ae 7E010000 		.4byte	.LVL47
+ 1957 04b2 0D0A0000 		.4byte	0xa0d
+ 1958 04b6 0E       		.uleb128 0xe
+ 1959 04b7 AC010000 		.4byte	.LVL48
+ 1960 04bb 7E090000 		.4byte	0x97e
+ 1961 04bf 0E       		.uleb128 0xe
+ 1962 04c0 B0010000 		.4byte	.LVL49
+ 1963 04c4 89090000 		.4byte	0x989
+ 1964 04c8 0E       		.uleb128 0xe
+ 1965 04c9 B4010000 		.4byte	.LVL50
+ 1966 04cd 180A0000 		.4byte	0xa18
+ 1967 04d1 0E       		.uleb128 0xe
+ 1968 04d2 B8010000 		.4byte	.LVL51
+ 1969 04d6 230A0000 		.4byte	0xa23
+ 1970 04da 0E       		.uleb128 0xe
+ 1971 04db BC010000 		.4byte	.LVL52
+ 1972 04df 2E0A0000 		.4byte	0xa2e
+ 1973 04e3 0F       		.uleb128 0xf
+ 1974 04e4 C6010000 		.4byte	.LVL53
+ 1975 04e8 B5090000 		.4byte	0x9b5
+ 1976 04ec 02050000 		.4byte	0x502
+ 1977 04f0 10       		.uleb128 0x10
+ 1978 04f1 01       		.uleb128 0x1
+ 1979 04f2 50       		.byte	0x50
+ 1980 04f3 01       		.uleb128 0x1
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 43
+
+
+ 1981 04f4 48       		.byte	0x48
+ 1982 04f5 10       		.uleb128 0x10
+ 1983 04f6 01       		.uleb128 0x1
+ 1984 04f7 51       		.byte	0x51
+ 1985 04f8 02       		.uleb128 0x2
+ 1986 04f9 08       		.byte	0x8
+ 1987 04fa 22       		.byte	0x22
+ 1988 04fb 10       		.uleb128 0x10
+ 1989 04fc 01       		.uleb128 0x1
+ 1990 04fd 52       		.byte	0x52
+ 1991 04fe 02       		.uleb128 0x2
+ 1992 04ff 74       		.byte	0x74
+ 1993 0500 00       		.sleb128 0
+ 1994 0501 00       		.byte	0
+ 1995 0502 0F       		.uleb128 0xf
+ 1996 0503 D4010000 		.4byte	.LVL54
+ 1997 0507 B5090000 		.4byte	0x9b5
+ 1998 050b 21050000 		.4byte	0x521
+ 1999 050f 10       		.uleb128 0x10
+ 2000 0510 01       		.uleb128 0x1
+ 2001 0511 50       		.byte	0x50
+ 2002 0512 01       		.uleb128 0x1
+ 2003 0513 48       		.byte	0x48
+ 2004 0514 10       		.uleb128 0x10
+ 2005 0515 01       		.uleb128 0x1
+ 2006 0516 51       		.byte	0x51
+ 2007 0517 02       		.uleb128 0x2
+ 2008 0518 08       		.byte	0x8
+ 2009 0519 2E       		.byte	0x2e
+ 2010 051a 10       		.uleb128 0x10
+ 2011 051b 01       		.uleb128 0x1
+ 2012 051c 52       		.byte	0x52
+ 2013 051d 02       		.uleb128 0x2
+ 2014 051e 74       		.byte	0x74
+ 2015 051f 00       		.sleb128 0
+ 2016 0520 00       		.byte	0
+ 2017 0521 0F       		.uleb128 0xf
+ 2018 0522 E0010000 		.4byte	.LVL55
+ 2019 0526 B5090000 		.4byte	0x9b5
+ 2020 052a 40050000 		.4byte	0x540
+ 2021 052e 10       		.uleb128 0x10
+ 2022 052f 01       		.uleb128 0x1
+ 2023 0530 50       		.byte	0x50
+ 2024 0531 01       		.uleb128 0x1
+ 2025 0532 48       		.byte	0x48
+ 2026 0533 10       		.uleb128 0x10
+ 2027 0534 01       		.uleb128 0x1
+ 2028 0535 51       		.byte	0x51
+ 2029 0536 02       		.uleb128 0x2
+ 2030 0537 08       		.byte	0x8
+ 2031 0538 24       		.byte	0x24
+ 2032 0539 10       		.uleb128 0x10
+ 2033 053a 01       		.uleb128 0x1
+ 2034 053b 52       		.byte	0x52
+ 2035 053c 02       		.uleb128 0x2
+ 2036 053d 74       		.byte	0x74
+ 2037 053e 00       		.sleb128 0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 44
+
+
+ 2038 053f 00       		.byte	0
+ 2039 0540 0F       		.uleb128 0xf
+ 2040 0541 E8010000 		.4byte	.LVL56
+ 2041 0545 390A0000 		.4byte	0xa39
+ 2042 0549 54050000 		.4byte	0x554
+ 2043 054d 10       		.uleb128 0x10
+ 2044 054e 01       		.uleb128 0x1
+ 2045 054f 50       		.byte	0x50
+ 2046 0550 02       		.uleb128 0x2
+ 2047 0551 76       		.byte	0x76
+ 2048 0552 00       		.sleb128 0
+ 2049 0553 00       		.byte	0
+ 2050 0554 0E       		.uleb128 0xe
+ 2051 0555 EC010000 		.4byte	.LVL57
+ 2052 0559 0D0A0000 		.4byte	0xa0d
+ 2053 055d 0E       		.uleb128 0xe
+ 2054 055e F8010000 		.4byte	.LVL58
+ 2055 0562 440A0000 		.4byte	0xa44
+ 2056 0566 0E       		.uleb128 0xe
+ 2057 0567 FC010000 		.4byte	.LVL59
+ 2058 056b 4F0A0000 		.4byte	0xa4f
+ 2059 056f 0E       		.uleb128 0xe
+ 2060 0570 00020000 		.4byte	.LVL60
+ 2061 0574 5A0A0000 		.4byte	0xa5a
+ 2062 0578 0F       		.uleb128 0xf
+ 2063 0579 06020000 		.4byte	.LVL61
+ 2064 057d 390A0000 		.4byte	0xa39
+ 2065 0581 8C050000 		.4byte	0x58c
+ 2066 0585 10       		.uleb128 0x10
+ 2067 0586 01       		.uleb128 0x1
+ 2068 0587 50       		.byte	0x50
+ 2069 0588 02       		.uleb128 0x2
+ 2070 0589 74       		.byte	0x74
+ 2071 058a 00       		.sleb128 0
+ 2072 058b 00       		.byte	0
+ 2073 058c 0F       		.uleb128 0xf
+ 2074 058d 28020000 		.4byte	.LVL62
+ 2075 0591 650A0000 		.4byte	0xa65
+ 2076 0595 9F050000 		.4byte	0x59f
+ 2077 0599 10       		.uleb128 0x10
+ 2078 059a 01       		.uleb128 0x1
+ 2079 059b 50       		.byte	0x50
+ 2080 059c 01       		.uleb128 0x1
+ 2081 059d 31       		.byte	0x31
+ 2082 059e 00       		.byte	0
+ 2083 059f 0F       		.uleb128 0xf
+ 2084 05a0 DE020000 		.4byte	.LVL63
+ 2085 05a4 58010000 		.4byte	0x158
+ 2086 05a8 B4050000 		.4byte	0x5b4
+ 2087 05ac 10       		.uleb128 0x10
+ 2088 05ad 01       		.uleb128 0x1
+ 2089 05ae 50       		.byte	0x50
+ 2090 05af 03       		.uleb128 0x3
+ 2091 05b0 0A       		.byte	0xa
+ 2092 05b1 E803     		.2byte	0x3e8
+ 2093 05b3 00       		.byte	0
+ 2094 05b4 0F       		.uleb128 0xf
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 45
+
+
+ 2095 05b5 18030000 		.4byte	.LVL64
+ 2096 05b9 650A0000 		.4byte	0xa65
+ 2097 05bd C7050000 		.4byte	0x5c7
+ 2098 05c1 10       		.uleb128 0x10
+ 2099 05c2 01       		.uleb128 0x1
+ 2100 05c3 50       		.byte	0x50
+ 2101 05c4 01       		.uleb128 0x1
+ 2102 05c5 30       		.byte	0x30
+ 2103 05c6 00       		.byte	0
+ 2104 05c7 0F       		.uleb128 0xf
+ 2105 05c8 94030000 		.4byte	.LVL65
+ 2106 05cc 58010000 		.4byte	0x158
+ 2107 05d0 DB050000 		.4byte	0x5db
+ 2108 05d4 10       		.uleb128 0x10
+ 2109 05d5 01       		.uleb128 0x1
+ 2110 05d6 50       		.byte	0x50
+ 2111 05d7 02       		.uleb128 0x2
+ 2112 05d8 08       		.byte	0x8
+ 2113 05d9 64       		.byte	0x64
+ 2114 05da 00       		.byte	0
+ 2115 05db 0F       		.uleb128 0xf
+ 2116 05dc FA030000 		.4byte	.LVL66
+ 2117 05e0 58010000 		.4byte	0x158
+ 2118 05e4 EF050000 		.4byte	0x5ef
+ 2119 05e8 10       		.uleb128 0x10
+ 2120 05e9 01       		.uleb128 0x1
+ 2121 05ea 50       		.byte	0x50
+ 2122 05eb 02       		.uleb128 0x2
+ 2123 05ec 08       		.byte	0x8
+ 2124 05ed 28       		.byte	0x28
+ 2125 05ee 00       		.byte	0
+ 2126 05ef 14       		.uleb128 0x14
+ 2127 05f0 60040000 		.4byte	.LVL67
+ 2128 05f4 58010000 		.4byte	0x158
+ 2129 05f8 10       		.uleb128 0x10
+ 2130 05f9 01       		.uleb128 0x1
+ 2131 05fa 50       		.byte	0x50
+ 2132 05fb 01       		.uleb128 0x1
+ 2133 05fc 44       		.byte	0x44
+ 2134 05fd 00       		.byte	0
+ 2135 05fe 00       		.byte	0
+ 2136 05ff 15       		.uleb128 0x15
+ 2137 0600 96000000 		.4byte	.LASF35
+ 2138 0604 01       		.byte	0x1
+ 2139 0605 7201     		.2byte	0x172
+ 2140 0607 00000000 		.4byte	.LFB70
+ 2141 060b 14000000 		.4byte	.LFE70-.LFB70
+ 2142 060f 01       		.uleb128 0x1
+ 2143 0610 9C       		.byte	0x9c
+ 2144 0611 1F060000 		.4byte	0x61f
+ 2145 0615 0E       		.uleb128 0xe
+ 2146 0616 0C000000 		.4byte	.LVL68
+ 2147 061a 700A0000 		.4byte	0xa70
+ 2148 061e 00       		.byte	0
+ 2149 061f 15       		.uleb128 0x15
+ 2150 0620 3B010000 		.4byte	.LASF36
+ 2151 0624 01       		.byte	0x1
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 46
+
+
+ 2152 0625 7701     		.2byte	0x177
+ 2153 0627 00000000 		.4byte	.LFB71
+ 2154 062b 94000000 		.4byte	.LFE71-.LFB71
+ 2155 062f 01       		.uleb128 0x1
+ 2156 0630 9C       		.byte	0x9c
+ 2157 0631 9B060000 		.4byte	0x69b
+ 2158 0635 0E       		.uleb128 0xe
+ 2159 0636 0E000000 		.4byte	.LVL69
+ 2160 063a 7B0A0000 		.4byte	0xa7b
+ 2161 063e 0F       		.uleb128 0xf
+ 2162 063f 18000000 		.4byte	.LVL70
+ 2163 0643 860A0000 		.4byte	0xa86
+ 2164 0647 51060000 		.4byte	0x651
+ 2165 064b 10       		.uleb128 0x10
+ 2166 064c 01       		.uleb128 0x1
+ 2167 064d 50       		.byte	0x50
+ 2168 064e 01       		.uleb128 0x1
+ 2169 064f 30       		.byte	0x30
+ 2170 0650 00       		.byte	0
+ 2171 0651 0F       		.uleb128 0xf
+ 2172 0652 48000000 		.4byte	.LVL71
+ 2173 0656 910A0000 		.4byte	0xa91
+ 2174 065a 71060000 		.4byte	0x671
+ 2175 065e 10       		.uleb128 0x10
+ 2176 065f 01       		.uleb128 0x1
+ 2177 0660 50       		.byte	0x50
+ 2178 0661 05       		.uleb128 0x5
+ 2179 0662 03       		.byte	0x3
+ 2180 0663 00000000 		.4byte	elapsed_time_string
+ 2181 0667 10       		.uleb128 0x10
+ 2182 0668 01       		.uleb128 0x1
+ 2183 0669 51       		.byte	0x51
+ 2184 066a 05       		.uleb128 0x5
+ 2185 066b 03       		.byte	0x3
+ 2186 066c 3C000000 		.4byte	.LC3
+ 2187 0670 00       		.byte	0
+ 2188 0671 0F       		.uleb128 0xf
+ 2189 0672 76000000 		.4byte	.LVL72
+ 2190 0676 910A0000 		.4byte	0xa91
+ 2191 067a 91060000 		.4byte	0x691
+ 2192 067e 10       		.uleb128 0x10
+ 2193 067f 01       		.uleb128 0x1
+ 2194 0680 50       		.byte	0x50
+ 2195 0681 05       		.uleb128 0x5
+ 2196 0682 03       		.byte	0x3
+ 2197 0683 00000000 		.4byte	elapsed_time_string
+ 2198 0687 10       		.uleb128 0x10
+ 2199 0688 01       		.uleb128 0x1
+ 2200 0689 51       		.byte	0x51
+ 2201 068a 05       		.uleb128 0x5
+ 2202 068b 03       		.byte	0x3
+ 2203 068c 3C000000 		.4byte	.LC3
+ 2204 0690 00       		.byte	0
+ 2205 0691 0E       		.uleb128 0xe
+ 2206 0692 7A000000 		.4byte	.LVL73
+ 2207 0696 9C0A0000 		.4byte	0xa9c
+ 2208 069a 00       		.byte	0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 47
+
+
+ 2209 069b 16       		.uleb128 0x16
+ 2210 069c 4E010000 		.4byte	0x14e
+ 2211 06a0 AB060000 		.4byte	0x6ab
+ 2212 06a4 17       		.uleb128 0x17
+ 2213 06a5 F7000000 		.4byte	0xf7
+ 2214 06a9 BF       		.byte	0xbf
+ 2215 06aa 00       		.byte	0
+ 2216 06ab 18       		.uleb128 0x18
+ 2217 06ac 5A000000 		.4byte	.LASF37
+ 2218 06b0 05       		.byte	0x5
+ 2219 06b1 17       		.byte	0x17
+ 2220 06b2 BC060000 		.4byte	0x6bc
+ 2221 06b6 05       		.uleb128 0x5
+ 2222 06b7 03       		.byte	0x3
+ 2223 06b8 00000000 		.4byte	AccData
+ 2224 06bc 06       		.uleb128 0x6
+ 2225 06bd 9B060000 		.4byte	0x69b
+ 2226 06c1 16       		.uleb128 0x16
+ 2227 06c2 8C000000 		.4byte	0x8c
+ 2228 06c6 D1060000 		.4byte	0x6d1
+ 2229 06ca 17       		.uleb128 0x17
+ 2230 06cb F7000000 		.4byte	0xf7
+ 2231 06cf BF       		.byte	0xbf
+ 2232 06d0 00       		.byte	0
+ 2233 06d1 18       		.uleb128 0x18
+ 2234 06d2 FA040000 		.4byte	.LASF38
+ 2235 06d6 05       		.byte	0x5
+ 2236 06d7 18       		.byte	0x18
+ 2237 06d8 C1060000 		.4byte	0x6c1
+ 2238 06dc 05       		.uleb128 0x5
+ 2239 06dd 03       		.byte	0x3
+ 2240 06de 00000000 		.4byte	AccData2
+ 2241 06e2 18       		.uleb128 0x18
+ 2242 06e3 F1040000 		.4byte	.LASF39
+ 2243 06e7 05       		.byte	0x5
+ 2244 06e8 19       		.byte	0x19
+ 2245 06e9 4E010000 		.4byte	0x14e
+ 2246 06ed 05       		.uleb128 0x5
+ 2247 06ee 03       		.byte	0x3
+ 2248 06ef 00000000 		.4byte	FlagFifo
+ 2249 06f3 18       		.uleb128 0x18
+ 2250 06f4 31060000 		.4byte	.LASF40
+ 2251 06f8 05       		.byte	0x5
+ 2252 06f9 20       		.byte	0x20
+ 2253 06fa 4E010000 		.4byte	0x14e
+ 2254 06fe 05       		.uleb128 0x5
+ 2255 06ff 03       		.byte	0x3
+ 2256 0700 00000000 		.4byte	counter_timer
+ 2257 0704 18       		.uleb128 0x18
+ 2258 0705 DB040000 		.4byte	.LASF41
+ 2259 0709 05       		.byte	0x5
+ 2260 070a 1B       		.byte	0x1b
+ 2261 070b 4E010000 		.4byte	0x14e
+ 2262 070f 05       		.uleb128 0x5
+ 2263 0710 03       		.byte	0x3
+ 2264 0711 00000000 		.4byte	CountSensor
+ 2265 0715 16       		.uleb128 0x16
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 48
+
+
+ 2266 0716 53010000 		.4byte	0x153
+ 2267 071a 25070000 		.4byte	0x725
+ 2268 071e 17       		.uleb128 0x17
+ 2269 071f F7000000 		.4byte	0xf7
+ 2270 0723 1F       		.byte	0x1f
+ 2271 0724 00       		.byte	0
+ 2272 0725 18       		.uleb128 0x18
+ 2273 0726 28060000 		.4byte	.LASF42
+ 2274 072a 05       		.byte	0x5
+ 2275 072b 1C       		.byte	0x1c
+ 2276 072c 36070000 		.4byte	0x736
+ 2277 0730 05       		.uleb128 0x5
+ 2278 0731 03       		.byte	0x3
+ 2279 0732 00000000 		.4byte	SensData
+ 2280 0736 06       		.uleb128 0x6
+ 2281 0737 15070000 		.4byte	0x715
+ 2282 073b 16       		.uleb128 0x16
+ 2283 073c 4E010000 		.4byte	0x14e
+ 2284 0740 4B070000 		.4byte	0x74b
+ 2285 0744 17       		.uleb128 0x17
+ 2286 0745 F7000000 		.4byte	0xf7
+ 2287 0749 3F       		.byte	0x3f
+ 2288 074a 00       		.byte	0
+ 2289 074b 18       		.uleb128 0x18
+ 2290 074c DB000000 		.4byte	.LASF43
+ 2291 0750 05       		.byte	0x5
+ 2292 0751 1D       		.byte	0x1d
+ 2293 0752 5C070000 		.4byte	0x75c
+ 2294 0756 05       		.uleb128 0x5
+ 2295 0757 03       		.byte	0x3
+ 2296 0758 00000000 		.4byte	SensBytes
+ 2297 075c 06       		.uleb128 0x6
+ 2298 075d 3B070000 		.4byte	0x73b
+ 2299 0761 18       		.uleb128 0x18
+ 2300 0762 67020000 		.4byte	.LASF44
+ 2301 0766 05       		.byte	0x5
+ 2302 0767 1E       		.byte	0x1e
+ 2303 0768 72070000 		.4byte	0x772
+ 2304 076c 05       		.uleb128 0x5
+ 2305 076d 03       		.byte	0x3
+ 2306 076e 00000000 		.4byte	SensBytes_old
+ 2307 0772 06       		.uleb128 0x6
+ 2308 0773 3B070000 		.4byte	0x73b
+ 2309 0777 18       		.uleb128 0x18
+ 2310 0778 BD020000 		.4byte	.LASF45
+ 2311 077c 05       		.byte	0x5
+ 2312 077d 21       		.byte	0x21
+ 2313 077e 4E010000 		.4byte	0x14e
+ 2314 0782 05       		.uleb128 0x5
+ 2315 0783 03       		.byte	0x3
+ 2316 0784 00000000 		.4byte	SensorDataReady
+ 2317 0788 18       		.uleb128 0x18
+ 2318 0789 37000000 		.4byte	.LASF46
+ 2319 078d 05       		.byte	0x5
+ 2320 078e 22       		.byte	0x22
+ 2321 078f 99070000 		.4byte	0x799
+ 2322 0793 05       		.uleb128 0x5
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 49
+
+
+ 2323 0794 03       		.byte	0x3
+ 2324 0795 00000000 		.4byte	Sensitivity
+ 2325 0799 06       		.uleb128 0x6
+ 2326 079a C5000000 		.4byte	0xc5
+ 2327 079e 18       		.uleb128 0x18
+ 2328 079f 37040000 		.4byte	.LASF47
+ 2329 07a3 05       		.byte	0x5
+ 2330 07a4 23       		.byte	0x23
+ 2331 07a5 4E010000 		.4byte	0x14e
+ 2332 07a9 05       		.uleb128 0x5
+ 2333 07aa 03       		.byte	0x3
+ 2334 07ab 00000000 		.4byte	full_or_empty
+ 2335 07af 16       		.uleb128 0x16
+ 2336 07b0 DF000000 		.4byte	0xdf
+ 2337 07b4 BF070000 		.4byte	0x7bf
+ 2338 07b8 17       		.uleb128 0x17
+ 2339 07b9 F7000000 		.4byte	0xf7
+ 2340 07bd 3F       		.byte	0x3f
+ 2341 07be 00       		.byte	0
+ 2342 07bf 18       		.uleb128 0x18
+ 2343 07c0 AA000000 		.4byte	.LASF48
+ 2344 07c4 05       		.byte	0x5
+ 2345 07c5 25       		.byte	0x25
+ 2346 07c6 AF070000 		.4byte	0x7af
+ 2347 07ca 05       		.uleb128 0x5
+ 2348 07cb 03       		.byte	0x3
+ 2349 07cc 00000000 		.4byte	elapsed_time_string
+ 2350 07d0 18       		.uleb128 0x18
+ 2351 07d1 BE000000 		.4byte	.LASF49
+ 2352 07d5 05       		.byte	0x5
+ 2353 07d6 26       		.byte	0x26
+ 2354 07d7 EB000000 		.4byte	0xeb
+ 2355 07db 05       		.uleb128 0x5
+ 2356 07dc 03       		.byte	0x3
+ 2357 07dd 00000000 		.4byte	elapsed_time
+ 2358 07e1 19       		.uleb128 0x19
+ 2359 07e2 B0040000 		.4byte	.LASF50
+ 2360 07e6 07       		.byte	0x7
+ 2361 07e7 1207     		.2byte	0x712
+ 2362 07e9 ED070000 		.4byte	0x7ed
+ 2363 07ed 06       		.uleb128 0x6
+ 2364 07ee A2000000 		.4byte	0xa2
+ 2365 07f2 18       		.uleb128 0x18
+ 2366 07f3 47010000 		.4byte	.LASF51
+ 2367 07f7 08       		.byte	0x8
+ 2368 07f8 14       		.byte	0x14
+ 2369 07f9 E6000000 		.4byte	0xe6
+ 2370 07fd 05       		.uleb128 0x5
+ 2371 07fe 03       		.byte	0x3
+ 2372 07ff 00000000 		.4byte	StartAcquisition_flag
+ 2373 0803 18       		.uleb128 0x18
+ 2374 0804 45040000 		.4byte	.LASF52
+ 2375 0808 08       		.byte	0x8
+ 2376 0809 15       		.byte	0x15
+ 2377 080a E6000000 		.4byte	0xe6
+ 2378 080e 05       		.uleb128 0x5
+ 2379 080f 03       		.byte	0x3
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 50
+
+
+ 2380 0810 00000000 		.4byte	StartStream_flag
+ 2381 0814 18       		.uleb128 0x18
+ 2382 0815 A1000000 		.4byte	.LASF53
+ 2383 0819 08       		.byte	0x8
+ 2384 081a 18       		.byte	0x18
+ 2385 081b E6000000 		.4byte	0xe6
+ 2386 081f 05       		.uleb128 0x5
+ 2387 0820 03       		.byte	0x3
+ 2388 0821 00000000 		.4byte	FLAG_FSR
+ 2389 0825 18       		.uleb128 0x18
+ 2390 0826 8E000000 		.4byte	.LASF54
+ 2391 082a 08       		.byte	0x8
+ 2392 082b 19       		.byte	0x19
+ 2393 082c E6000000 		.4byte	0xe6
+ 2394 0830 05       		.uleb128 0x5
+ 2395 0831 03       		.byte	0x3
+ 2396 0832 00000000 		.4byte	FLAG_SF
+ 2397 0836 18       		.uleb128 0x18
+ 2398 0837 BD040000 		.4byte	.LASF55
+ 2399 083b 08       		.byte	0x8
+ 2400 083c 1A       		.byte	0x1a
+ 2401 083d E6000000 		.4byte	0xe6
+ 2402 0841 05       		.uleb128 0x5
+ 2403 0842 03       		.byte	0x3
+ 2404 0843 00000000 		.4byte	FLAG_AS
+ 2405 0847 18       		.uleb128 0x18
+ 2406 0848 61030000 		.4byte	.LASF56
+ 2407 084c 08       		.byte	0x8
+ 2408 084d 1B       		.byte	0x1b
+ 2409 084e E6000000 		.4byte	0xe6
+ 2410 0852 05       		.uleb128 0x5
+ 2411 0853 03       		.byte	0x3
+ 2412 0854 00000000 		.4byte	FLAG_BS
+ 2413 0858 18       		.uleb128 0x18
+ 2414 0859 70030000 		.4byte	.LASF57
+ 2415 085d 08       		.byte	0x8
+ 2416 085e 1E       		.byte	0x1e
+ 2417 085f E6000000 		.4byte	0xe6
+ 2418 0863 05       		.uleb128 0x5
+ 2419 0864 03       		.byte	0x3
+ 2420 0865 00000000 		.4byte	OPTION_FSR
+ 2421 0869 18       		.uleb128 0x18
+ 2422 086a FD010000 		.4byte	.LASF58
+ 2423 086e 08       		.byte	0x8
+ 2424 086f 1F       		.byte	0x1f
+ 2425 0870 E6000000 		.4byte	0xe6
+ 2426 0874 05       		.uleb128 0x5
+ 2427 0875 03       		.byte	0x3
+ 2428 0876 00000000 		.4byte	OPTION_SF
+ 2429 087a 18       		.uleb128 0x18
+ 2430 087b 7B030000 		.4byte	.LASF59
+ 2431 087f 08       		.byte	0x8
+ 2432 0880 20       		.byte	0x20
+ 2433 0881 E6000000 		.4byte	0xe6
+ 2434 0885 05       		.uleb128 0x5
+ 2435 0886 03       		.byte	0x3
+ 2436 0887 00000000 		.4byte	OPTION_AS
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 51
+
+
+ 2437 088b 18       		.uleb128 0x18
+ 2438 088c AF010000 		.4byte	.LASF60
+ 2439 0890 08       		.byte	0x8
+ 2440 0891 23       		.byte	0x23
+ 2441 0892 E6000000 		.4byte	0xe6
+ 2442 0896 05       		.uleb128 0x5
+ 2443 0897 03       		.byte	0x3
+ 2444 0898 00000000 		.4byte	summary_ready
+ 2445 089c 18       		.uleb128 0x18
+ 2446 089d 29010000 		.4byte	.LASF61
+ 2447 08a1 08       		.byte	0x8
+ 2448 08a2 24       		.byte	0x24
+ 2449 08a3 E6000000 		.4byte	0xe6
+ 2450 08a7 05       		.uleb128 0x5
+ 2451 08a8 03       		.byte	0x3
+ 2452 08a9 00000000 		.4byte	push_button_event
+ 2453 08ad 18       		.uleb128 0x18
+ 2454 08ae 4E020000 		.4byte	.LASF62
+ 2455 08b2 08       		.byte	0x8
+ 2456 08b3 27       		.byte	0x27
+ 2457 08b4 E6000000 		.4byte	0xe6
+ 2458 08b8 05       		.uleb128 0x5
+ 2459 08b9 03       		.byte	0x3
+ 2460 08ba 00000000 		.4byte	SETUP_BS_CHANGED
+ 2461 08be 18       		.uleb128 0x18
+ 2462 08bf 5D010000 		.4byte	.LASF63
+ 2463 08c3 08       		.byte	0x8
+ 2464 08c4 28       		.byte	0x28
+ 2465 08c5 E6000000 		.4byte	0xe6
+ 2466 08c9 05       		.uleb128 0x5
+ 2467 08ca 03       		.byte	0x3
+ 2468 08cb 00000000 		.4byte	SETUP_AS_CHANGED
+ 2469 08cf 18       		.uleb128 0x18
+ 2470 08d0 8A030000 		.4byte	.LASF64
+ 2471 08d4 08       		.byte	0x8
+ 2472 08d5 29       		.byte	0x29
+ 2473 08d6 E6000000 		.4byte	0xe6
+ 2474 08da 05       		.uleb128 0x5
+ 2475 08db 03       		.byte	0x3
+ 2476 08dc 00000000 		.4byte	SETUP_FSR_CHANGED
+ 2477 08e0 18       		.uleb128 0x18
+ 2478 08e1 17000000 		.4byte	.LASF65
+ 2479 08e5 08       		.byte	0x8
+ 2480 08e6 2A       		.byte	0x2a
+ 2481 08e7 E6000000 		.4byte	0xe6
+ 2482 08eb 05       		.uleb128 0x5
+ 2483 08ec 03       		.byte	0x3
+ 2484 08ed 00000000 		.4byte	SETUP_SF_CHANGED
+ 2485 08f1 18       		.uleb128 0x18
+ 2486 08f2 03050000 		.4byte	.LASF66
+ 2487 08f6 08       		.byte	0x8
+ 2488 08f7 2B       		.byte	0x2b
+ 2489 08f8 E6000000 		.4byte	0xe6
+ 2490 08fc 05       		.uleb128 0x5
+ 2491 08fd 03       		.byte	0x3
+ 2492 08fe 00000000 		.4byte	SETUP_FSR
+ 2493 0902 18       		.uleb128 0x18
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 52
+
+
+ 2494 0903 43000000 		.4byte	.LASF67
+ 2495 0907 08       		.byte	0x8
+ 2496 0908 2C       		.byte	0x2c
+ 2497 0909 E6000000 		.4byte	0xe6
+ 2498 090d 05       		.uleb128 0x5
+ 2499 090e 03       		.byte	0x3
+ 2500 090f 00000000 		.4byte	SETUP_SF
+ 2501 0913 18       		.uleb128 0x18
+ 2502 0914 C5040000 		.4byte	.LASF68
+ 2503 0918 01       		.byte	0x1
+ 2504 0919 1C       		.byte	0x1c
+ 2505 091a AD000000 		.4byte	0xad
+ 2506 091e 05       		.uleb128 0x5
+ 2507 091f 03       		.byte	0x3
+ 2508 0920 00000000 		.4byte	ch_receveid
+ 2509 0924 18       		.uleb128 0x18
+ 2510 0925 BD010000 		.4byte	.LASF69
+ 2511 0929 01       		.byte	0x1
+ 2512 092a 1D       		.byte	0x1d
+ 2513 092b 8C000000 		.4byte	0x8c
+ 2514 092f 05       		.uleb128 0x5
+ 2515 0930 03       		.byte	0x3
+ 2516 0931 00000000 		.4byte	PB_PRESSED
+ 2517 0935 18       		.uleb128 0x18
+ 2518 0936 6E010000 		.4byte	.LASF70
+ 2519 093a 01       		.byte	0x1
+ 2520 093b 1E       		.byte	0x1e
+ 2521 093c 97000000 		.4byte	0x97
+ 2522 0940 05       		.uleb128 0x5
+ 2523 0941 03       		.byte	0x3
+ 2524 0942 00000000 		.4byte	TIMER_COUNTER
+ 2525 0946 18       		.uleb128 0x18
+ 2526 0947 33050000 		.4byte	.LASF30
+ 2527 094b 01       		.byte	0x1
+ 2528 094c 1F       		.byte	0x1f
+ 2529 094d 43010000 		.4byte	0x143
+ 2530 0951 05       		.uleb128 0x5
+ 2531 0952 03       		.byte	0x3
+ 2532 0953 00000000 		.4byte	error
+ 2533 0957 18       		.uleb128 0x18
+ 2534 0958 9C030000 		.4byte	.LASF71
+ 2535 095c 01       		.byte	0x1
+ 2536 095d 21       		.byte	0x21
+ 2537 095e 68090000 		.4byte	0x968
+ 2538 0962 05       		.uleb128 0x5
+ 2539 0963 03       		.byte	0x3
+ 2540 0964 00000000 		.4byte	LED_ACQUISITION_ON
+ 2541 0968 1A       		.uleb128 0x1a
+ 2542 0969 1F010000 		.4byte	0x11f
+ 2543 096d 18       		.uleb128 0x18
+ 2544 096e B7030000 		.4byte	.LASF72
+ 2545 0972 01       		.byte	0x1
+ 2546 0973 22       		.byte	0x22
+ 2547 0974 68090000 		.4byte	0x968
+ 2548 0978 05       		.uleb128 0x5
+ 2549 0979 03       		.byte	0x3
+ 2550 097a 00000000 		.4byte	LED_EEPROM_FULL
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 53
+
+
+ 2551 097e 1B       		.uleb128 0x1b
+ 2552 097f 0E020000 		.4byte	.LASF73
+ 2553 0983 0E020000 		.4byte	.LASF73
+ 2554 0987 09       		.byte	0x9
+ 2555 0988 5B       		.byte	0x5b
+ 2556 0989 1B       		.uleb128 0x1b
+ 2557 098a 11030000 		.4byte	.LASF74
+ 2558 098e 11030000 		.4byte	.LASF74
+ 2559 0992 09       		.byte	0x9
+ 2560 0993 5E       		.byte	0x5e
+ 2561 0994 1B       		.uleb128 0x1b
+ 2562 0995 56040000 		.4byte	.LASF75
+ 2563 0999 56040000 		.4byte	.LASF75
+ 2564 099d 09       		.byte	0x9
+ 2565 099e 68       		.byte	0x68
+ 2566 099f 1B       		.uleb128 0x1b
+ 2567 09a0 E5000000 		.4byte	.LASF76
+ 2568 09a4 E5000000 		.4byte	.LASF76
+ 2569 09a8 09       		.byte	0x9
+ 2570 09a9 5A       		.byte	0x5a
+ 2571 09aa 1B       		.uleb128 0x1b
+ 2572 09ab D9020000 		.4byte	.LASF77
+ 2573 09af D9020000 		.4byte	.LASF77
+ 2574 09b3 0A       		.byte	0xa
+ 2575 09b4 36       		.byte	0x36
+ 2576 09b5 1B       		.uleb128 0x1b
+ 2577 09b6 93040000 		.4byte	.LASF78
+ 2578 09ba 93040000 		.4byte	.LASF78
+ 2579 09be 0A       		.byte	0xa
+ 2580 09bf 43       		.byte	0x43
+ 2581 09c0 1B       		.uleb128 0x1b
+ 2582 09c1 62000000 		.4byte	.LASF79
+ 2583 09c5 62000000 		.4byte	.LASF79
+ 2584 09c9 0B       		.byte	0xb
+ 2585 09ca 56       		.byte	0x56
+ 2586 09cb 1B       		.uleb128 0x1b
+ 2587 09cc 64050000 		.4byte	.LASF80
+ 2588 09d0 64050000 		.4byte	.LASF80
+ 2589 09d4 0C       		.byte	0xc
+ 2590 09d5 BE       		.byte	0xbe
+ 2591 09d6 1B       		.uleb128 0x1b
+ 2592 09d7 50030000 		.4byte	.LASF81
+ 2593 09db 50030000 		.4byte	.LASF81
+ 2594 09df 0C       		.byte	0xc
+ 2595 09e0 C3       		.byte	0xc3
+ 2596 09e1 1B       		.uleb128 0x1b
+ 2597 09e2 F8000000 		.4byte	.LASF82
+ 2598 09e6 F8000000 		.4byte	.LASF82
+ 2599 09ea 0D       		.byte	0xd
+ 2600 09eb 71       		.byte	0x71
+ 2601 09ec 1B       		.uleb128 0x1b
+ 2602 09ed 5F020000 		.4byte	.LASF83
+ 2603 09f1 5F020000 		.4byte	.LASF83
+ 2604 09f5 08       		.byte	0x8
+ 2605 09f6 2F       		.byte	0x2f
+ 2606 09f7 1B       		.uleb128 0x1b
+ 2607 09f8 05010000 		.4byte	.LASF84
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 54
+
+
+ 2608 09fc 05010000 		.4byte	.LASF84
+ 2609 0a00 0D       		.byte	0xd
+ 2610 0a01 8B       		.byte	0x8b
+ 2611 0a02 1B       		.uleb128 0x1b
+ 2612 0a03 E7040000 		.4byte	.LASF85
+ 2613 0a07 E7040000 		.4byte	.LASF85
+ 2614 0a0b 0C       		.byte	0xc
+ 2615 0a0c 92       		.byte	0x92
+ 2616 0a0d 1B       		.uleb128 0x1b
+ 2617 0a0e 47030000 		.4byte	.LASF86
+ 2618 0a12 47030000 		.4byte	.LASF86
+ 2619 0a16 0C       		.byte	0xc
+ 2620 0a17 93       		.byte	0x93
+ 2621 0a18 1B       		.uleb128 0x1b
+ 2622 0a19 45020000 		.4byte	.LASF87
+ 2623 0a1d 45020000 		.4byte	.LASF87
+ 2624 0a21 0B       		.byte	0xb
+ 2625 0a22 3B       		.byte	0x3b
+ 2626 0a23 1B       		.uleb128 0x1b
+ 2627 0a24 51050000 		.4byte	.LASF88
+ 2628 0a28 51050000 		.4byte	.LASF88
+ 2629 0a2c 0E       		.byte	0xe
+ 2630 0a2d 25       		.byte	0x25
+ 2631 0a2e 1B       		.uleb128 0x1b
+ 2632 0a2f 0D050000 		.4byte	.LASF89
+ 2633 0a33 0D050000 		.4byte	.LASF89
+ 2634 0a37 0F       		.byte	0xf
+ 2635 0a38 25       		.byte	0x25
+ 2636 0a39 1B       		.uleb128 0x1b
+ 2637 0a3a 21050000 		.4byte	.LASF90
+ 2638 0a3e 21050000 		.4byte	.LASF90
+ 2639 0a42 10       		.byte	0x10
+ 2640 0a43 26       		.byte	0x26
+ 2641 0a44 1B       		.uleb128 0x1b
+ 2642 0a45 DC010000 		.4byte	.LASF91
+ 2643 0a49 DC010000 		.4byte	.LASF91
+ 2644 0a4d 0B       		.byte	0xb
+ 2645 0a4e 3A       		.byte	0x3a
+ 2646 0a4f 1B       		.uleb128 0x1b
+ 2647 0a50 81040000 		.4byte	.LASF92
+ 2648 0a54 81040000 		.4byte	.LASF92
+ 2649 0a58 0E       		.byte	0xe
+ 2650 0a59 23       		.byte	0x23
+ 2651 0a5a 1B       		.uleb128 0x1b
+ 2652 0a5b 0B060000 		.4byte	.LASF93
+ 2653 0a5f 0B060000 		.4byte	.LASF93
+ 2654 0a63 0F       		.byte	0xf
+ 2655 0a64 23       		.byte	0x23
+ 2656 0a65 1B       		.uleb128 0x1b
+ 2657 0a66 82010000 		.4byte	.LASF94
+ 2658 0a6a 82010000 		.4byte	.LASF94
+ 2659 0a6e 11       		.byte	0x11
+ 2660 0a6f 57       		.byte	0x57
+ 2661 0a70 1B       		.uleb128 0x1b
+ 2662 0a71 28000000 		.4byte	.LASF95
+ 2663 0a75 28000000 		.4byte	.LASF95
+ 2664 0a79 12       		.byte	0x12
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 55
+
+
+ 2665 0a7a 5A       		.byte	0x5a
+ 2666 0a7b 1B       		.uleb128 0x1b
+ 2667 0a7c 2A020000 		.4byte	.LASF96
+ 2668 0a80 2A020000 		.4byte	.LASF96
+ 2669 0a84 12       		.byte	0x12
+ 2670 0a85 69       		.byte	0x69
+ 2671 0a86 1B       		.uleb128 0x1b
+ 2672 0a87 9F020000 		.4byte	.LASF97
+ 2673 0a8b 9F020000 		.4byte	.LASF97
+ 2674 0a8f 12       		.byte	0x12
+ 2675 0a90 6A       		.byte	0x6a
+ 2676 0a91 1B       		.uleb128 0x1b
+ 2677 0a92 B5020000 		.4byte	.LASF98
+ 2678 0a96 B5020000 		.4byte	.LASF98
+ 2679 0a9a 13       		.byte	0x13
+ 2680 0a9b E7       		.byte	0xe7
+ 2681 0a9c 1B       		.uleb128 0x1b
+ 2682 0a9d EF010000 		.4byte	.LASF99
+ 2683 0aa1 EF010000 		.4byte	.LASF99
+ 2684 0aa5 12       		.byte	0x12
+ 2685 0aa6 5B       		.byte	0x5b
+ 2686 0aa7 00       		.byte	0
+ 2687              		.section	.debug_abbrev,"",%progbits
+ 2688              	.Ldebug_abbrev0:
+ 2689 0000 01       		.uleb128 0x1
+ 2690 0001 11       		.uleb128 0x11
+ 2691 0002 01       		.byte	0x1
+ 2692 0003 25       		.uleb128 0x25
+ 2693 0004 0E       		.uleb128 0xe
+ 2694 0005 13       		.uleb128 0x13
+ 2695 0006 0B       		.uleb128 0xb
+ 2696 0007 03       		.uleb128 0x3
+ 2697 0008 0E       		.uleb128 0xe
+ 2698 0009 1B       		.uleb128 0x1b
+ 2699 000a 0E       		.uleb128 0xe
+ 2700 000b 55       		.uleb128 0x55
+ 2701 000c 17       		.uleb128 0x17
+ 2702 000d 11       		.uleb128 0x11
+ 2703 000e 01       		.uleb128 0x1
+ 2704 000f 10       		.uleb128 0x10
+ 2705 0010 17       		.uleb128 0x17
+ 2706 0011 00       		.byte	0
+ 2707 0012 00       		.byte	0
+ 2708 0013 02       		.uleb128 0x2
+ 2709 0014 24       		.uleb128 0x24
+ 2710 0015 00       		.byte	0
+ 2711 0016 0B       		.uleb128 0xb
+ 2712 0017 0B       		.uleb128 0xb
+ 2713 0018 3E       		.uleb128 0x3e
+ 2714 0019 0B       		.uleb128 0xb
+ 2715 001a 03       		.uleb128 0x3
+ 2716 001b 0E       		.uleb128 0xe
+ 2717 001c 00       		.byte	0
+ 2718 001d 00       		.byte	0
+ 2719 001e 03       		.uleb128 0x3
+ 2720 001f 16       		.uleb128 0x16
+ 2721 0020 00       		.byte	0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 56
+
+
+ 2722 0021 03       		.uleb128 0x3
+ 2723 0022 0E       		.uleb128 0xe
+ 2724 0023 3A       		.uleb128 0x3a
+ 2725 0024 0B       		.uleb128 0xb
+ 2726 0025 3B       		.uleb128 0x3b
+ 2727 0026 0B       		.uleb128 0xb
+ 2728 0027 49       		.uleb128 0x49
+ 2729 0028 13       		.uleb128 0x13
+ 2730 0029 00       		.byte	0
+ 2731 002a 00       		.byte	0
+ 2732 002b 04       		.uleb128 0x4
+ 2733 002c 24       		.uleb128 0x24
+ 2734 002d 00       		.byte	0
+ 2735 002e 0B       		.uleb128 0xb
+ 2736 002f 0B       		.uleb128 0xb
+ 2737 0030 3E       		.uleb128 0x3e
+ 2738 0031 0B       		.uleb128 0xb
+ 2739 0032 03       		.uleb128 0x3
+ 2740 0033 08       		.uleb128 0x8
+ 2741 0034 00       		.byte	0
+ 2742 0035 00       		.byte	0
+ 2743 0036 05       		.uleb128 0x5
+ 2744 0037 16       		.uleb128 0x16
+ 2745 0038 00       		.byte	0
+ 2746 0039 03       		.uleb128 0x3
+ 2747 003a 0E       		.uleb128 0xe
+ 2748 003b 3A       		.uleb128 0x3a
+ 2749 003c 0B       		.uleb128 0xb
+ 2750 003d 3B       		.uleb128 0x3b
+ 2751 003e 05       		.uleb128 0x5
+ 2752 003f 49       		.uleb128 0x49
+ 2753 0040 13       		.uleb128 0x13
+ 2754 0041 00       		.byte	0
+ 2755 0042 00       		.byte	0
+ 2756 0043 06       		.uleb128 0x6
+ 2757 0044 35       		.uleb128 0x35
+ 2758 0045 00       		.byte	0
+ 2759 0046 49       		.uleb128 0x49
+ 2760 0047 13       		.uleb128 0x13
+ 2761 0048 00       		.byte	0
+ 2762 0049 00       		.byte	0
+ 2763 004a 07       		.uleb128 0x7
+ 2764 004b 13       		.uleb128 0x13
+ 2765 004c 01       		.byte	0x1
+ 2766 004d 0B       		.uleb128 0xb
+ 2767 004e 0B       		.uleb128 0xb
+ 2768 004f 3A       		.uleb128 0x3a
+ 2769 0050 0B       		.uleb128 0xb
+ 2770 0051 3B       		.uleb128 0x3b
+ 2771 0052 0B       		.uleb128 0xb
+ 2772 0053 01       		.uleb128 0x1
+ 2773 0054 13       		.uleb128 0x13
+ 2774 0055 00       		.byte	0
+ 2775 0056 00       		.byte	0
+ 2776 0057 08       		.uleb128 0x8
+ 2777 0058 0D       		.uleb128 0xd
+ 2778 0059 00       		.byte	0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 57
+
+
+ 2779 005a 03       		.uleb128 0x3
+ 2780 005b 0E       		.uleb128 0xe
+ 2781 005c 3A       		.uleb128 0x3a
+ 2782 005d 0B       		.uleb128 0xb
+ 2783 005e 3B       		.uleb128 0x3b
+ 2784 005f 0B       		.uleb128 0xb
+ 2785 0060 49       		.uleb128 0x49
+ 2786 0061 13       		.uleb128 0x13
+ 2787 0062 38       		.uleb128 0x38
+ 2788 0063 0B       		.uleb128 0xb
+ 2789 0064 00       		.byte	0
+ 2790 0065 00       		.byte	0
+ 2791 0066 09       		.uleb128 0x9
+ 2792 0067 0D       		.uleb128 0xd
+ 2793 0068 00       		.byte	0
+ 2794 0069 03       		.uleb128 0x3
+ 2795 006a 08       		.uleb128 0x8
+ 2796 006b 3A       		.uleb128 0x3a
+ 2797 006c 0B       		.uleb128 0xb
+ 2798 006d 3B       		.uleb128 0x3b
+ 2799 006e 0B       		.uleb128 0xb
+ 2800 006f 49       		.uleb128 0x49
+ 2801 0070 13       		.uleb128 0x13
+ 2802 0071 38       		.uleb128 0x38
+ 2803 0072 0B       		.uleb128 0xb
+ 2804 0073 00       		.byte	0
+ 2805 0074 00       		.byte	0
+ 2806 0075 0A       		.uleb128 0xa
+ 2807 0076 04       		.uleb128 0x4
+ 2808 0077 01       		.byte	0x1
+ 2809 0078 0B       		.uleb128 0xb
+ 2810 0079 0B       		.uleb128 0xb
+ 2811 007a 49       		.uleb128 0x49
+ 2812 007b 13       		.uleb128 0x13
+ 2813 007c 3A       		.uleb128 0x3a
+ 2814 007d 0B       		.uleb128 0xb
+ 2815 007e 3B       		.uleb128 0x3b
+ 2816 007f 0B       		.uleb128 0xb
+ 2817 0080 01       		.uleb128 0x1
+ 2818 0081 13       		.uleb128 0x13
+ 2819 0082 00       		.byte	0
+ 2820 0083 00       		.byte	0
+ 2821 0084 0B       		.uleb128 0xb
+ 2822 0085 28       		.uleb128 0x28
+ 2823 0086 00       		.byte	0
+ 2824 0087 03       		.uleb128 0x3
+ 2825 0088 0E       		.uleb128 0xe
+ 2826 0089 1C       		.uleb128 0x1c
+ 2827 008a 0B       		.uleb128 0xb
+ 2828 008b 00       		.byte	0
+ 2829 008c 00       		.byte	0
+ 2830 008d 0C       		.uleb128 0xc
+ 2831 008e 2E       		.uleb128 0x2e
+ 2832 008f 01       		.byte	0x1
+ 2833 0090 3F       		.uleb128 0x3f
+ 2834 0091 19       		.uleb128 0x19
+ 2835 0092 03       		.uleb128 0x3
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 58
+
+
+ 2836 0093 0E       		.uleb128 0xe
+ 2837 0094 3A       		.uleb128 0x3a
+ 2838 0095 0B       		.uleb128 0xb
+ 2839 0096 3B       		.uleb128 0x3b
+ 2840 0097 0B       		.uleb128 0xb
+ 2841 0098 27       		.uleb128 0x27
+ 2842 0099 19       		.uleb128 0x19
+ 2843 009a 11       		.uleb128 0x11
+ 2844 009b 01       		.uleb128 0x1
+ 2845 009c 12       		.uleb128 0x12
+ 2846 009d 06       		.uleb128 0x6
+ 2847 009e 40       		.uleb128 0x40
+ 2848 009f 18       		.uleb128 0x18
+ 2849 00a0 9742     		.uleb128 0x2117
+ 2850 00a2 19       		.uleb128 0x19
+ 2851 00a3 01       		.uleb128 0x1
+ 2852 00a4 13       		.uleb128 0x13
+ 2853 00a5 00       		.byte	0
+ 2854 00a6 00       		.byte	0
+ 2855 00a7 0D       		.uleb128 0xd
+ 2856 00a8 05       		.uleb128 0x5
+ 2857 00a9 00       		.byte	0
+ 2858 00aa 03       		.uleb128 0x3
+ 2859 00ab 0E       		.uleb128 0xe
+ 2860 00ac 3A       		.uleb128 0x3a
+ 2861 00ad 0B       		.uleb128 0xb
+ 2862 00ae 3B       		.uleb128 0x3b
+ 2863 00af 0B       		.uleb128 0xb
+ 2864 00b0 49       		.uleb128 0x49
+ 2865 00b1 13       		.uleb128 0x13
+ 2866 00b2 02       		.uleb128 0x2
+ 2867 00b3 17       		.uleb128 0x17
+ 2868 00b4 00       		.byte	0
+ 2869 00b5 00       		.byte	0
+ 2870 00b6 0E       		.uleb128 0xe
+ 2871 00b7 898201   		.uleb128 0x4109
+ 2872 00ba 00       		.byte	0
+ 2873 00bb 11       		.uleb128 0x11
+ 2874 00bc 01       		.uleb128 0x1
+ 2875 00bd 31       		.uleb128 0x31
+ 2876 00be 13       		.uleb128 0x13
+ 2877 00bf 00       		.byte	0
+ 2878 00c0 00       		.byte	0
+ 2879 00c1 0F       		.uleb128 0xf
+ 2880 00c2 898201   		.uleb128 0x4109
+ 2881 00c5 01       		.byte	0x1
+ 2882 00c6 11       		.uleb128 0x11
+ 2883 00c7 01       		.uleb128 0x1
+ 2884 00c8 31       		.uleb128 0x31
+ 2885 00c9 13       		.uleb128 0x13
+ 2886 00ca 01       		.uleb128 0x1
+ 2887 00cb 13       		.uleb128 0x13
+ 2888 00cc 00       		.byte	0
+ 2889 00cd 00       		.byte	0
+ 2890 00ce 10       		.uleb128 0x10
+ 2891 00cf 8A8201   		.uleb128 0x410a
+ 2892 00d2 00       		.byte	0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 59
+
+
+ 2893 00d3 02       		.uleb128 0x2
+ 2894 00d4 18       		.uleb128 0x18
+ 2895 00d5 9142     		.uleb128 0x2111
+ 2896 00d7 18       		.uleb128 0x18
+ 2897 00d8 00       		.byte	0
+ 2898 00d9 00       		.byte	0
+ 2899 00da 11       		.uleb128 0x11
+ 2900 00db 34       		.uleb128 0x34
+ 2901 00dc 00       		.byte	0
+ 2902 00dd 03       		.uleb128 0x3
+ 2903 00de 0E       		.uleb128 0xe
+ 2904 00df 3A       		.uleb128 0x3a
+ 2905 00e0 0B       		.uleb128 0xb
+ 2906 00e1 3B       		.uleb128 0x3b
+ 2907 00e2 0B       		.uleb128 0xb
+ 2908 00e3 49       		.uleb128 0x49
+ 2909 00e4 13       		.uleb128 0x13
+ 2910 00e5 02       		.uleb128 0x2
+ 2911 00e6 17       		.uleb128 0x17
+ 2912 00e7 00       		.byte	0
+ 2913 00e8 00       		.byte	0
+ 2914 00e9 12       		.uleb128 0x12
+ 2915 00ea 0B       		.uleb128 0xb
+ 2916 00eb 01       		.byte	0x1
+ 2917 00ec 55       		.uleb128 0x55
+ 2918 00ed 17       		.uleb128 0x17
+ 2919 00ee 01       		.uleb128 0x1
+ 2920 00ef 13       		.uleb128 0x13
+ 2921 00f0 00       		.byte	0
+ 2922 00f1 00       		.byte	0
+ 2923 00f2 13       		.uleb128 0x13
+ 2924 00f3 34       		.uleb128 0x34
+ 2925 00f4 00       		.byte	0
+ 2926 00f5 03       		.uleb128 0x3
+ 2927 00f6 08       		.uleb128 0x8
+ 2928 00f7 3A       		.uleb128 0x3a
+ 2929 00f8 0B       		.uleb128 0xb
+ 2930 00f9 3B       		.uleb128 0x3b
+ 2931 00fa 0B       		.uleb128 0xb
+ 2932 00fb 49       		.uleb128 0x49
+ 2933 00fc 13       		.uleb128 0x13
+ 2934 00fd 02       		.uleb128 0x2
+ 2935 00fe 17       		.uleb128 0x17
+ 2936 00ff 00       		.byte	0
+ 2937 0100 00       		.byte	0
+ 2938 0101 14       		.uleb128 0x14
+ 2939 0102 898201   		.uleb128 0x4109
+ 2940 0105 01       		.byte	0x1
+ 2941 0106 11       		.uleb128 0x11
+ 2942 0107 01       		.uleb128 0x1
+ 2943 0108 31       		.uleb128 0x31
+ 2944 0109 13       		.uleb128 0x13
+ 2945 010a 00       		.byte	0
+ 2946 010b 00       		.byte	0
+ 2947 010c 15       		.uleb128 0x15
+ 2948 010d 2E       		.uleb128 0x2e
+ 2949 010e 01       		.byte	0x1
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 60
+
+
+ 2950 010f 3F       		.uleb128 0x3f
+ 2951 0110 19       		.uleb128 0x19
+ 2952 0111 03       		.uleb128 0x3
+ 2953 0112 0E       		.uleb128 0xe
+ 2954 0113 3A       		.uleb128 0x3a
+ 2955 0114 0B       		.uleb128 0xb
+ 2956 0115 3B       		.uleb128 0x3b
+ 2957 0116 05       		.uleb128 0x5
+ 2958 0117 27       		.uleb128 0x27
+ 2959 0118 19       		.uleb128 0x19
+ 2960 0119 11       		.uleb128 0x11
+ 2961 011a 01       		.uleb128 0x1
+ 2962 011b 12       		.uleb128 0x12
+ 2963 011c 06       		.uleb128 0x6
+ 2964 011d 40       		.uleb128 0x40
+ 2965 011e 18       		.uleb128 0x18
+ 2966 011f 9742     		.uleb128 0x2117
+ 2967 0121 19       		.uleb128 0x19
+ 2968 0122 01       		.uleb128 0x1
+ 2969 0123 13       		.uleb128 0x13
+ 2970 0124 00       		.byte	0
+ 2971 0125 00       		.byte	0
+ 2972 0126 16       		.uleb128 0x16
+ 2973 0127 01       		.uleb128 0x1
+ 2974 0128 01       		.byte	0x1
+ 2975 0129 49       		.uleb128 0x49
+ 2976 012a 13       		.uleb128 0x13
+ 2977 012b 01       		.uleb128 0x1
+ 2978 012c 13       		.uleb128 0x13
+ 2979 012d 00       		.byte	0
+ 2980 012e 00       		.byte	0
+ 2981 012f 17       		.uleb128 0x17
+ 2982 0130 21       		.uleb128 0x21
+ 2983 0131 00       		.byte	0
+ 2984 0132 49       		.uleb128 0x49
+ 2985 0133 13       		.uleb128 0x13
+ 2986 0134 2F       		.uleb128 0x2f
+ 2987 0135 0B       		.uleb128 0xb
+ 2988 0136 00       		.byte	0
+ 2989 0137 00       		.byte	0
+ 2990 0138 18       		.uleb128 0x18
+ 2991 0139 34       		.uleb128 0x34
+ 2992 013a 00       		.byte	0
+ 2993 013b 03       		.uleb128 0x3
+ 2994 013c 0E       		.uleb128 0xe
+ 2995 013d 3A       		.uleb128 0x3a
+ 2996 013e 0B       		.uleb128 0xb
+ 2997 013f 3B       		.uleb128 0x3b
+ 2998 0140 0B       		.uleb128 0xb
+ 2999 0141 49       		.uleb128 0x49
+ 3000 0142 13       		.uleb128 0x13
+ 3001 0143 3F       		.uleb128 0x3f
+ 3002 0144 19       		.uleb128 0x19
+ 3003 0145 02       		.uleb128 0x2
+ 3004 0146 18       		.uleb128 0x18
+ 3005 0147 00       		.byte	0
+ 3006 0148 00       		.byte	0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 61
+
+
+ 3007 0149 19       		.uleb128 0x19
+ 3008 014a 34       		.uleb128 0x34
+ 3009 014b 00       		.byte	0
+ 3010 014c 03       		.uleb128 0x3
+ 3011 014d 0E       		.uleb128 0xe
+ 3012 014e 3A       		.uleb128 0x3a
+ 3013 014f 0B       		.uleb128 0xb
+ 3014 0150 3B       		.uleb128 0x3b
+ 3015 0151 05       		.uleb128 0x5
+ 3016 0152 49       		.uleb128 0x49
+ 3017 0153 13       		.uleb128 0x13
+ 3018 0154 3F       		.uleb128 0x3f
+ 3019 0155 19       		.uleb128 0x19
+ 3020 0156 3C       		.uleb128 0x3c
+ 3021 0157 19       		.uleb128 0x19
+ 3022 0158 00       		.byte	0
+ 3023 0159 00       		.byte	0
+ 3024 015a 1A       		.uleb128 0x1a
+ 3025 015b 26       		.uleb128 0x26
+ 3026 015c 00       		.byte	0
+ 3027 015d 49       		.uleb128 0x49
+ 3028 015e 13       		.uleb128 0x13
+ 3029 015f 00       		.byte	0
+ 3030 0160 00       		.byte	0
+ 3031 0161 1B       		.uleb128 0x1b
+ 3032 0162 2E       		.uleb128 0x2e
+ 3033 0163 00       		.byte	0
+ 3034 0164 3F       		.uleb128 0x3f
+ 3035 0165 19       		.uleb128 0x19
+ 3036 0166 3C       		.uleb128 0x3c
+ 3037 0167 19       		.uleb128 0x19
+ 3038 0168 6E       		.uleb128 0x6e
+ 3039 0169 0E       		.uleb128 0xe
+ 3040 016a 03       		.uleb128 0x3
+ 3041 016b 0E       		.uleb128 0xe
+ 3042 016c 3A       		.uleb128 0x3a
+ 3043 016d 0B       		.uleb128 0xb
+ 3044 016e 3B       		.uleb128 0x3b
+ 3045 016f 0B       		.uleb128 0xb
+ 3046 0170 00       		.byte	0
+ 3047 0171 00       		.byte	0
+ 3048 0172 00       		.byte	0
+ 3049              		.section	.debug_loc,"",%progbits
+ 3050              	.Ldebug_loc0:
+ 3051              	.LLST0:
+ 3052 0000 00000000 		.4byte	.LVL0
+ 3053 0004 07000000 		.4byte	.LVL1-1
+ 3054 0008 0100     		.2byte	0x1
+ 3055 000a 50       		.byte	0x50
+ 3056 000b 07000000 		.4byte	.LVL1-1
+ 3057 000f 1C000000 		.4byte	.LFE64
+ 3058 0013 0400     		.2byte	0x4
+ 3059 0015 F3       		.byte	0xf3
+ 3060 0016 01       		.uleb128 0x1
+ 3061 0017 50       		.byte	0x50
+ 3062 0018 9F       		.byte	0x9f
+ 3063 0019 00000000 		.4byte	0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 62
+
+
+ 3064 001d 00000000 		.4byte	0
+ 3065              	.LLST1:
+ 3066 0021 0E000000 		.4byte	.LVL6
+ 3067 0025 2E000000 		.4byte	.LVL11
+ 3068 0029 0100     		.2byte	0x1
+ 3069 002b 50       		.byte	0x50
+ 3070 002c 34000000 		.4byte	.LVL13
+ 3071 0030 40000000 		.4byte	.LVL14
+ 3072 0034 0100     		.2byte	0x1
+ 3073 0036 54       		.byte	0x54
+ 3074 0037 00000000 		.4byte	0
+ 3075 003b 00000000 		.4byte	0
+ 3076              	.LLST2:
+ 3077 003f 12000000 		.4byte	.LVL7
+ 3078 0043 1E000000 		.4byte	.LVL9
+ 3079 0047 0100     		.2byte	0x1
+ 3080 0049 53       		.byte	0x53
+ 3081 004a 22000000 		.4byte	.LVL10
+ 3082 004e 31000000 		.4byte	.LVL12-1
+ 3083 0052 0100     		.2byte	0x1
+ 3084 0054 53       		.byte	0x53
+ 3085 0055 00000000 		.4byte	0
+ 3086 0059 00000000 		.4byte	0
+ 3087              	.LLST3:
+ 3088 005d 70000000 		.4byte	.LVL17
+ 3089 0061 7E000000 		.4byte	.LVL19
+ 3090 0065 0100     		.2byte	0x1
+ 3091 0067 53       		.byte	0x53
+ 3092 0068 80000000 		.4byte	.LVL20
+ 3093 006c 88000000 		.4byte	.LVL21
+ 3094 0070 0100     		.2byte	0x1
+ 3095 0072 53       		.byte	0x53
+ 3096 0073 00000000 		.4byte	0
+ 3097 0077 00000000 		.4byte	0
+ 3098              		.section	.debug_aranges,"",%progbits
+ 3099 0000 54000000 		.4byte	0x54
+ 3100 0004 0200     		.2byte	0x2
+ 3101 0006 00000000 		.4byte	.Ldebug_info0
+ 3102 000a 04       		.byte	0x4
+ 3103 000b 00       		.byte	0
+ 3104 000c 0000     		.2byte	0
+ 3105 000e 0000     		.2byte	0
+ 3106 0010 00000000 		.4byte	.LFB64
+ 3107 0014 1C000000 		.4byte	.LFE64-.LFB64
+ 3108 0018 00000000 		.4byte	.LFB65
+ 3109 001c 54000000 		.4byte	.LFE65-.LFB65
+ 3110 0020 00000000 		.4byte	.LFB66
+ 3111 0024 A8000000 		.4byte	.LFE66-.LFB66
+ 3112 0028 00000000 		.4byte	.LFB67
+ 3113 002c 10000000 		.4byte	.LFE67-.LFB67
+ 3114 0030 00000000 		.4byte	.LFB68
+ 3115 0034 10000000 		.4byte	.LFE68-.LFB68
+ 3116 0038 00000000 		.4byte	.LFB69
+ 3117 003c F8040000 		.4byte	.LFE69-.LFB69
+ 3118 0040 00000000 		.4byte	.LFB70
+ 3119 0044 14000000 		.4byte	.LFE70-.LFB70
+ 3120 0048 00000000 		.4byte	.LFB71
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 63
+
+
+ 3121 004c 94000000 		.4byte	.LFE71-.LFB71
+ 3122 0050 00000000 		.4byte	0
+ 3123 0054 00000000 		.4byte	0
+ 3124              		.section	.debug_ranges,"",%progbits
+ 3125              	.Ldebug_ranges0:
+ 3126 0000 12000000 		.4byte	.LBB2
+ 3127 0004 20000000 		.4byte	.LBE2
+ 3128 0008 22000000 		.4byte	.LBB3
+ 3129 000c 26000000 		.4byte	.LBE3
+ 3130 0010 00000000 		.4byte	0
+ 3131 0014 00000000 		.4byte	0
+ 3132 0018 70000000 		.4byte	.LBB4
+ 3133 001c 7E000000 		.4byte	.LBE4
+ 3134 0020 80000000 		.4byte	.LBB5
+ 3135 0024 A8000000 		.4byte	.LBE5
+ 3136 0028 00000000 		.4byte	0
+ 3137 002c 00000000 		.4byte	0
+ 3138 0030 00000000 		.4byte	.LFB64
+ 3139 0034 1C000000 		.4byte	.LFE64
+ 3140 0038 00000000 		.4byte	.LFB65
+ 3141 003c 54000000 		.4byte	.LFE65
+ 3142 0040 00000000 		.4byte	.LFB66
+ 3143 0044 A8000000 		.4byte	.LFE66
+ 3144 0048 00000000 		.4byte	.LFB67
+ 3145 004c 10000000 		.4byte	.LFE67
+ 3146 0050 00000000 		.4byte	.LFB68
+ 3147 0054 10000000 		.4byte	.LFE68
+ 3148 0058 00000000 		.4byte	.LFB69
+ 3149 005c F8040000 		.4byte	.LFE69
+ 3150 0060 00000000 		.4byte	.LFB70
+ 3151 0064 14000000 		.4byte	.LFE70
+ 3152 0068 00000000 		.4byte	.LFB71
+ 3153 006c 94000000 		.4byte	.LFE71
+ 3154 0070 00000000 		.4byte	0
+ 3155 0074 00000000 		.4byte	0
+ 3156              		.section	.debug_line,"",%progbits
+ 3157              	.Ldebug_line0:
+ 3158 0000 67040000 		.section	.debug_str,"MS",%progbits,1
+ 3158      02008902 
+ 3158      00000201 
+ 3158      FB0E0D00 
+ 3158      01010101 
+ 3159              	.LASF33:
+ 3160 0000 4C45445F 		.ascii	"LED_EEPROM_FULL_TOGGLE\000"
+ 3160      45455052 
+ 3160      4F4D5F46 
+ 3160      554C4C5F 
+ 3160      544F4747 
+ 3161              	.LASF65:
+ 3162 0017 53455455 		.ascii	"SETUP_SF_CHANGED\000"
+ 3162      505F5346 
+ 3162      5F434841 
+ 3162      4E474544 
+ 3162      00
+ 3163              	.LASF95:
+ 3164 0028 54696D65 		.ascii	"Timer_PB_Start\000"
+ 3164      725F5042 
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 64
+
+
+ 3164      5F537461 
+ 3164      727400
+ 3165              	.LASF46:
+ 3166 0037 53656E73 		.ascii	"Sensitivity\000"
+ 3166      69746976 
+ 3166      69747900 
+ 3167              	.LASF67:
+ 3168 0043 53455455 		.ascii	"SETUP_SF\000"
+ 3168      505F5346 
+ 3168      00
+ 3169              	.LASF28:
+ 3170 004c 4348414E 		.ascii	"CHANGE_ADC_SF\000"
+ 3170      47455F41 
+ 3170      44435F53 
+ 3170      4600
+ 3171              	.LASF37:
+ 3172 005a 41636344 		.ascii	"AccData\000"
+ 3172      61746100 
+ 3173              	.LASF79:
+ 3174 0062 4144435F 		.ascii	"ADC_Read32\000"
+ 3174      52656164 
+ 3174      333200
+ 3175              	.LASF2:
+ 3176 006d 73686F72 		.ascii	"short int\000"
+ 3176      7420696E 
+ 3176      7400
+ 3177              	.LASF34:
+ 3178 0077 43757374 		.ascii	"Custom_ISR_RX\000"
+ 3178      6F6D5F49 
+ 3178      53525F52 
+ 3178      5800
+ 3179              	.LASF22:
+ 3180 0085 73697A65 		.ascii	"sizetype\000"
+ 3180      74797065 
+ 3180      00
+ 3181              	.LASF54:
+ 3182 008e 464C4147 		.ascii	"FLAG_SF\000"
+ 3182      5F534600 
+ 3183              	.LASF35:
+ 3184 0096 4953525F 		.ascii	"ISR_PB_LOW\000"
+ 3184      50425F4C 
+ 3184      4F5700
+ 3185              	.LASF53:
+ 3186 00a1 464C4147 		.ascii	"FLAG_FSR\000"
+ 3186      5F465352 
+ 3186      00
+ 3187              	.LASF48:
+ 3188 00aa 656C6170 		.ascii	"elapsed_time_string\000"
+ 3188      7365645F 
+ 3188      74696D65 
+ 3188      5F737472 
+ 3188      696E6700 
+ 3189              	.LASF49:
+ 3190 00be 656C6170 		.ascii	"elapsed_time\000"
+ 3190      7365645F 
+ 3190      74696D65 
+ 3190      00
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 65
+
+
+ 3191              	.LASF24:
+ 3192 00cb 6D6F6465 		.ascii	"mode\000"
+ 3192      00
+ 3193              	.LASF4:
+ 3194 00d0 5F5F7569 		.ascii	"__uint16_t\000"
+ 3194      6E743136 
+ 3194      5F7400
+ 3195              	.LASF43:
+ 3196 00db 53656E73 		.ascii	"SensBytes\000"
+ 3196      42797465 
+ 3196      7300
+ 3197              	.LASF76:
+ 3198 00e5 54696D65 		.ascii	"Timer_sensor_Start\000"
+ 3198      725F7365 
+ 3198      6E736F72 
+ 3198      5F537461 
+ 3198      727400
+ 3199              	.LASF82:
+ 3200 00f8 55415254 		.ascii	"UART_GetChar\000"
+ 3200      5F476574 
+ 3200      43686172 
+ 3200      00
+ 3201              	.LASF84:
+ 3202 0105 55415254 		.ascii	"UART_PutString\000"
+ 3202      5F507574 
+ 3202      53747269 
+ 3202      6E6700
+ 3203              	.LASF16:
+ 3204 0114 75696E74 		.ascii	"uint16\000"
+ 3204      313600
+ 3205              	.LASF12:
+ 3206 011b 75696E74 		.ascii	"uint8_t\000"
+ 3206      385F7400 
+ 3207              	.LASF17:
+ 3208 0123 696E7431 		.ascii	"int16\000"
+ 3208      3600
+ 3209              	.LASF61:
+ 3210 0129 70757368 		.ascii	"push_button_event\000"
+ 3210      5F627574 
+ 3210      746F6E5F 
+ 3210      6576656E 
+ 3210      7400
+ 3211              	.LASF36:
+ 3212 013b 4953525F 		.ascii	"ISR_PB_HIGH\000"
+ 3212      50425F48 
+ 3212      49474800 
+ 3213              	.LASF51:
+ 3214 0147 53746172 		.ascii	"StartAcquisition_flag\000"
+ 3214      74416371 
+ 3214      75697369 
+ 3214      74696F6E 
+ 3214      5F666C61 
+ 3215              	.LASF63:
+ 3216 015d 53455455 		.ascii	"SETUP_AS_CHANGED\000"
+ 3216      505F4153 
+ 3216      5F434841 
+ 3216      4E474544 
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 66
+
+
+ 3216      00
+ 3217              	.LASF70:
+ 3218 016e 54494D45 		.ascii	"TIMER_COUNTER\000"
+ 3218      525F434F 
+ 3218      554E5445 
+ 3218      5200
+ 3219              	.LASF18:
+ 3220 017c 666C6F61 		.ascii	"float\000"
+ 3220      7400
+ 3221              	.LASF94:
+ 3222 0182 414D7578 		.ascii	"AMux_Select\000"
+ 3222      5F53656C 
+ 3222      65637400 
+ 3223              	.LASF5:
+ 3224 018e 73686F72 		.ascii	"short unsigned int\000"
+ 3224      7420756E 
+ 3224      7369676E 
+ 3224      65642069 
+ 3224      6E7400
+ 3225              	.LASF9:
+ 3226 01a1 6C6F6E67 		.ascii	"long long int\000"
+ 3226      206C6F6E 
+ 3226      6720696E 
+ 3226      7400
+ 3227              	.LASF60:
+ 3228 01af 73756D6D 		.ascii	"summary_ready\000"
+ 3228      6172795F 
+ 3228      72656164 
+ 3228      7900
+ 3229              	.LASF69:
+ 3230 01bd 50425F50 		.ascii	"PB_PRESSED\000"
+ 3230      52455353 
+ 3230      454400
+ 3231              	.LASF101:
+ 3232 01c8 496E7465 		.ascii	"InterruptRoutines.c\000"
+ 3232      72727570 
+ 3232      74526F75 
+ 3232      74696E65 
+ 3232      732E6300 
+ 3233              	.LASF91:
+ 3234 01dc 4144435F 		.ascii	"ADC_Start\000"
+ 3234      53746172 
+ 3234      7400
+ 3235              	.LASF7:
+ 3236 01e6 6C6F6E67 		.ascii	"long int\000"
+ 3236      20696E74 
+ 3236      00
+ 3237              	.LASF99:
+ 3238 01ef 54696D65 		.ascii	"Timer_PB_Stop\000"
+ 3238      725F5042 
+ 3238      5F53746F 
+ 3238      7000
+ 3239              	.LASF58:
+ 3240 01fd 4F505449 		.ascii	"OPTION_SF\000"
+ 3240      4F4E5F53 
+ 3240      4600
+ 3241              	.LASF103:
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 67
+
+
+ 3242 0207 70657269 		.ascii	"period\000"
+ 3242      6F6400
+ 3243              	.LASF73:
+ 3244 020e 54696D65 		.ascii	"Timer_sensor_Stop\000"
+ 3244      725F7365 
+ 3244      6E736F72 
+ 3244      5F53746F 
+ 3244      7000
+ 3245              	.LASF3:
+ 3246 0220 5F5F7569 		.ascii	"__uint8_t\000"
+ 3246      6E74385F 
+ 3246      7400
+ 3247              	.LASF96:
+ 3248 022a 54696D65 		.ascii	"Timer_PB_ReadCounter\000"
+ 3248      725F5042 
+ 3248      5F526561 
+ 3248      64436F75 
+ 3248      6E746572 
+ 3249              	.LASF26:
+ 3250 023f 4552524F 		.ascii	"ERROR\000"
+ 3250      5200
+ 3251              	.LASF87:
+ 3252 0245 4144435F 		.ascii	"ADC_Stop\000"
+ 3252      53746F70 
+ 3252      00
+ 3253              	.LASF62:
+ 3254 024e 53455455 		.ascii	"SETUP_BS_CHANGED\000"
+ 3254      505F4253 
+ 3254      5F434841 
+ 3254      4E474544 
+ 3254      00
+ 3255              	.LASF83:
+ 3256 025f 57454C43 		.ascii	"WELCOME\000"
+ 3256      4F4D4500 
+ 3257              	.LASF44:
+ 3258 0267 53656E73 		.ascii	"SensBytes_old\000"
+ 3258      42797465 
+ 3258      735F6F6C 
+ 3258      6400
+ 3259              	.LASF21:
+ 3260 0275 6C6F6E67 		.ascii	"long double\000"
+ 3260      20646F75 
+ 3260      626C6500 
+ 3261              	.LASF29:
+ 3262 0281 43757374 		.ascii	"Custom_FIFO_ISR\000"
+ 3262      6F6D5F46 
+ 3262      49464F5F 
+ 3262      49535200 
+ 3263              	.LASF1:
+ 3264 0291 756E7369 		.ascii	"unsigned char\000"
+ 3264      676E6564 
+ 3264      20636861 
+ 3264      7200
+ 3265              	.LASF97:
+ 3266 029f 54696D65 		.ascii	"Timer_PB_WriteCounter\000"
+ 3266      725F5042 
+ 3266      5F577269 
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 68
+
+
+ 3266      7465436F 
+ 3266      756E7465 
+ 3267              	.LASF98:
+ 3268 02b5 73707269 		.ascii	"sprintf\000"
+ 3268      6E746600 
+ 3269              	.LASF45:
+ 3270 02bd 53656E73 		.ascii	"SensorDataReady\000"
+ 3270      6F724461 
+ 3270      74615265 
+ 3270      61647900 
+ 3271              	.LASF0:
+ 3272 02cd 7369676E 		.ascii	"signed char\000"
+ 3272      65642063 
+ 3272      68617200 
+ 3273              	.LASF77:
+ 3274 02d9 4932435F 		.ascii	"I2C_Peripheral_ReadRegisterMulti\000"
+ 3274      50657269 
+ 3274      70686572 
+ 3274      616C5F52 
+ 3274      65616452 
+ 3275              	.LASF10:
+ 3276 02fa 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 3276      206C6F6E 
+ 3276      6720756E 
+ 3276      7369676E 
+ 3276      65642069 
+ 3277              	.LASF74:
+ 3278 0311 54696D65 		.ascii	"Timer_sensor_ReadStatusRegister\000"
+ 3278      725F7365 
+ 3278      6E736F72 
+ 3278      5F526561 
+ 3278      64537461 
+ 3279              	.LASF11:
+ 3280 0331 756E7369 		.ascii	"unsigned int\000"
+ 3280      676E6564 
+ 3280      20696E74 
+ 3280      00
+ 3281              	.LASF13:
+ 3282 033e 75696E74 		.ascii	"uint16_t\000"
+ 3282      31365F74 
+ 3282      00
+ 3283              	.LASF86:
+ 3284 0347 50574D5F 		.ascii	"PWM_Stop\000"
+ 3284      53746F70 
+ 3284      00
+ 3285              	.LASF81:
+ 3286 0350 50574D5F 		.ascii	"PWM_WriteCompare\000"
+ 3286      57726974 
+ 3286      65436F6D 
+ 3286      70617265 
+ 3286      00
+ 3287              	.LASF56:
+ 3288 0361 464C4147 		.ascii	"FLAG_BS\000"
+ 3288      5F425300 
+ 3289              	.LASF23:
+ 3290 0369 50657269 		.ascii	"Period\000"
+ 3290      6F6400
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 69
+
+
+ 3291              	.LASF57:
+ 3292 0370 4F505449 		.ascii	"OPTION_FSR\000"
+ 3292      4F4E5F46 
+ 3292      535200
+ 3293              	.LASF59:
+ 3294 037b 4F505449 		.ascii	"OPTION_AS\000"
+ 3294      4F4E5F41 
+ 3294      5300
+ 3295              	.LASF20:
+ 3296 0385 63686172 		.ascii	"char\000"
+ 3296      00
+ 3297              	.LASF64:
+ 3298 038a 53455455 		.ascii	"SETUP_FSR_CHANGED\000"
+ 3298      505F4653 
+ 3298      525F4348 
+ 3298      414E4745 
+ 3298      4400
+ 3299              	.LASF71:
+ 3300 039c 4C45445F 		.ascii	"LED_ACQUISITION_ON\000"
+ 3300      41435155 
+ 3300      49534954 
+ 3300      494F4E5F 
+ 3300      4F4E00
+ 3301              	.LASF14:
+ 3302 03af 696E7433 		.ascii	"int32_t\000"
+ 3302      325F7400 
+ 3303              	.LASF72:
+ 3304 03b7 4C45445F 		.ascii	"LED_EEPROM_FULL\000"
+ 3304      45455052 
+ 3304      4F4D5F46 
+ 3304      554C4C00 
+ 3305              	.LASF32:
+ 3306 03c7 4C45445F 		.ascii	"LED_ACQUISITION_ON_TOGGLE\000"
+ 3306      41435155 
+ 3306      49534954 
+ 3306      494F4E5F 
+ 3306      4F4E5F54 
+ 3307              	.LASF15:
+ 3308 03e1 75696E74 		.ascii	"uint8\000"
+ 3308      3800
+ 3309              	.LASF102:
+ 3310 03e7 433A5C55 		.ascii	"C:\\Users\\indya\\Desktop\\master\\FINAL_ASSIGNMENT"
+ 3310      73657273 
+ 3310      5C696E64 
+ 3310      79615C44 
+ 3310      65736B74 
+ 3311 0415 5F67726F 		.ascii	"_group4\\ASSIGNMENT_finale_4.cydsn\000"
+ 3311      7570345C 
+ 3311      41535349 
+ 3311      474E4D45 
+ 3311      4E545F66 
+ 3312              	.LASF47:
+ 3313 0437 66756C6C 		.ascii	"full_or_empty\000"
+ 3313      5F6F725F 
+ 3313      656D7074 
+ 3313      7900
+ 3314              	.LASF52:
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 70
+
+
+ 3315 0445 53746172 		.ascii	"StartStream_flag\000"
+ 3315      74537472 
+ 3315      65616D5F 
+ 3315      666C6167 
+ 3315      00
+ 3316              	.LASF75:
+ 3317 0456 54696D65 		.ascii	"Timer_sensor_WritePeriod\000"
+ 3317      725F7365 
+ 3317      6E736F72 
+ 3317      5F577269 
+ 3317      74655065 
+ 3318              	.LASF8:
+ 3319 046f 6C6F6E67 		.ascii	"long unsigned int\000"
+ 3319      20756E73 
+ 3319      69676E65 
+ 3319      6420696E 
+ 3319      7400
+ 3320              	.LASF92:
+ 3321 0481 4953525F 		.ascii	"ISR_PB_LOW_Enable\000"
+ 3321      50425F4C 
+ 3321      4F575F45 
+ 3321      6E61626C 
+ 3321      6500
+ 3322              	.LASF78:
+ 3323 0493 4932435F 		.ascii	"I2C_Peripheral_WriteRegister\000"
+ 3323      50657269 
+ 3323      70686572 
+ 3323      616C5F57 
+ 3323      72697465 
+ 3324              	.LASF50:
+ 3325 04b0 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 3325      52784275 
+ 3325      66666572 
+ 3325      00
+ 3326              	.LASF55:
+ 3327 04bd 464C4147 		.ascii	"FLAG_AS\000"
+ 3327      5F415300 
+ 3328              	.LASF68:
+ 3329 04c5 63685F72 		.ascii	"ch_receveid\000"
+ 3329      65636576 
+ 3329      65696400 
+ 3330              	.LASF6:
+ 3331 04d1 5F5F696E 		.ascii	"__int32_t\000"
+ 3331      7433325F 
+ 3331      7400
+ 3332              	.LASF41:
+ 3333 04db 436F756E 		.ascii	"CountSensor\000"
+ 3333      7453656E 
+ 3333      736F7200 
+ 3334              	.LASF85:
+ 3335 04e7 50574D5F 		.ascii	"PWM_Start\000"
+ 3335      53746172 
+ 3335      7400
+ 3336              	.LASF39:
+ 3337 04f1 466C6167 		.ascii	"FlagFifo\000"
+ 3337      4669666F 
+ 3337      00
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 71
+
+
+ 3338              	.LASF38:
+ 3339 04fa 41636344 		.ascii	"AccData2\000"
+ 3339      61746132 
+ 3339      00
+ 3340              	.LASF66:
+ 3341 0503 53455455 		.ascii	"SETUP_FSR\000"
+ 3341      505F4653 
+ 3341      5200
+ 3342              	.LASF89:
+ 3343 050d 4953525F 		.ascii	"ISR_PB_HIGH_Disable\000"
+ 3343      50425F48 
+ 3343      4947485F 
+ 3343      44697361 
+ 3343      626C6500 
+ 3344              	.LASF90:
+ 3345 0521 70696E5F 		.ascii	"pin_LED_EXT_Write\000"
+ 3345      4C45445F 
+ 3345      4558545F 
+ 3345      57726974 
+ 3345      6500
+ 3346              	.LASF30:
+ 3347 0533 6572726F 		.ascii	"error\000"
+ 3347      7200
+ 3348              	.LASF19:
+ 3349 0539 646F7562 		.ascii	"double\000"
+ 3349      6C6500
+ 3350              	.LASF31:
+ 3351 0540 43757374 		.ascii	"Custom_TIMER_ISR\000"
+ 3351      6F6D5F54 
+ 3351      494D4552 
+ 3351      5F495352 
+ 3351      00
+ 3352              	.LASF88:
+ 3353 0551 4953525F 		.ascii	"ISR_PB_LOW_Disable\000"
+ 3353      50425F4C 
+ 3353      4F575F44 
+ 3353      69736162 
+ 3353      6C6500
+ 3354              	.LASF80:
+ 3355 0564 50574D5F 		.ascii	"PWM_WritePeriod\000"
+ 3355      57726974 
+ 3355      65506572 
+ 3355      696F6400 
+ 3356              	.LASF25:
+ 3357 0574 4E4F5F45 		.ascii	"NO_ERROR\000"
+ 3357      52524F52 
+ 3357      00
+ 3358              	.LASF100:
+ 3359 057d 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 3359      43313120 
+ 3359      352E342E 
+ 3359      31203230 
+ 3359      31363036 
+ 3360 05b0 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 3360      20726576 
+ 3360      6973696F 
+ 3360      6E203233 
+ARM GAS  C:\Users\indya\AppData\Local\Temp\ccKs4Gbn.s 			page 72
+
+
+ 3360      37373135 
+ 3361 05e3 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 3361      66756E63 
+ 3361      74696F6E 
+ 3361      2D736563 
+ 3361      74696F6E 
+ 3362              	.LASF93:
+ 3363 060b 4953525F 		.ascii	"ISR_PB_HIGH_Enable\000"
+ 3363      50425F48 
+ 3363      4947485F 
+ 3363      456E6162 
+ 3363      6C6500
+ 3364              	.LASF27:
+ 3365 061e 4572726F 		.ascii	"ErrorCode\000"
+ 3365      72436F64 
+ 3365      6500
+ 3366              	.LASF42:
+ 3367 0628 53656E73 		.ascii	"SensData\000"
+ 3367      44617461 
+ 3367      00
+ 3368              	.LASF40:
+ 3369 0631 636F756E 		.ascii	"counter_timer\000"
+ 3369      7465725F 
+ 3369      74696D65 
+ 3369      7200
+ 3370              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

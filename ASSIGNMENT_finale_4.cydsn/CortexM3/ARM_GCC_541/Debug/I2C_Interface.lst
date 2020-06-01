@@ -1,0 +1,2151 @@
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"I2C_Interface.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.I2C_Peripheral_Start,"ax",%progbits
+  20              		.align	2
+  21              		.global	I2C_Peripheral_Start
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	I2C_Peripheral_Start, %function
+  25              	I2C_Peripheral_Start:
+  26              	.LFB0:
+  27              		.file 1 "I2C_Interface.c"
+   1:I2C_Interface.c **** /*
+   2:I2C_Interface.c **** * This file includes all the required source code to interface
+   3:I2C_Interface.c **** * the I2C peripheral.
+   4:I2C_Interface.c **** */
+   5:I2C_Interface.c **** 
+   6:I2C_Interface.c **** /**
+   7:I2C_Interface.c **** *   \brief Value returned if device present on I2C bus.
+   8:I2C_Interface.c **** */
+   9:I2C_Interface.c **** #ifndef DEVICE_CONNECTED
+  10:I2C_Interface.c ****     #define DEVICE_CONNECTED 1
+  11:I2C_Interface.c **** #endif
+  12:I2C_Interface.c **** 
+  13:I2C_Interface.c **** /**
+  14:I2C_Interface.c **** *   \brief Value returned if device not present on I2C bus.
+  15:I2C_Interface.c **** */
+  16:I2C_Interface.c **** #ifndef DEVICE_UNCONNECTED
+  17:I2C_Interface.c ****     #define DEVICE_UNCONNECTED 0
+  18:I2C_Interface.c **** #endif
+  19:I2C_Interface.c **** 
+  20:I2C_Interface.c **** #include "I2C_Interface.h" 
+  21:I2C_Interface.c **** #include "I2C_Master.h"
+  22:I2C_Interface.c **** 
+  23:I2C_Interface.c ****     /**********************************************************************************************
+  24:I2C_Interface.c ****     /*                                             PERIPHERAL START                                
+  25:I2C_Interface.c ****     /**********************************************************************************************
+  26:I2C_Interface.c **** 
+  27:I2C_Interface.c ****     ErrorCode I2C_Peripheral_Start(void) 
+  28:I2C_Interface.c ****     {
+  28              		.loc 1 28 0
+  29              		.cfi_startproc
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 2
+
+
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32 0000 08B5     		push	{r3, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 3, -8
+  35              		.cfi_offset 14, -4
+  29:I2C_Interface.c ****         // Start I2C peripheral
+  30:I2C_Interface.c ****         I2C_Master_Start();  
+  36              		.loc 1 30 0
+  37 0002 FFF7FEFF 		bl	I2C_Master_Start
+  38              	.LVL0:
+  31:I2C_Interface.c ****         
+  32:I2C_Interface.c ****         // Return no error since start function does not return any error
+  33:I2C_Interface.c ****         return NO_ERROR;
+  34:I2C_Interface.c ****     }
+  39              		.loc 1 34 0
+  40 0006 0020     		movs	r0, #0
+  41 0008 08BD     		pop	{r3, pc}
+  42              		.cfi_endproc
+  43              	.LFE0:
+  44              		.size	I2C_Peripheral_Start, .-I2C_Peripheral_Start
+  45 000a 00BF     		.section	.text.I2C_Peripheral_Stop,"ax",%progbits
+  46              		.align	2
+  47              		.global	I2C_Peripheral_Stop
+  48              		.thumb
+  49              		.thumb_func
+  50              		.type	I2C_Peripheral_Stop, %function
+  51              	I2C_Peripheral_Stop:
+  52              	.LFB1:
+  35:I2C_Interface.c ****     
+  36:I2C_Interface.c ****     
+  37:I2C_Interface.c ****     /**********************************************************************************************
+  38:I2C_Interface.c ****     /*                                             PERIPHERAL STOP                                 
+  39:I2C_Interface.c ****     /**********************************************************************************************
+  40:I2C_Interface.c ****     
+  41:I2C_Interface.c ****     ErrorCode I2C_Peripheral_Stop(void)
+  42:I2C_Interface.c ****     {
+  53              		.loc 1 42 0
+  54              		.cfi_startproc
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 0, uses_anonymous_args = 0
+  57 0000 08B5     		push	{r3, lr}
+  58              		.cfi_def_cfa_offset 8
+  59              		.cfi_offset 3, -8
+  60              		.cfi_offset 14, -4
+  43:I2C_Interface.c ****         // Stop I2C peripheral
+  44:I2C_Interface.c ****         I2C_Master_Stop();
+  61              		.loc 1 44 0
+  62 0002 FFF7FEFF 		bl	I2C_Master_Stop
+  63              	.LVL1:
+  45:I2C_Interface.c ****         // Return no error since stop function does not return any error
+  46:I2C_Interface.c ****         return NO_ERROR;
+  47:I2C_Interface.c ****     }
+  64              		.loc 1 47 0
+  65 0006 0020     		movs	r0, #0
+  66 0008 08BD     		pop	{r3, pc}
+  67              		.cfi_endproc
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 3
+
+
+  68              	.LFE1:
+  69              		.size	I2C_Peripheral_Stop, .-I2C_Peripheral_Stop
+  70 000a 00BF     		.section	.text.I2C_Peripheral_ReadRegister,"ax",%progbits
+  71              		.align	2
+  72              		.global	I2C_Peripheral_ReadRegister
+  73              		.thumb
+  74              		.thumb_func
+  75              		.type	I2C_Peripheral_ReadRegister, %function
+  76              	I2C_Peripheral_ReadRegister:
+  77              	.LFB2:
+  48:I2C_Interface.c ****     
+  49:I2C_Interface.c ****     
+  50:I2C_Interface.c ****     /**********************************************************************************************
+  51:I2C_Interface.c ****     /*                                            READ SINGLE REGISTER                             
+  52:I2C_Interface.c ****     /**********************************************************************************************
+  53:I2C_Interface.c **** 
+  54:I2C_Interface.c ****     ErrorCode I2C_Peripheral_ReadRegister(uint8_t device_address, 
+  55:I2C_Interface.c ****                                           uint8_t register_address,
+  56:I2C_Interface.c ****                                           uint8_t* data)
+  57:I2C_Interface.c ****     {
+  78              		.loc 1 57 0
+  79              		.cfi_startproc
+  80              		@ args = 0, pretend = 0, frame = 0
+  81              		@ frame_needed = 0, uses_anonymous_args = 0
+  82              	.LVL2:
+  83 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+  84              		.cfi_def_cfa_offset 24
+  85              		.cfi_offset 3, -24
+  86              		.cfi_offset 4, -20
+  87              		.cfi_offset 5, -16
+  88              		.cfi_offset 6, -12
+  89              		.cfi_offset 7, -8
+  90              		.cfi_offset 14, -4
+  91 0002 0646     		mov	r6, r0
+  92 0004 0D46     		mov	r5, r1
+  93 0006 1746     		mov	r7, r2
+  58:I2C_Interface.c ****         // Send start condition
+  59:I2C_Interface.c ****         uint8_t error = I2C_Master_MasterSendStart(device_address,I2C_Master_WRITE_XFER_MODE);
+  94              		.loc 1 59 0
+  95 0008 0021     		movs	r1, #0
+  96              	.LVL3:
+  97 000a FFF7FEFF 		bl	I2C_Master_MasterSendStart
+  98              	.LVL4:
+  60:I2C_Interface.c ****         if (error == I2C_Master_MSTR_NO_ERROR)
+  99              		.loc 1 60 0
+ 100 000e 0446     		mov	r4, r0
+ 101 0010 68B9     		cbnz	r0, .L6
+  61:I2C_Interface.c ****         {
+  62:I2C_Interface.c ****             // Write address of register to be read
+  63:I2C_Interface.c ****             error = I2C_Master_MasterWriteByte(register_address);
+ 102              		.loc 1 63 0
+ 103 0012 2846     		mov	r0, r5
+ 104              	.LVL5:
+ 105 0014 FFF7FEFF 		bl	I2C_Master_MasterWriteByte
+ 106              	.LVL6:
+  64:I2C_Interface.c ****             if (error == I2C_Master_MSTR_NO_ERROR)
+ 107              		.loc 1 64 0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 4
+
+
+ 108 0018 0446     		mov	r4, r0
+ 109 001a 40B9     		cbnz	r0, .L6
+  65:I2C_Interface.c ****             {
+  66:I2C_Interface.c ****                 // Send restart condition
+  67:I2C_Interface.c ****                 error = I2C_Master_MasterSendRestart(device_address, I2C_Master_READ_XFER_MODE);
+ 110              		.loc 1 67 0
+ 111 001c 0121     		movs	r1, #1
+ 112 001e 3046     		mov	r0, r6
+ 113              	.LVL7:
+ 114 0020 FFF7FEFF 		bl	I2C_Master_MasterSendRestart
+ 115              	.LVL8:
+  68:I2C_Interface.c ****                 if (error == I2C_Master_MSTR_NO_ERROR)
+ 116              		.loc 1 68 0
+ 117 0024 0446     		mov	r4, r0
+ 118 0026 10B9     		cbnz	r0, .L6
+  69:I2C_Interface.c ****                 {
+  70:I2C_Interface.c ****                     // Read data without acknowledgement
+  71:I2C_Interface.c ****                     *data = I2C_Master_MasterReadByte(I2C_Master_NAK_DATA);
+ 119              		.loc 1 71 0
+ 120 0028 FFF7FEFF 		bl	I2C_Master_MasterReadByte
+ 121              	.LVL9:
+ 122 002c 3870     		strb	r0, [r7]
+ 123              	.L6:
+ 124              	.LVL10:
+  72:I2C_Interface.c ****                 }
+  73:I2C_Interface.c ****             }
+  74:I2C_Interface.c ****         }
+  75:I2C_Interface.c ****         // Send stop condition
+  76:I2C_Interface.c ****         I2C_Master_MasterSendStop();
+ 125              		.loc 1 76 0
+ 126 002e FFF7FEFF 		bl	I2C_Master_MasterSendStop
+ 127              	.LVL11:
+  77:I2C_Interface.c ****         // Return error code
+  78:I2C_Interface.c ****         return error ? ERROR : NO_ERROR;
+  79:I2C_Interface.c ****     }
+ 128              		.loc 1 79 0
+ 129 0032 201C     		adds	r0, r4, #0
+ 130 0034 18BF     		it	ne
+ 131 0036 0120     		movne	r0, #1
+ 132 0038 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 133              		.cfi_endproc
+ 134              	.LFE2:
+ 135              		.size	I2C_Peripheral_ReadRegister, .-I2C_Peripheral_ReadRegister
+ 136 003a 00BF     		.section	.text.I2C_Peripheral_ReadRegisterMulti,"ax",%progbits
+ 137              		.align	2
+ 138              		.global	I2C_Peripheral_ReadRegisterMulti
+ 139              		.thumb
+ 140              		.thumb_func
+ 141              		.type	I2C_Peripheral_ReadRegisterMulti, %function
+ 142              	I2C_Peripheral_ReadRegisterMulti:
+ 143              	.LFB3:
+  80:I2C_Interface.c ****         
+  81:I2C_Interface.c ****     
+  82:I2C_Interface.c ****     /**********************************************************************************************
+  83:I2C_Interface.c ****     /*                                            READ MULTIPLE REGISTERs                          
+  84:I2C_Interface.c ****     /**********************************************************************************************
+  85:I2C_Interface.c ****     
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 5
+
+
+  86:I2C_Interface.c ****     ErrorCode I2C_Peripheral_ReadRegisterMulti(uint8_t device_address,
+  87:I2C_Interface.c ****                                                 uint8_t register_address,
+  88:I2C_Interface.c ****                                                 uint8_t register_count,
+  89:I2C_Interface.c ****                                                 uint8_t* data) 
+  90:I2C_Interface.c ****     {
+ 144              		.loc 1 90 0
+ 145              		.cfi_startproc
+ 146              		@ args = 0, pretend = 0, frame = 0
+ 147              		@ frame_needed = 0, uses_anonymous_args = 0
+ 148              	.LVL12:
+ 149 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 150              		.cfi_def_cfa_offset 24
+ 151              		.cfi_offset 4, -24
+ 152              		.cfi_offset 5, -20
+ 153              		.cfi_offset 6, -16
+ 154              		.cfi_offset 7, -12
+ 155              		.cfi_offset 8, -8
+ 156              		.cfi_offset 14, -4
+ 157 0004 8046     		mov	r8, r0
+ 158 0006 0C46     		mov	r4, r1
+ 159 0008 1646     		mov	r6, r2
+ 160 000a 1F46     		mov	r7, r3
+  91:I2C_Interface.c ****         // Send start condition
+  92:I2C_Interface.c ****         uint8_t error = I2C_Master_MasterSendStart(device_address,I2C_Master_WRITE_XFER_MODE);
+ 161              		.loc 1 92 0
+ 162 000c 0021     		movs	r1, #0
+ 163              	.LVL13:
+ 164 000e FFF7FEFF 		bl	I2C_Master_MasterSendStart
+ 165              	.LVL14:
+  93:I2C_Interface.c ****         if (error == I2C_Master_MSTR_NO_ERROR)
+ 166              		.loc 1 93 0
+ 167 0012 0546     		mov	r5, r0
+ 168 0014 F0B9     		cbnz	r0, .L9
+ 169              	.LVL15:
+  94:I2C_Interface.c ****         {
+  95:I2C_Interface.c ****             // Write address of register to be read with the MSB equal to 1
+  96:I2C_Interface.c ****             register_address |= 0x80;
+  97:I2C_Interface.c ****             error = I2C_Master_MasterWriteByte(register_address);
+ 170              		.loc 1 97 0
+ 171 0016 44F08000 		orr	r0, r4, #128
+ 172              	.LVL16:
+ 173 001a FFF7FEFF 		bl	I2C_Master_MasterWriteByte
+ 174              	.LVL17:
+  98:I2C_Interface.c ****             if (error == I2C_Master_MSTR_NO_ERROR)
+ 175              		.loc 1 98 0
+ 176 001e 0546     		mov	r5, r0
+ 177 0020 C0B9     		cbnz	r0, .L9
+  99:I2C_Interface.c ****             {
+ 100:I2C_Interface.c ****                 // Send restart condition
+ 101:I2C_Interface.c ****                 error = I2C_Master_MasterSendRestart(device_address, I2C_Master_READ_XFER_MODE);
+ 178              		.loc 1 101 0
+ 179 0022 0121     		movs	r1, #1
+ 180 0024 4046     		mov	r0, r8
+ 181              	.LVL18:
+ 182 0026 FFF7FEFF 		bl	I2C_Master_MasterSendRestart
+ 183              	.LVL19:
+ 102:I2C_Interface.c ****                 if (error == I2C_Master_MSTR_NO_ERROR)
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 6
+
+
+ 184              		.loc 1 102 0
+ 185 002a 0546     		mov	r5, r0
+ 186 002c 50B1     		cbz	r0, .L12
+ 187 002e 11E0     		b	.L9
+ 188              	.LVL20:
+ 189              	.L11:
+ 190              	.LBB2:
+ 103:I2C_Interface.c ****                 {
+ 104:I2C_Interface.c ****                     // Continue reading until we have register to read
+ 105:I2C_Interface.c ****                     uint8_t counter = register_count;
+ 106:I2C_Interface.c ****                     while(counter>1)
+ 107:I2C_Interface.c ****                     {
+ 108:I2C_Interface.c ****                         data[register_count-counter] =
+ 191              		.loc 1 108 0
+ 192 0030 C4EB0608 		rsb	r8, r4, r6
+ 109:I2C_Interface.c ****                             I2C_Master_MasterReadByte(I2C_Master_ACK_DATA);
+ 193              		.loc 1 109 0
+ 194 0034 0120     		movs	r0, #1
+ 195 0036 FFF7FEFF 		bl	I2C_Master_MasterReadByte
+ 196              	.LVL21:
+ 108:I2C_Interface.c ****                             I2C_Master_MasterReadByte(I2C_Master_ACK_DATA);
+ 197              		.loc 1 108 0
+ 198 003a 07F80800 		strb	r0, [r7, r8]
+ 110:I2C_Interface.c ****                         counter--;
+ 199              		.loc 1 110 0
+ 200 003e 013C     		subs	r4, r4, #1
+ 201              	.LVL22:
+ 202 0040 E4B2     		uxtb	r4, r4
+ 203              	.LVL23:
+ 204 0042 00E0     		b	.L10
+ 205              	.LVL24:
+ 206              	.L12:
+ 207              	.LBE2:
+ 208 0044 3446     		mov	r4, r6
+ 209              	.LVL25:
+ 210              	.L10:
+ 211              	.LBB3:
+ 106:I2C_Interface.c ****                     {
+ 212              		.loc 1 106 0
+ 213 0046 012C     		cmp	r4, #1
+ 214 0048 F2D8     		bhi	.L11
+ 111:I2C_Interface.c ****                     }
+ 112:I2C_Interface.c ****                     // Read last data without acknowledgement
+ 113:I2C_Interface.c ****                     data[register_count-1]
+ 215              		.loc 1 113 0
+ 216 004a 013E     		subs	r6, r6, #1
+ 114:I2C_Interface.c ****                         = I2C_Master_MasterReadByte(I2C_Master_NAK_DATA);
+ 217              		.loc 1 114 0
+ 218 004c 0020     		movs	r0, #0
+ 219 004e FFF7FEFF 		bl	I2C_Master_MasterReadByte
+ 220              	.LVL26:
+ 221 0052 B855     		strb	r0, [r7, r6]
+ 222              	.LVL27:
+ 223              	.L9:
+ 224              	.LBE3:
+ 115:I2C_Interface.c ****                 }
+ 116:I2C_Interface.c ****             }
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 7
+
+
+ 117:I2C_Interface.c ****         }
+ 118:I2C_Interface.c ****         // Send stop condition
+ 119:I2C_Interface.c ****         I2C_Master_MasterSendStop();
+ 225              		.loc 1 119 0
+ 226 0054 FFF7FEFF 		bl	I2C_Master_MasterSendStop
+ 227              	.LVL28:
+ 120:I2C_Interface.c ****         // Return error code
+ 121:I2C_Interface.c ****         return error ? ERROR : NO_ERROR;
+ 122:I2C_Interface.c ****     }
+ 228              		.loc 1 122 0
+ 229 0058 281C     		adds	r0, r5, #0
+ 230 005a 18BF     		it	ne
+ 231 005c 0120     		movne	r0, #1
+ 232 005e BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 233              		.cfi_endproc
+ 234              	.LFE3:
+ 235              		.size	I2C_Peripheral_ReadRegisterMulti, .-I2C_Peripheral_ReadRegisterMulti
+ 236 0062 00BF     		.section	.text.I2C_Peripheral_WriteRegister,"ax",%progbits
+ 237              		.align	2
+ 238              		.global	I2C_Peripheral_WriteRegister
+ 239              		.thumb
+ 240              		.thumb_func
+ 241              		.type	I2C_Peripheral_WriteRegister, %function
+ 242              	I2C_Peripheral_WriteRegister:
+ 243              	.LFB4:
+ 123:I2C_Interface.c ****     
+ 124:I2C_Interface.c **** 
+ 125:I2C_Interface.c ****     
+ 126:I2C_Interface.c ****     
+ 127:I2C_Interface.c ****     /**********************************************************************************************
+ 128:I2C_Interface.c ****     /*                                            WRITE SINGLE REGISTER                            
+ 129:I2C_Interface.c ****     /**********************************************************************************************
+ 130:I2C_Interface.c ****     
+ 131:I2C_Interface.c ****     ErrorCode I2C_Peripheral_WriteRegister(uint8_t device_address,
+ 132:I2C_Interface.c ****                                            uint8_t register_address,
+ 133:I2C_Interface.c ****                                            uint8_t data)
+ 134:I2C_Interface.c ****     {
+ 244              		.loc 1 134 0
+ 245              		.cfi_startproc
+ 246              		@ args = 0, pretend = 0, frame = 0
+ 247              		@ frame_needed = 0, uses_anonymous_args = 0
+ 248              	.LVL29:
+ 249 0000 70B5     		push	{r4, r5, r6, lr}
+ 250              		.cfi_def_cfa_offset 16
+ 251              		.cfi_offset 4, -16
+ 252              		.cfi_offset 5, -12
+ 253              		.cfi_offset 6, -8
+ 254              		.cfi_offset 14, -4
+ 255 0002 0D46     		mov	r5, r1
+ 256 0004 1646     		mov	r6, r2
+ 135:I2C_Interface.c ****         // Send start condition
+ 136:I2C_Interface.c ****         uint8_t error = I2C_Master_MasterSendStart(device_address, I2C_Master_WRITE_XFER_MODE);
+ 257              		.loc 1 136 0
+ 258 0006 0021     		movs	r1, #0
+ 259              	.LVL30:
+ 260 0008 FFF7FEFF 		bl	I2C_Master_MasterSendStart
+ 261              	.LVL31:
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 8
+
+
+ 137:I2C_Interface.c ****         if (error == I2C_Master_MSTR_NO_ERROR){
+ 262              		.loc 1 137 0
+ 263 000c 0446     		mov	r4, r0
+ 264 000e 40B9     		cbnz	r0, .L15
+ 138:I2C_Interface.c ****             
+ 139:I2C_Interface.c ****             // Write register address
+ 140:I2C_Interface.c ****             error = I2C_Master_MasterWriteByte(register_address);
+ 265              		.loc 1 140 0
+ 266 0010 2846     		mov	r0, r5
+ 267              	.LVL32:
+ 268 0012 FFF7FEFF 		bl	I2C_Master_MasterWriteByte
+ 269              	.LVL33:
+ 141:I2C_Interface.c ****             if (error == I2C_Master_MSTR_NO_ERROR)
+ 270              		.loc 1 141 0
+ 271 0016 0446     		mov	r4, r0
+ 272 0018 18B9     		cbnz	r0, .L15
+ 142:I2C_Interface.c ****             {
+ 143:I2C_Interface.c ****                 // Write byte of interest
+ 144:I2C_Interface.c ****                 error = I2C_Master_MasterWriteByte(data);
+ 273              		.loc 1 144 0
+ 274 001a 3046     		mov	r0, r6
+ 275              	.LVL34:
+ 276 001c FFF7FEFF 		bl	I2C_Master_MasterWriteByte
+ 277              	.LVL35:
+ 278 0020 0446     		mov	r4, r0
+ 279              	.LVL36:
+ 280              	.L15:
+ 145:I2C_Interface.c ****             }
+ 146:I2C_Interface.c ****         }
+ 147:I2C_Interface.c ****         // Send stop condition
+ 148:I2C_Interface.c ****         I2C_Master_MasterSendStop();
+ 281              		.loc 1 148 0
+ 282 0022 FFF7FEFF 		bl	I2C_Master_MasterSendStop
+ 283              	.LVL37:
+ 149:I2C_Interface.c ****         // Return error code
+ 150:I2C_Interface.c ****         return error ? ERROR : NO_ERROR;
+ 151:I2C_Interface.c ****     }
+ 284              		.loc 1 151 0
+ 285 0026 201C     		adds	r0, r4, #0
+ 286 0028 18BF     		it	ne
+ 287 002a 0120     		movne	r0, #1
+ 288 002c 70BD     		pop	{r4, r5, r6, pc}
+ 289              		.cfi_endproc
+ 290              	.LFE4:
+ 291              		.size	I2C_Peripheral_WriteRegister, .-I2C_Peripheral_WriteRegister
+ 292 002e 00BF     		.section	.text.I2C_Peripheral_WriteRegisterMulti,"ax",%progbits
+ 293              		.align	2
+ 294              		.global	I2C_Peripheral_WriteRegisterMulti
+ 295              		.thumb
+ 296              		.thumb_func
+ 297              		.type	I2C_Peripheral_WriteRegisterMulti, %function
+ 298              	I2C_Peripheral_WriteRegisterMulti:
+ 299              	.LFB5:
+ 152:I2C_Interface.c ****     
+ 153:I2C_Interface.c ****     
+ 154:I2C_Interface.c ****     /**********************************************************************************************
+ 155:I2C_Interface.c ****     /*                                            WRITE MULTIPLE REGISTERs                         
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 9
+
+
+ 156:I2C_Interface.c ****     /**********************************************************************************************
+ 157:I2C_Interface.c ****     
+ 158:I2C_Interface.c ****     ErrorCode I2C_Peripheral_WriteRegisterMulti(uint8_t device_address,
+ 159:I2C_Interface.c ****                                                 uint8_t register_address,
+ 160:I2C_Interface.c ****                                                 uint8_t register_count,
+ 161:I2C_Interface.c ****                                                 uint8_t* data)
+ 162:I2C_Interface.c ****     {
+ 300              		.loc 1 162 0
+ 301              		.cfi_startproc
+ 302              		@ args = 0, pretend = 0, frame = 0
+ 303              		@ frame_needed = 0, uses_anonymous_args = 0
+ 304              	.LVL38:
+ 305 0000 F8B5     		push	{r3, r4, r5, r6, r7, lr}
+ 306              		.cfi_def_cfa_offset 24
+ 307              		.cfi_offset 3, -24
+ 308              		.cfi_offset 4, -20
+ 309              		.cfi_offset 5, -16
+ 310              		.cfi_offset 6, -12
+ 311              		.cfi_offset 7, -8
+ 312              		.cfi_offset 14, -4
+ 313 0002 0F46     		mov	r7, r1
+ 314 0004 1546     		mov	r5, r2
+ 315 0006 1E46     		mov	r6, r3
+ 163:I2C_Interface.c ****         // Send start condition
+ 164:I2C_Interface.c ****         uint8_t error = I2C_Master_MasterSendStart(device_address, I2C_Master_WRITE_XFER_MODE);
+ 316              		.loc 1 164 0
+ 317 0008 0021     		movs	r1, #0
+ 318              	.LVL39:
+ 319 000a FFF7FEFF 		bl	I2C_Master_MasterSendStart
+ 320              	.LVL40:
+ 165:I2C_Interface.c ****         if (error == I2C_Master_MSTR_NO_ERROR)
+ 321              		.loc 1 165 0
+ 322 000e 0446     		mov	r4, r0
+ 323 0010 88B9     		cbnz	r0, .L18
+ 166:I2C_Interface.c ****         {
+ 167:I2C_Interface.c ****             // Write register address
+ 168:I2C_Interface.c ****             error = I2C_Master_MasterWriteByte(register_address);
+ 324              		.loc 1 168 0
+ 325 0012 3846     		mov	r0, r7
+ 326              	.LVL41:
+ 327 0014 FFF7FEFF 		bl	I2C_Master_MasterWriteByte
+ 328              	.LVL42:
+ 169:I2C_Interface.c ****             if (error == I2C_Master_MSTR_NO_ERROR)
+ 329              		.loc 1 169 0
+ 330 0018 0446     		mov	r4, r0
+ 331 001a 60B9     		cbnz	r0, .L18
+ 332 001c 2C46     		mov	r4, r5
+ 333              	.L21:
+ 334              	.LVL43:
+ 335              	.LBB4:
+ 170:I2C_Interface.c ****             {
+ 171:I2C_Interface.c ****                 // Continue writing until we have data to write
+ 172:I2C_Interface.c ****                 uint8_t counter = register_count;
+ 173:I2C_Interface.c ****                 while(counter >= 0)
+ 174:I2C_Interface.c ****                 {
+ 175:I2C_Interface.c ****                      error =
+ 176:I2C_Interface.c ****                         I2C_Master_MasterWriteByte(data[register_count-counter]);
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 10
+
+
+ 336              		.loc 1 176 0
+ 337 001e 2B1B     		subs	r3, r5, r4
+ 175:I2C_Interface.c ****                         I2C_Master_MasterWriteByte(data[register_count-counter]);
+ 338              		.loc 1 175 0
+ 339 0020 F05C     		ldrb	r0, [r6, r3]	@ zero_extendqisi2
+ 340              	.LVL44:
+ 341 0022 FFF7FEFF 		bl	I2C_Master_MasterWriteByte
+ 342              	.LVL45:
+ 177:I2C_Interface.c ****                     if (error != I2C_Master_MSTR_NO_ERROR)
+ 343              		.loc 1 177 0
+ 344 0026 18B1     		cbz	r0, .L19
+ 178:I2C_Interface.c ****                     {
+ 179:I2C_Interface.c ****                         // Send stop condition
+ 180:I2C_Interface.c ****                         I2C_Master_MasterSendStop();
+ 345              		.loc 1 180 0
+ 346 0028 FFF7FEFF 		bl	I2C_Master_MasterSendStop
+ 347              	.LVL46:
+ 181:I2C_Interface.c ****                         // Return error code
+ 182:I2C_Interface.c ****                         return ERROR;
+ 348              		.loc 1 182 0
+ 349 002c 0120     		movs	r0, #1
+ 350 002e F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 351              	.LVL47:
+ 352              	.L19:
+ 183:I2C_Interface.c ****                     }
+ 184:I2C_Interface.c ****                     counter--;
+ 353              		.loc 1 184 0
+ 354 0030 013C     		subs	r4, r4, #1
+ 355              	.LVL48:
+ 356 0032 E4B2     		uxtb	r4, r4
+ 357              	.LVL49:
+ 185:I2C_Interface.c ****                 }
+ 358              		.loc 1 185 0
+ 359 0034 F3E7     		b	.L21
+ 360              	.LVL50:
+ 361              	.L18:
+ 362              	.LBE4:
+ 186:I2C_Interface.c ****             }
+ 187:I2C_Interface.c ****         }
+ 188:I2C_Interface.c ****         // Send stop condition in case something didn't work out correctly
+ 189:I2C_Interface.c ****         I2C_Master_MasterSendStop();
+ 363              		.loc 1 189 0
+ 364 0036 FFF7FEFF 		bl	I2C_Master_MasterSendStop
+ 365              	.LVL51:
+ 190:I2C_Interface.c ****         // Return error code
+ 191:I2C_Interface.c ****         return error ? ERROR : NO_ERROR;
+ 366              		.loc 1 191 0
+ 367 003a 201C     		adds	r0, r4, #0
+ 368 003c 18BF     		it	ne
+ 369 003e 0120     		movne	r0, #1
+ 192:I2C_Interface.c ****     }
+ 370              		.loc 1 192 0
+ 371 0040 F8BD     		pop	{r3, r4, r5, r6, r7, pc}
+ 372              		.cfi_endproc
+ 373              	.LFE5:
+ 374              		.size	I2C_Peripheral_WriteRegisterMulti, .-I2C_Peripheral_WriteRegisterMulti
+ 375 0042 00BF     		.section	.text.I2C_Peripheral_IsDeviceConnected,"ax",%progbits
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 11
+
+
+ 376              		.align	2
+ 377              		.global	I2C_Peripheral_IsDeviceConnected
+ 378              		.thumb
+ 379              		.thumb_func
+ 380              		.type	I2C_Peripheral_IsDeviceConnected, %function
+ 381              	I2C_Peripheral_IsDeviceConnected:
+ 382              	.LFB6:
+ 193:I2C_Interface.c ****     
+ 194:I2C_Interface.c ****     
+ 195:I2C_Interface.c ****     
+ 196:I2C_Interface.c ****     /**********************************************************************************************
+ 197:I2C_Interface.c ****     /*                                          IS THE DEVICE CONNECTED?                           
+ 198:I2C_Interface.c ****     /**********************************************************************************************
+ 199:I2C_Interface.c ****     
+ 200:I2C_Interface.c ****     uint8_t I2C_Peripheral_IsDeviceConnected(uint8_t device_address)
+ 201:I2C_Interface.c ****     {
+ 383              		.loc 1 201 0
+ 384              		.cfi_startproc
+ 385              		@ args = 0, pretend = 0, frame = 0
+ 386              		@ frame_needed = 0, uses_anonymous_args = 0
+ 387              	.LVL52:
+ 388 0000 10B5     		push	{r4, lr}
+ 389              		.cfi_def_cfa_offset 8
+ 390              		.cfi_offset 4, -8
+ 391              		.cfi_offset 14, -4
+ 202:I2C_Interface.c ****         // Send a start condition followed by a stop condition
+ 203:I2C_Interface.c ****         uint8_t error = I2C_Master_MasterSendStart(device_address, I2C_Master_WRITE_XFER_MODE);
+ 392              		.loc 1 203 0
+ 393 0002 0021     		movs	r1, #0
+ 394 0004 FFF7FEFF 		bl	I2C_Master_MasterSendStart
+ 395              	.LVL53:
+ 396 0008 0446     		mov	r4, r0
+ 397              	.LVL54:
+ 204:I2C_Interface.c ****         I2C_Master_MasterSendStop();
+ 398              		.loc 1 204 0
+ 399 000a FFF7FEFF 		bl	I2C_Master_MasterSendStop
+ 400              	.LVL55:
+ 205:I2C_Interface.c ****         // If no error generated during stop, device is connected
+ 206:I2C_Interface.c ****         if (error == I2C_Master_MSTR_NO_ERROR)
+ 401              		.loc 1 206 0
+ 402 000e 0CB9     		cbnz	r4, .L25
+ 207:I2C_Interface.c ****         {
+ 208:I2C_Interface.c ****             return DEVICE_CONNECTED;
+ 403              		.loc 1 208 0
+ 404 0010 0120     		movs	r0, #1
+ 405 0012 10BD     		pop	{r4, pc}
+ 406              	.LVL56:
+ 407              	.L25:
+ 209:I2C_Interface.c ****         }
+ 210:I2C_Interface.c ****         return DEVICE_UNCONNECTED;
+ 408              		.loc 1 210 0
+ 409 0014 0020     		movs	r0, #0
+ 211:I2C_Interface.c ****     }
+ 410              		.loc 1 211 0
+ 411 0016 10BD     		pop	{r4, pc}
+ 412              		.cfi_endproc
+ 413              	.LFE6:
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 12
+
+
+ 414              		.size	I2C_Peripheral_IsDeviceConnected, .-I2C_Peripheral_IsDeviceConnected
+ 415              		.text
+ 416              	.Letext0:
+ 417              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\4.3\\psoc creator\\import\\gnu\\arm\\5.4.
+ 418              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.3\\psoc creator\\import\\gnu\\arm\\5.4.
+ 419              		.file 4 "ErrorCodes.h"
+ 420              		.file 5 "Generated_Source\\PSoC5/I2C_Master.h"
+ 421              		.section	.debug_info,"",%progbits
+ 422              	.Ldebug_info0:
+ 423 0000 B9040000 		.4byte	0x4b9
+ 424 0004 0400     		.2byte	0x4
+ 425 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 426 000a 04       		.byte	0x4
+ 427 000b 01       		.uleb128 0x1
+ 428 000c F2000000 		.4byte	.LASF39
+ 429 0010 0C       		.byte	0xc
+ 430 0011 4E000000 		.4byte	.LASF40
+ 431 0015 89000000 		.4byte	.LASF41
+ 432 0019 18000000 		.4byte	.Ldebug_ranges0+0x18
+ 433 001d 00000000 		.4byte	0
+ 434 0021 00000000 		.4byte	.Ldebug_line0
+ 435 0025 02       		.uleb128 0x2
+ 436 0026 01       		.byte	0x1
+ 437 0027 06       		.byte	0x6
+ 438 0028 53030000 		.4byte	.LASF0
+ 439 002c 03       		.uleb128 0x3
+ 440 002d 00000000 		.4byte	.LASF9
+ 441 0031 02       		.byte	0x2
+ 442 0032 1D       		.byte	0x1d
+ 443 0033 37000000 		.4byte	0x37
+ 444 0037 02       		.uleb128 0x2
+ 445 0038 01       		.byte	0x1
+ 446 0039 08       		.byte	0x8
+ 447 003a E4000000 		.4byte	.LASF1
+ 448 003e 02       		.uleb128 0x2
+ 449 003f 02       		.byte	0x2
+ 450 0040 05       		.byte	0x5
+ 451 0041 07030000 		.4byte	.LASF2
+ 452 0045 02       		.uleb128 0x2
+ 453 0046 02       		.byte	0x2
+ 454 0047 07       		.byte	0x7
+ 455 0048 A2010000 		.4byte	.LASF3
+ 456 004c 02       		.uleb128 0x2
+ 457 004d 04       		.byte	0x4
+ 458 004e 05       		.byte	0x5
+ 459 004f 39030000 		.4byte	.LASF4
+ 460 0053 02       		.uleb128 0x2
+ 461 0054 04       		.byte	0x4
+ 462 0055 07       		.byte	0x7
+ 463 0056 41020000 		.4byte	.LASF5
+ 464 005a 02       		.uleb128 0x2
+ 465 005b 08       		.byte	0x8
+ 466 005c 05       		.byte	0x5
+ 467 005d AF020000 		.4byte	.LASF6
+ 468 0061 02       		.uleb128 0x2
+ 469 0062 08       		.byte	0x8
+ 470 0063 07       		.byte	0x7
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 13
+
+
+ 471 0064 60020000 		.4byte	.LASF7
+ 472 0068 04       		.uleb128 0x4
+ 473 0069 04       		.byte	0x4
+ 474 006a 05       		.byte	0x5
+ 475 006b 696E7400 		.ascii	"int\000"
+ 476 006f 02       		.uleb128 0x2
+ 477 0070 04       		.byte	0x4
+ 478 0071 07       		.byte	0x7
+ 479 0072 53020000 		.4byte	.LASF8
+ 480 0076 03       		.uleb128 0x3
+ 481 0077 77020000 		.4byte	.LASF10
+ 482 007b 03       		.byte	0x3
+ 483 007c 18       		.byte	0x18
+ 484 007d 2C000000 		.4byte	0x2c
+ 485 0081 02       		.uleb128 0x2
+ 486 0082 04       		.byte	0x4
+ 487 0083 04       		.byte	0x4
+ 488 0084 D9000000 		.4byte	.LASF11
+ 489 0088 02       		.uleb128 0x2
+ 490 0089 08       		.byte	0x8
+ 491 008a 04       		.byte	0x4
+ 492 008b FC010000 		.4byte	.LASF12
+ 493 008f 02       		.uleb128 0x2
+ 494 0090 01       		.byte	0x1
+ 495 0091 08       		.byte	0x8
+ 496 0092 42030000 		.4byte	.LASF13
+ 497 0096 05       		.uleb128 0x5
+ 498 0097 01       		.byte	0x1
+ 499 0098 37000000 		.4byte	0x37
+ 500 009c 04       		.byte	0x4
+ 501 009d 15       		.byte	0x15
+ 502 009e AF000000 		.4byte	0xaf
+ 503 00a2 06       		.uleb128 0x6
+ 504 00a3 30030000 		.4byte	.LASF14
+ 505 00a7 00       		.byte	0
+ 506 00a8 06       		.uleb128 0x6
+ 507 00a9 7F020000 		.4byte	.LASF15
+ 508 00ad 01       		.byte	0x1
+ 509 00ae 00       		.byte	0
+ 510 00af 03       		.uleb128 0x3
+ 511 00b0 5E000000 		.4byte	.LASF16
+ 512 00b4 04       		.byte	0x4
+ 513 00b5 18       		.byte	0x18
+ 514 00b6 96000000 		.4byte	0x96
+ 515 00ba 02       		.uleb128 0x2
+ 516 00bb 08       		.byte	0x8
+ 517 00bc 04       		.byte	0x4
+ 518 00bd 47030000 		.4byte	.LASF17
+ 519 00c1 02       		.uleb128 0x2
+ 520 00c2 04       		.byte	0x4
+ 521 00c3 07       		.byte	0x7
+ 522 00c4 A0020000 		.4byte	.LASF18
+ 523 00c8 07       		.uleb128 0x7
+ 524 00c9 5F030000 		.4byte	.LASF19
+ 525 00cd 01       		.byte	0x1
+ 526 00ce 1B       		.byte	0x1b
+ 527 00cf AF000000 		.4byte	0xaf
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 14
+
+
+ 528 00d3 00000000 		.4byte	.LFB0
+ 529 00d7 0A000000 		.4byte	.LFE0-.LFB0
+ 530 00db 01       		.uleb128 0x1
+ 531 00dc 9C       		.byte	0x9c
+ 532 00dd EB000000 		.4byte	0xeb
+ 533 00e1 08       		.uleb128 0x8
+ 534 00e2 06000000 		.4byte	.LVL0
+ 535 00e6 6F040000 		.4byte	0x46f
+ 536 00ea 00       		.byte	0
+ 537 00eb 07       		.uleb128 0x7
+ 538 00ec D7020000 		.4byte	.LASF20
+ 539 00f0 01       		.byte	0x1
+ 540 00f1 29       		.byte	0x29
+ 541 00f2 AF000000 		.4byte	0xaf
+ 542 00f6 00000000 		.4byte	.LFB1
+ 543 00fa 0A000000 		.4byte	.LFE1-.LFB1
+ 544 00fe 01       		.uleb128 0x1
+ 545 00ff 9C       		.byte	0x9c
+ 546 0100 0E010000 		.4byte	0x10e
+ 547 0104 08       		.uleb128 0x8
+ 548 0105 06000000 		.4byte	.LVL1
+ 549 0109 7A040000 		.4byte	0x47a
+ 550 010d 00       		.byte	0
+ 551 010e 07       		.uleb128 0x7
+ 552 010f EB020000 		.4byte	.LASF21
+ 553 0113 01       		.byte	0x1
+ 554 0114 36       		.byte	0x36
+ 555 0115 AF000000 		.4byte	0xaf
+ 556 0119 00000000 		.4byte	.LFB2
+ 557 011d 3A000000 		.4byte	.LFE2-.LFB2
+ 558 0121 01       		.uleb128 0x1
+ 559 0122 9C       		.byte	0x9c
+ 560 0123 C7010000 		.4byte	0x1c7
+ 561 0127 09       		.uleb128 0x9
+ 562 0128 11030000 		.4byte	.LASF22
+ 563 012c 01       		.byte	0x1
+ 564 012d 36       		.byte	0x36
+ 565 012e 76000000 		.4byte	0x76
+ 566 0132 00000000 		.4byte	.LLST0
+ 567 0136 09       		.uleb128 0x9
+ 568 0137 B5010000 		.4byte	.LASF23
+ 569 013b 01       		.byte	0x1
+ 570 013c 37       		.byte	0x37
+ 571 013d 76000000 		.4byte	0x76
+ 572 0141 21000000 		.4byte	.LLST1
+ 573 0145 09       		.uleb128 0x9
+ 574 0146 DF000000 		.4byte	.LASF24
+ 575 014a 01       		.byte	0x1
+ 576 014b 38       		.byte	0x38
+ 577 014c C7010000 		.4byte	0x1c7
+ 578 0150 42000000 		.4byte	.LLST2
+ 579 0154 0A       		.uleb128 0xa
+ 580 0155 A9020000 		.4byte	.LASF27
+ 581 0159 01       		.byte	0x1
+ 582 015a 3B       		.byte	0x3b
+ 583 015b 76000000 		.4byte	0x76
+ 584 015f 60000000 		.4byte	.LLST3
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 15
+
+
+ 585 0163 0B       		.uleb128 0xb
+ 586 0164 0E000000 		.4byte	.LVL4
+ 587 0168 85040000 		.4byte	0x485
+ 588 016c 7C010000 		.4byte	0x17c
+ 589 0170 0C       		.uleb128 0xc
+ 590 0171 01       		.uleb128 0x1
+ 591 0172 50       		.byte	0x50
+ 592 0173 02       		.uleb128 0x2
+ 593 0174 76       		.byte	0x76
+ 594 0175 00       		.sleb128 0
+ 595 0176 0C       		.uleb128 0xc
+ 596 0177 01       		.uleb128 0x1
+ 597 0178 51       		.byte	0x51
+ 598 0179 01       		.uleb128 0x1
+ 599 017a 30       		.byte	0x30
+ 600 017b 00       		.byte	0
+ 601 017c 0B       		.uleb128 0xb
+ 602 017d 18000000 		.4byte	.LVL6
+ 603 0181 90040000 		.4byte	0x490
+ 604 0185 90010000 		.4byte	0x190
+ 605 0189 0C       		.uleb128 0xc
+ 606 018a 01       		.uleb128 0x1
+ 607 018b 50       		.byte	0x50
+ 608 018c 02       		.uleb128 0x2
+ 609 018d 75       		.byte	0x75
+ 610 018e 00       		.sleb128 0
+ 611 018f 00       		.byte	0
+ 612 0190 0B       		.uleb128 0xb
+ 613 0191 24000000 		.4byte	.LVL8
+ 614 0195 9B040000 		.4byte	0x49b
+ 615 0199 A9010000 		.4byte	0x1a9
+ 616 019d 0C       		.uleb128 0xc
+ 617 019e 01       		.uleb128 0x1
+ 618 019f 50       		.byte	0x50
+ 619 01a0 02       		.uleb128 0x2
+ 620 01a1 76       		.byte	0x76
+ 621 01a2 00       		.sleb128 0
+ 622 01a3 0C       		.uleb128 0xc
+ 623 01a4 01       		.uleb128 0x1
+ 624 01a5 51       		.byte	0x51
+ 625 01a6 01       		.uleb128 0x1
+ 626 01a7 31       		.byte	0x31
+ 627 01a8 00       		.byte	0
+ 628 01a9 0B       		.uleb128 0xb
+ 629 01aa 2C000000 		.4byte	.LVL9
+ 630 01ae A6040000 		.4byte	0x4a6
+ 631 01b2 BD010000 		.4byte	0x1bd
+ 632 01b6 0C       		.uleb128 0xc
+ 633 01b7 01       		.uleb128 0x1
+ 634 01b8 50       		.byte	0x50
+ 635 01b9 02       		.uleb128 0x2
+ 636 01ba 74       		.byte	0x74
+ 637 01bb 00       		.sleb128 0
+ 638 01bc 00       		.byte	0
+ 639 01bd 08       		.uleb128 0x8
+ 640 01be 32000000 		.4byte	.LVL11
+ 641 01c2 B1040000 		.4byte	0x4b1
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 16
+
+
+ 642 01c6 00       		.byte	0
+ 643 01c7 0D       		.uleb128 0xd
+ 644 01c8 04       		.byte	0x4
+ 645 01c9 76000000 		.4byte	0x76
+ 646 01cd 07       		.uleb128 0x7
+ 647 01ce 03020000 		.4byte	.LASF25
+ 648 01d2 01       		.byte	0x1
+ 649 01d3 56       		.byte	0x56
+ 650 01d4 AF000000 		.4byte	0xaf
+ 651 01d8 00000000 		.4byte	.LFB3
+ 652 01dc 62000000 		.4byte	.LFE3-.LFB3
+ 653 01e0 01       		.uleb128 0x1
+ 654 01e1 9C       		.byte	0x9c
+ 655 01e2 BF020000 		.4byte	0x2bf
+ 656 01e6 09       		.uleb128 0x9
+ 657 01e7 11030000 		.4byte	.LASF22
+ 658 01eb 01       		.byte	0x1
+ 659 01ec 56       		.byte	0x56
+ 660 01ed 76000000 		.4byte	0x76
+ 661 01f1 94000000 		.4byte	.LLST4
+ 662 01f5 09       		.uleb128 0x9
+ 663 01f6 B5010000 		.4byte	.LASF23
+ 664 01fa 01       		.byte	0x1
+ 665 01fb 57       		.byte	0x57
+ 666 01fc 76000000 		.4byte	0x76
+ 667 0200 B5000000 		.4byte	.LLST5
+ 668 0204 09       		.uleb128 0x9
+ 669 0205 3F000000 		.4byte	.LASF26
+ 670 0209 01       		.byte	0x1
+ 671 020a 58       		.byte	0x58
+ 672 020b 76000000 		.4byte	0x76
+ 673 020f F6000000 		.4byte	.LLST6
+ 674 0213 09       		.uleb128 0x9
+ 675 0214 DF000000 		.4byte	.LASF24
+ 676 0218 01       		.byte	0x1
+ 677 0219 59       		.byte	0x59
+ 678 021a C7010000 		.4byte	0x1c7
+ 679 021e 17010000 		.4byte	.LLST7
+ 680 0222 0A       		.uleb128 0xa
+ 681 0223 A9020000 		.4byte	.LASF27
+ 682 0227 01       		.byte	0x1
+ 683 0228 5C       		.byte	0x5c
+ 684 0229 76000000 		.4byte	0x76
+ 685 022d 35010000 		.4byte	.LLST8
+ 686 0231 0E       		.uleb128 0xe
+ 687 0232 00000000 		.4byte	.Ldebug_ranges0+0
+ 688 0236 6C020000 		.4byte	0x26c
+ 689 023a 0A       		.uleb128 0xa
+ 690 023b E3010000 		.4byte	.LASF28
+ 691 023f 01       		.byte	0x1
+ 692 0240 69       		.byte	0x69
+ 693 0241 76000000 		.4byte	0x76
+ 694 0245 74010000 		.4byte	.LLST9
+ 695 0249 0B       		.uleb128 0xb
+ 696 024a 3A000000 		.4byte	.LVL21
+ 697 024e A6040000 		.4byte	0x4a6
+ 698 0252 5C020000 		.4byte	0x25c
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 17
+
+
+ 699 0256 0C       		.uleb128 0xc
+ 700 0257 01       		.uleb128 0x1
+ 701 0258 50       		.byte	0x50
+ 702 0259 01       		.uleb128 0x1
+ 703 025a 31       		.byte	0x31
+ 704 025b 00       		.byte	0
+ 705 025c 0F       		.uleb128 0xf
+ 706 025d 52000000 		.4byte	.LVL26
+ 707 0261 A6040000 		.4byte	0x4a6
+ 708 0265 0C       		.uleb128 0xc
+ 709 0266 01       		.uleb128 0x1
+ 710 0267 50       		.byte	0x50
+ 711 0268 01       		.uleb128 0x1
+ 712 0269 30       		.byte	0x30
+ 713 026a 00       		.byte	0
+ 714 026b 00       		.byte	0
+ 715 026c 0B       		.uleb128 0xb
+ 716 026d 12000000 		.4byte	.LVL14
+ 717 0271 85040000 		.4byte	0x485
+ 718 0275 85020000 		.4byte	0x285
+ 719 0279 0C       		.uleb128 0xc
+ 720 027a 01       		.uleb128 0x1
+ 721 027b 50       		.byte	0x50
+ 722 027c 02       		.uleb128 0x2
+ 723 027d 78       		.byte	0x78
+ 724 027e 00       		.sleb128 0
+ 725 027f 0C       		.uleb128 0xc
+ 726 0280 01       		.uleb128 0x1
+ 727 0281 51       		.byte	0x51
+ 728 0282 01       		.uleb128 0x1
+ 729 0283 30       		.byte	0x30
+ 730 0284 00       		.byte	0
+ 731 0285 0B       		.uleb128 0xb
+ 732 0286 1E000000 		.4byte	.LVL17
+ 733 028a 90040000 		.4byte	0x490
+ 734 028e 9C020000 		.4byte	0x29c
+ 735 0292 0C       		.uleb128 0xc
+ 736 0293 01       		.uleb128 0x1
+ 737 0294 50       		.byte	0x50
+ 738 0295 05       		.uleb128 0x5
+ 739 0296 74       		.byte	0x74
+ 740 0297 00       		.sleb128 0
+ 741 0298 08       		.byte	0x8
+ 742 0299 80       		.byte	0x80
+ 743 029a 21       		.byte	0x21
+ 744 029b 00       		.byte	0
+ 745 029c 0B       		.uleb128 0xb
+ 746 029d 2A000000 		.4byte	.LVL19
+ 747 02a1 9B040000 		.4byte	0x49b
+ 748 02a5 B5020000 		.4byte	0x2b5
+ 749 02a9 0C       		.uleb128 0xc
+ 750 02aa 01       		.uleb128 0x1
+ 751 02ab 50       		.byte	0x50
+ 752 02ac 02       		.uleb128 0x2
+ 753 02ad 78       		.byte	0x78
+ 754 02ae 00       		.sleb128 0
+ 755 02af 0C       		.uleb128 0xc
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 18
+
+
+ 756 02b0 01       		.uleb128 0x1
+ 757 02b1 51       		.byte	0x51
+ 758 02b2 01       		.uleb128 0x1
+ 759 02b3 31       		.byte	0x31
+ 760 02b4 00       		.byte	0
+ 761 02b5 08       		.uleb128 0x8
+ 762 02b6 58000000 		.4byte	.LVL28
+ 763 02ba B1040000 		.4byte	0x4b1
+ 764 02be 00       		.byte	0
+ 765 02bf 07       		.uleb128 0x7
+ 766 02c0 24020000 		.4byte	.LASF29
+ 767 02c4 01       		.byte	0x1
+ 768 02c5 83       		.byte	0x83
+ 769 02c6 AF000000 		.4byte	0xaf
+ 770 02ca 00000000 		.4byte	.LFB4
+ 771 02ce 2E000000 		.4byte	.LFE4-.LFB4
+ 772 02d2 01       		.uleb128 0x1
+ 773 02d3 9C       		.byte	0x9c
+ 774 02d4 59030000 		.4byte	0x359
+ 775 02d8 09       		.uleb128 0x9
+ 776 02d9 11030000 		.4byte	.LASF22
+ 777 02dd 01       		.byte	0x1
+ 778 02de 83       		.byte	0x83
+ 779 02df 76000000 		.4byte	0x76
+ 780 02e3 9D010000 		.4byte	.LLST10
+ 781 02e7 09       		.uleb128 0x9
+ 782 02e8 B5010000 		.4byte	.LASF23
+ 783 02ec 01       		.byte	0x1
+ 784 02ed 84       		.byte	0x84
+ 785 02ee 76000000 		.4byte	0x76
+ 786 02f2 BE010000 		.4byte	.LLST11
+ 787 02f6 09       		.uleb128 0x9
+ 788 02f7 DF000000 		.4byte	.LASF24
+ 789 02fb 01       		.byte	0x1
+ 790 02fc 85       		.byte	0x85
+ 791 02fd 76000000 		.4byte	0x76
+ 792 0301 DF010000 		.4byte	.LLST12
+ 793 0305 0A       		.uleb128 0xa
+ 794 0306 A9020000 		.4byte	.LASF27
+ 795 030a 01       		.byte	0x1
+ 796 030b 88       		.byte	0x88
+ 797 030c 76000000 		.4byte	0x76
+ 798 0310 00020000 		.4byte	.LLST13
+ 799 0314 0B       		.uleb128 0xb
+ 800 0315 0C000000 		.4byte	.LVL31
+ 801 0319 85040000 		.4byte	0x485
+ 802 031d 27030000 		.4byte	0x327
+ 803 0321 0C       		.uleb128 0xc
+ 804 0322 01       		.uleb128 0x1
+ 805 0323 51       		.byte	0x51
+ 806 0324 01       		.uleb128 0x1
+ 807 0325 30       		.byte	0x30
+ 808 0326 00       		.byte	0
+ 809 0327 0B       		.uleb128 0xb
+ 810 0328 16000000 		.4byte	.LVL33
+ 811 032c 90040000 		.4byte	0x490
+ 812 0330 3B030000 		.4byte	0x33b
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 19
+
+
+ 813 0334 0C       		.uleb128 0xc
+ 814 0335 01       		.uleb128 0x1
+ 815 0336 50       		.byte	0x50
+ 816 0337 02       		.uleb128 0x2
+ 817 0338 75       		.byte	0x75
+ 818 0339 00       		.sleb128 0
+ 819 033a 00       		.byte	0
+ 820 033b 0B       		.uleb128 0xb
+ 821 033c 20000000 		.4byte	.LVL35
+ 822 0340 90040000 		.4byte	0x490
+ 823 0344 4F030000 		.4byte	0x34f
+ 824 0348 0C       		.uleb128 0xc
+ 825 0349 01       		.uleb128 0x1
+ 826 034a 50       		.byte	0x50
+ 827 034b 02       		.uleb128 0x2
+ 828 034c 76       		.byte	0x76
+ 829 034d 00       		.sleb128 0
+ 830 034e 00       		.byte	0
+ 831 034f 08       		.uleb128 0x8
+ 832 0350 26000000 		.4byte	.LVL37
+ 833 0354 B1040000 		.4byte	0x4b1
+ 834 0358 00       		.byte	0
+ 835 0359 07       		.uleb128 0x7
+ 836 035a 80010000 		.4byte	.LASF30
+ 837 035e 01       		.byte	0x1
+ 838 035f 9E       		.byte	0x9e
+ 839 0360 AF000000 		.4byte	0xaf
+ 840 0364 00000000 		.4byte	.LFB5
+ 841 0368 42000000 		.4byte	.LFE5-.LFB5
+ 842 036c 01       		.uleb128 0x1
+ 843 036d 9C       		.byte	0x9c
+ 844 036e 1D040000 		.4byte	0x41d
+ 845 0372 09       		.uleb128 0x9
+ 846 0373 11030000 		.4byte	.LASF22
+ 847 0377 01       		.byte	0x1
+ 848 0378 9E       		.byte	0x9e
+ 849 0379 76000000 		.4byte	0x76
+ 850 037d 29020000 		.4byte	.LLST14
+ 851 0381 09       		.uleb128 0x9
+ 852 0382 B5010000 		.4byte	.LASF23
+ 853 0386 01       		.byte	0x1
+ 854 0387 9F       		.byte	0x9f
+ 855 0388 76000000 		.4byte	0x76
+ 856 038c 4A020000 		.4byte	.LLST15
+ 857 0390 09       		.uleb128 0x9
+ 858 0391 3F000000 		.4byte	.LASF26
+ 859 0395 01       		.byte	0x1
+ 860 0396 A0       		.byte	0xa0
+ 861 0397 76000000 		.4byte	0x76
+ 862 039b 6B020000 		.4byte	.LLST16
+ 863 039f 09       		.uleb128 0x9
+ 864 03a0 DF000000 		.4byte	.LASF24
+ 865 03a4 01       		.byte	0x1
+ 866 03a5 A1       		.byte	0xa1
+ 867 03a6 C7010000 		.4byte	0x1c7
+ 868 03aa 8C020000 		.4byte	.LLST17
+ 869 03ae 0A       		.uleb128 0xa
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 20
+
+
+ 870 03af A9020000 		.4byte	.LASF27
+ 871 03b3 01       		.byte	0x1
+ 872 03b4 A4       		.byte	0xa4
+ 873 03b5 76000000 		.4byte	0x76
+ 874 03b9 AA020000 		.4byte	.LLST18
+ 875 03bd 10       		.uleb128 0x10
+ 876 03be 1E000000 		.4byte	.LBB4
+ 877 03c2 18000000 		.4byte	.LBE4-.LBB4
+ 878 03c6 EC030000 		.4byte	0x3ec
+ 879 03ca 0A       		.uleb128 0xa
+ 880 03cb E3010000 		.4byte	.LASF28
+ 881 03cf 01       		.byte	0x1
+ 882 03d0 AC       		.byte	0xac
+ 883 03d1 76000000 		.4byte	0x76
+ 884 03d5 E9020000 		.4byte	.LLST19
+ 885 03d9 08       		.uleb128 0x8
+ 886 03da 26000000 		.4byte	.LVL45
+ 887 03de 90040000 		.4byte	0x490
+ 888 03e2 08       		.uleb128 0x8
+ 889 03e3 2C000000 		.4byte	.LVL46
+ 890 03e7 B1040000 		.4byte	0x4b1
+ 891 03eb 00       		.byte	0
+ 892 03ec 0B       		.uleb128 0xb
+ 893 03ed 0E000000 		.4byte	.LVL40
+ 894 03f1 85040000 		.4byte	0x485
+ 895 03f5 FF030000 		.4byte	0x3ff
+ 896 03f9 0C       		.uleb128 0xc
+ 897 03fa 01       		.uleb128 0x1
+ 898 03fb 51       		.byte	0x51
+ 899 03fc 01       		.uleb128 0x1
+ 900 03fd 30       		.byte	0x30
+ 901 03fe 00       		.byte	0
+ 902 03ff 0B       		.uleb128 0xb
+ 903 0400 18000000 		.4byte	.LVL42
+ 904 0404 90040000 		.4byte	0x490
+ 905 0408 13040000 		.4byte	0x413
+ 906 040c 0C       		.uleb128 0xc
+ 907 040d 01       		.uleb128 0x1
+ 908 040e 50       		.byte	0x50
+ 909 040f 02       		.uleb128 0x2
+ 910 0410 77       		.byte	0x77
+ 911 0411 00       		.sleb128 0
+ 912 0412 00       		.byte	0
+ 913 0413 08       		.uleb128 0x8
+ 914 0414 3A000000 		.4byte	.LVL51
+ 915 0418 B1040000 		.4byte	0x4b1
+ 916 041c 00       		.byte	0
+ 917 041d 07       		.uleb128 0x7
+ 918 041e 68000000 		.4byte	.LASF31
+ 919 0422 01       		.byte	0x1
+ 920 0423 C8       		.byte	0xc8
+ 921 0424 76000000 		.4byte	0x76
+ 922 0428 00000000 		.4byte	.LFB6
+ 923 042c 18000000 		.4byte	.LFE6-.LFB6
+ 924 0430 01       		.uleb128 0x1
+ 925 0431 9C       		.byte	0x9c
+ 926 0432 6F040000 		.4byte	0x46f
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 21
+
+
+ 927 0436 09       		.uleb128 0x9
+ 928 0437 11030000 		.4byte	.LASF22
+ 929 043b 01       		.byte	0x1
+ 930 043c C8       		.byte	0xc8
+ 931 043d 76000000 		.4byte	0x76
+ 932 0441 07030000 		.4byte	.LLST20
+ 933 0445 11       		.uleb128 0x11
+ 934 0446 A9020000 		.4byte	.LASF27
+ 935 044a 01       		.byte	0x1
+ 936 044b CB       		.byte	0xcb
+ 937 044c 76000000 		.4byte	0x76
+ 938 0450 01       		.uleb128 0x1
+ 939 0451 54       		.byte	0x54
+ 940 0452 0B       		.uleb128 0xb
+ 941 0453 08000000 		.4byte	.LVL53
+ 942 0457 85040000 		.4byte	0x485
+ 943 045b 65040000 		.4byte	0x465
+ 944 045f 0C       		.uleb128 0xc
+ 945 0460 01       		.uleb128 0x1
+ 946 0461 51       		.byte	0x51
+ 947 0462 01       		.uleb128 0x1
+ 948 0463 30       		.byte	0x30
+ 949 0464 00       		.byte	0
+ 950 0465 08       		.uleb128 0x8
+ 951 0466 0E000000 		.4byte	.LVL55
+ 952 046a B1040000 		.4byte	0x4b1
+ 953 046e 00       		.byte	0
+ 954 046f 12       		.uleb128 0x12
+ 955 0470 EB010000 		.4byte	.LASF32
+ 956 0474 EB010000 		.4byte	.LASF32
+ 957 0478 05       		.byte	0x5
+ 958 0479 93       		.byte	0x93
+ 959 047a 12       		.uleb128 0x12
+ 960 047b 20030000 		.4byte	.LASF33
+ 961 047f 20030000 		.4byte	.LASF33
+ 962 0483 05       		.byte	0x5
+ 963 0484 94       		.byte	0x94
+ 964 0485 12       		.uleb128 0x12
+ 965 0486 85020000 		.4byte	.LASF34
+ 966 048a 85020000 		.4byte	.LASF34
+ 967 048e 05       		.byte	0x5
+ 968 048f B1       		.byte	0xb1
+ 969 0490 12       		.uleb128 0x12
+ 970 0491 24000000 		.4byte	.LASF35
+ 971 0495 24000000 		.4byte	.LASF35
+ 972 0499 05       		.byte	0x5
+ 973 049a B6       		.byte	0xb6
+ 974 049b 12       		.uleb128 0x12
+ 975 049c C6010000 		.4byte	.LASF36
+ 976 04a0 C6010000 		.4byte	.LASF36
+ 977 04a4 05       		.byte	0x5
+ 978 04a5 B3       		.byte	0xb3
+ 979 04a6 12       		.uleb128 0x12
+ 980 04a7 0A000000 		.4byte	.LASF37
+ 981 04ab 0A000000 		.4byte	.LASF37
+ 982 04af 05       		.byte	0x5
+ 983 04b0 B7       		.byte	0xb7
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 22
+
+
+ 984 04b1 12       		.uleb128 0x12
+ 985 04b2 BD020000 		.4byte	.LASF38
+ 986 04b6 BD020000 		.4byte	.LASF38
+ 987 04ba 05       		.byte	0x5
+ 988 04bb B5       		.byte	0xb5
+ 989 04bc 00       		.byte	0
+ 990              		.section	.debug_abbrev,"",%progbits
+ 991              	.Ldebug_abbrev0:
+ 992 0000 01       		.uleb128 0x1
+ 993 0001 11       		.uleb128 0x11
+ 994 0002 01       		.byte	0x1
+ 995 0003 25       		.uleb128 0x25
+ 996 0004 0E       		.uleb128 0xe
+ 997 0005 13       		.uleb128 0x13
+ 998 0006 0B       		.uleb128 0xb
+ 999 0007 03       		.uleb128 0x3
+ 1000 0008 0E       		.uleb128 0xe
+ 1001 0009 1B       		.uleb128 0x1b
+ 1002 000a 0E       		.uleb128 0xe
+ 1003 000b 55       		.uleb128 0x55
+ 1004 000c 17       		.uleb128 0x17
+ 1005 000d 11       		.uleb128 0x11
+ 1006 000e 01       		.uleb128 0x1
+ 1007 000f 10       		.uleb128 0x10
+ 1008 0010 17       		.uleb128 0x17
+ 1009 0011 00       		.byte	0
+ 1010 0012 00       		.byte	0
+ 1011 0013 02       		.uleb128 0x2
+ 1012 0014 24       		.uleb128 0x24
+ 1013 0015 00       		.byte	0
+ 1014 0016 0B       		.uleb128 0xb
+ 1015 0017 0B       		.uleb128 0xb
+ 1016 0018 3E       		.uleb128 0x3e
+ 1017 0019 0B       		.uleb128 0xb
+ 1018 001a 03       		.uleb128 0x3
+ 1019 001b 0E       		.uleb128 0xe
+ 1020 001c 00       		.byte	0
+ 1021 001d 00       		.byte	0
+ 1022 001e 03       		.uleb128 0x3
+ 1023 001f 16       		.uleb128 0x16
+ 1024 0020 00       		.byte	0
+ 1025 0021 03       		.uleb128 0x3
+ 1026 0022 0E       		.uleb128 0xe
+ 1027 0023 3A       		.uleb128 0x3a
+ 1028 0024 0B       		.uleb128 0xb
+ 1029 0025 3B       		.uleb128 0x3b
+ 1030 0026 0B       		.uleb128 0xb
+ 1031 0027 49       		.uleb128 0x49
+ 1032 0028 13       		.uleb128 0x13
+ 1033 0029 00       		.byte	0
+ 1034 002a 00       		.byte	0
+ 1035 002b 04       		.uleb128 0x4
+ 1036 002c 24       		.uleb128 0x24
+ 1037 002d 00       		.byte	0
+ 1038 002e 0B       		.uleb128 0xb
+ 1039 002f 0B       		.uleb128 0xb
+ 1040 0030 3E       		.uleb128 0x3e
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 23
+
+
+ 1041 0031 0B       		.uleb128 0xb
+ 1042 0032 03       		.uleb128 0x3
+ 1043 0033 08       		.uleb128 0x8
+ 1044 0034 00       		.byte	0
+ 1045 0035 00       		.byte	0
+ 1046 0036 05       		.uleb128 0x5
+ 1047 0037 04       		.uleb128 0x4
+ 1048 0038 01       		.byte	0x1
+ 1049 0039 0B       		.uleb128 0xb
+ 1050 003a 0B       		.uleb128 0xb
+ 1051 003b 49       		.uleb128 0x49
+ 1052 003c 13       		.uleb128 0x13
+ 1053 003d 3A       		.uleb128 0x3a
+ 1054 003e 0B       		.uleb128 0xb
+ 1055 003f 3B       		.uleb128 0x3b
+ 1056 0040 0B       		.uleb128 0xb
+ 1057 0041 01       		.uleb128 0x1
+ 1058 0042 13       		.uleb128 0x13
+ 1059 0043 00       		.byte	0
+ 1060 0044 00       		.byte	0
+ 1061 0045 06       		.uleb128 0x6
+ 1062 0046 28       		.uleb128 0x28
+ 1063 0047 00       		.byte	0
+ 1064 0048 03       		.uleb128 0x3
+ 1065 0049 0E       		.uleb128 0xe
+ 1066 004a 1C       		.uleb128 0x1c
+ 1067 004b 0B       		.uleb128 0xb
+ 1068 004c 00       		.byte	0
+ 1069 004d 00       		.byte	0
+ 1070 004e 07       		.uleb128 0x7
+ 1071 004f 2E       		.uleb128 0x2e
+ 1072 0050 01       		.byte	0x1
+ 1073 0051 3F       		.uleb128 0x3f
+ 1074 0052 19       		.uleb128 0x19
+ 1075 0053 03       		.uleb128 0x3
+ 1076 0054 0E       		.uleb128 0xe
+ 1077 0055 3A       		.uleb128 0x3a
+ 1078 0056 0B       		.uleb128 0xb
+ 1079 0057 3B       		.uleb128 0x3b
+ 1080 0058 0B       		.uleb128 0xb
+ 1081 0059 27       		.uleb128 0x27
+ 1082 005a 19       		.uleb128 0x19
+ 1083 005b 49       		.uleb128 0x49
+ 1084 005c 13       		.uleb128 0x13
+ 1085 005d 11       		.uleb128 0x11
+ 1086 005e 01       		.uleb128 0x1
+ 1087 005f 12       		.uleb128 0x12
+ 1088 0060 06       		.uleb128 0x6
+ 1089 0061 40       		.uleb128 0x40
+ 1090 0062 18       		.uleb128 0x18
+ 1091 0063 9742     		.uleb128 0x2117
+ 1092 0065 19       		.uleb128 0x19
+ 1093 0066 01       		.uleb128 0x1
+ 1094 0067 13       		.uleb128 0x13
+ 1095 0068 00       		.byte	0
+ 1096 0069 00       		.byte	0
+ 1097 006a 08       		.uleb128 0x8
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 24
+
+
+ 1098 006b 898201   		.uleb128 0x4109
+ 1099 006e 00       		.byte	0
+ 1100 006f 11       		.uleb128 0x11
+ 1101 0070 01       		.uleb128 0x1
+ 1102 0071 31       		.uleb128 0x31
+ 1103 0072 13       		.uleb128 0x13
+ 1104 0073 00       		.byte	0
+ 1105 0074 00       		.byte	0
+ 1106 0075 09       		.uleb128 0x9
+ 1107 0076 05       		.uleb128 0x5
+ 1108 0077 00       		.byte	0
+ 1109 0078 03       		.uleb128 0x3
+ 1110 0079 0E       		.uleb128 0xe
+ 1111 007a 3A       		.uleb128 0x3a
+ 1112 007b 0B       		.uleb128 0xb
+ 1113 007c 3B       		.uleb128 0x3b
+ 1114 007d 0B       		.uleb128 0xb
+ 1115 007e 49       		.uleb128 0x49
+ 1116 007f 13       		.uleb128 0x13
+ 1117 0080 02       		.uleb128 0x2
+ 1118 0081 17       		.uleb128 0x17
+ 1119 0082 00       		.byte	0
+ 1120 0083 00       		.byte	0
+ 1121 0084 0A       		.uleb128 0xa
+ 1122 0085 34       		.uleb128 0x34
+ 1123 0086 00       		.byte	0
+ 1124 0087 03       		.uleb128 0x3
+ 1125 0088 0E       		.uleb128 0xe
+ 1126 0089 3A       		.uleb128 0x3a
+ 1127 008a 0B       		.uleb128 0xb
+ 1128 008b 3B       		.uleb128 0x3b
+ 1129 008c 0B       		.uleb128 0xb
+ 1130 008d 49       		.uleb128 0x49
+ 1131 008e 13       		.uleb128 0x13
+ 1132 008f 02       		.uleb128 0x2
+ 1133 0090 17       		.uleb128 0x17
+ 1134 0091 00       		.byte	0
+ 1135 0092 00       		.byte	0
+ 1136 0093 0B       		.uleb128 0xb
+ 1137 0094 898201   		.uleb128 0x4109
+ 1138 0097 01       		.byte	0x1
+ 1139 0098 11       		.uleb128 0x11
+ 1140 0099 01       		.uleb128 0x1
+ 1141 009a 31       		.uleb128 0x31
+ 1142 009b 13       		.uleb128 0x13
+ 1143 009c 01       		.uleb128 0x1
+ 1144 009d 13       		.uleb128 0x13
+ 1145 009e 00       		.byte	0
+ 1146 009f 00       		.byte	0
+ 1147 00a0 0C       		.uleb128 0xc
+ 1148 00a1 8A8201   		.uleb128 0x410a
+ 1149 00a4 00       		.byte	0
+ 1150 00a5 02       		.uleb128 0x2
+ 1151 00a6 18       		.uleb128 0x18
+ 1152 00a7 9142     		.uleb128 0x2111
+ 1153 00a9 18       		.uleb128 0x18
+ 1154 00aa 00       		.byte	0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 25
+
+
+ 1155 00ab 00       		.byte	0
+ 1156 00ac 0D       		.uleb128 0xd
+ 1157 00ad 0F       		.uleb128 0xf
+ 1158 00ae 00       		.byte	0
+ 1159 00af 0B       		.uleb128 0xb
+ 1160 00b0 0B       		.uleb128 0xb
+ 1161 00b1 49       		.uleb128 0x49
+ 1162 00b2 13       		.uleb128 0x13
+ 1163 00b3 00       		.byte	0
+ 1164 00b4 00       		.byte	0
+ 1165 00b5 0E       		.uleb128 0xe
+ 1166 00b6 0B       		.uleb128 0xb
+ 1167 00b7 01       		.byte	0x1
+ 1168 00b8 55       		.uleb128 0x55
+ 1169 00b9 17       		.uleb128 0x17
+ 1170 00ba 01       		.uleb128 0x1
+ 1171 00bb 13       		.uleb128 0x13
+ 1172 00bc 00       		.byte	0
+ 1173 00bd 00       		.byte	0
+ 1174 00be 0F       		.uleb128 0xf
+ 1175 00bf 898201   		.uleb128 0x4109
+ 1176 00c2 01       		.byte	0x1
+ 1177 00c3 11       		.uleb128 0x11
+ 1178 00c4 01       		.uleb128 0x1
+ 1179 00c5 31       		.uleb128 0x31
+ 1180 00c6 13       		.uleb128 0x13
+ 1181 00c7 00       		.byte	0
+ 1182 00c8 00       		.byte	0
+ 1183 00c9 10       		.uleb128 0x10
+ 1184 00ca 0B       		.uleb128 0xb
+ 1185 00cb 01       		.byte	0x1
+ 1186 00cc 11       		.uleb128 0x11
+ 1187 00cd 01       		.uleb128 0x1
+ 1188 00ce 12       		.uleb128 0x12
+ 1189 00cf 06       		.uleb128 0x6
+ 1190 00d0 01       		.uleb128 0x1
+ 1191 00d1 13       		.uleb128 0x13
+ 1192 00d2 00       		.byte	0
+ 1193 00d3 00       		.byte	0
+ 1194 00d4 11       		.uleb128 0x11
+ 1195 00d5 34       		.uleb128 0x34
+ 1196 00d6 00       		.byte	0
+ 1197 00d7 03       		.uleb128 0x3
+ 1198 00d8 0E       		.uleb128 0xe
+ 1199 00d9 3A       		.uleb128 0x3a
+ 1200 00da 0B       		.uleb128 0xb
+ 1201 00db 3B       		.uleb128 0x3b
+ 1202 00dc 0B       		.uleb128 0xb
+ 1203 00dd 49       		.uleb128 0x49
+ 1204 00de 13       		.uleb128 0x13
+ 1205 00df 02       		.uleb128 0x2
+ 1206 00e0 18       		.uleb128 0x18
+ 1207 00e1 00       		.byte	0
+ 1208 00e2 00       		.byte	0
+ 1209 00e3 12       		.uleb128 0x12
+ 1210 00e4 2E       		.uleb128 0x2e
+ 1211 00e5 00       		.byte	0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 26
+
+
+ 1212 00e6 3F       		.uleb128 0x3f
+ 1213 00e7 19       		.uleb128 0x19
+ 1214 00e8 3C       		.uleb128 0x3c
+ 1215 00e9 19       		.uleb128 0x19
+ 1216 00ea 6E       		.uleb128 0x6e
+ 1217 00eb 0E       		.uleb128 0xe
+ 1218 00ec 03       		.uleb128 0x3
+ 1219 00ed 0E       		.uleb128 0xe
+ 1220 00ee 3A       		.uleb128 0x3a
+ 1221 00ef 0B       		.uleb128 0xb
+ 1222 00f0 3B       		.uleb128 0x3b
+ 1223 00f1 0B       		.uleb128 0xb
+ 1224 00f2 00       		.byte	0
+ 1225 00f3 00       		.byte	0
+ 1226 00f4 00       		.byte	0
+ 1227              		.section	.debug_loc,"",%progbits
+ 1228              	.Ldebug_loc0:
+ 1229              	.LLST0:
+ 1230 0000 00000000 		.4byte	.LVL2
+ 1231 0004 0D000000 		.4byte	.LVL4-1
+ 1232 0008 0100     		.2byte	0x1
+ 1233 000a 50       		.byte	0x50
+ 1234 000b 0D000000 		.4byte	.LVL4-1
+ 1235 000f 3A000000 		.4byte	.LFE2
+ 1236 0013 0400     		.2byte	0x4
+ 1237 0015 F3       		.byte	0xf3
+ 1238 0016 01       		.uleb128 0x1
+ 1239 0017 50       		.byte	0x50
+ 1240 0018 9F       		.byte	0x9f
+ 1241 0019 00000000 		.4byte	0
+ 1242 001d 00000000 		.4byte	0
+ 1243              	.LLST1:
+ 1244 0021 00000000 		.4byte	.LVL2
+ 1245 0025 0A000000 		.4byte	.LVL3
+ 1246 0029 0100     		.2byte	0x1
+ 1247 002b 51       		.byte	0x51
+ 1248 002c 0A000000 		.4byte	.LVL3
+ 1249 0030 3A000000 		.4byte	.LFE2
+ 1250 0034 0400     		.2byte	0x4
+ 1251 0036 F3       		.byte	0xf3
+ 1252 0037 01       		.uleb128 0x1
+ 1253 0038 51       		.byte	0x51
+ 1254 0039 9F       		.byte	0x9f
+ 1255 003a 00000000 		.4byte	0
+ 1256 003e 00000000 		.4byte	0
+ 1257              	.LLST2:
+ 1258 0042 00000000 		.4byte	.LVL2
+ 1259 0046 0D000000 		.4byte	.LVL4-1
+ 1260 004a 0100     		.2byte	0x1
+ 1261 004c 52       		.byte	0x52
+ 1262 004d 0D000000 		.4byte	.LVL4-1
+ 1263 0051 3A000000 		.4byte	.LFE2
+ 1264 0055 0100     		.2byte	0x1
+ 1265 0057 57       		.byte	0x57
+ 1266 0058 00000000 		.4byte	0
+ 1267 005c 00000000 		.4byte	0
+ 1268              	.LLST3:
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 27
+
+
+ 1269 0060 0E000000 		.4byte	.LVL4
+ 1270 0064 14000000 		.4byte	.LVL5
+ 1271 0068 0100     		.2byte	0x1
+ 1272 006a 50       		.byte	0x50
+ 1273 006b 18000000 		.4byte	.LVL6
+ 1274 006f 20000000 		.4byte	.LVL7
+ 1275 0073 0100     		.2byte	0x1
+ 1276 0075 50       		.byte	0x50
+ 1277 0076 24000000 		.4byte	.LVL8
+ 1278 007a 2B000000 		.4byte	.LVL9-1
+ 1279 007e 0100     		.2byte	0x1
+ 1280 0080 50       		.byte	0x50
+ 1281 0081 2E000000 		.4byte	.LVL10
+ 1282 0085 3A000000 		.4byte	.LFE2
+ 1283 0089 0100     		.2byte	0x1
+ 1284 008b 54       		.byte	0x54
+ 1285 008c 00000000 		.4byte	0
+ 1286 0090 00000000 		.4byte	0
+ 1287              	.LLST4:
+ 1288 0094 00000000 		.4byte	.LVL12
+ 1289 0098 11000000 		.4byte	.LVL14-1
+ 1290 009c 0100     		.2byte	0x1
+ 1291 009e 50       		.byte	0x50
+ 1292 009f 11000000 		.4byte	.LVL14-1
+ 1293 00a3 62000000 		.4byte	.LFE3
+ 1294 00a7 0400     		.2byte	0x4
+ 1295 00a9 F3       		.byte	0xf3
+ 1296 00aa 01       		.uleb128 0x1
+ 1297 00ab 50       		.byte	0x50
+ 1298 00ac 9F       		.byte	0x9f
+ 1299 00ad 00000000 		.4byte	0
+ 1300 00b1 00000000 		.4byte	0
+ 1301              	.LLST5:
+ 1302 00b5 00000000 		.4byte	.LVL12
+ 1303 00b9 0E000000 		.4byte	.LVL13
+ 1304 00bd 0100     		.2byte	0x1
+ 1305 00bf 51       		.byte	0x51
+ 1306 00c0 0E000000 		.4byte	.LVL13
+ 1307 00c4 16000000 		.4byte	.LVL15
+ 1308 00c8 0400     		.2byte	0x4
+ 1309 00ca F3       		.byte	0xf3
+ 1310 00cb 01       		.uleb128 0x1
+ 1311 00cc 51       		.byte	0x51
+ 1312 00cd 9F       		.byte	0x9f
+ 1313 00ce 16000000 		.4byte	.LVL15
+ 1314 00d2 30000000 		.4byte	.LVL20
+ 1315 00d6 0600     		.2byte	0x6
+ 1316 00d8 74       		.byte	0x74
+ 1317 00d9 00       		.sleb128 0
+ 1318 00da 08       		.byte	0x8
+ 1319 00db 80       		.byte	0x80
+ 1320 00dc 21       		.byte	0x21
+ 1321 00dd 9F       		.byte	0x9f
+ 1322 00de 44000000 		.4byte	.LVL24
+ 1323 00e2 46000000 		.4byte	.LVL25
+ 1324 00e6 0600     		.2byte	0x6
+ 1325 00e8 74       		.byte	0x74
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 28
+
+
+ 1326 00e9 00       		.sleb128 0
+ 1327 00ea 08       		.byte	0x8
+ 1328 00eb 80       		.byte	0x80
+ 1329 00ec 21       		.byte	0x21
+ 1330 00ed 9F       		.byte	0x9f
+ 1331 00ee 00000000 		.4byte	0
+ 1332 00f2 00000000 		.4byte	0
+ 1333              	.LLST6:
+ 1334 00f6 00000000 		.4byte	.LVL12
+ 1335 00fa 11000000 		.4byte	.LVL14-1
+ 1336 00fe 0100     		.2byte	0x1
+ 1337 0100 52       		.byte	0x52
+ 1338 0101 11000000 		.4byte	.LVL14-1
+ 1339 0105 62000000 		.4byte	.LFE3
+ 1340 0109 0400     		.2byte	0x4
+ 1341 010b F3       		.byte	0xf3
+ 1342 010c 01       		.uleb128 0x1
+ 1343 010d 52       		.byte	0x52
+ 1344 010e 9F       		.byte	0x9f
+ 1345 010f 00000000 		.4byte	0
+ 1346 0113 00000000 		.4byte	0
+ 1347              	.LLST7:
+ 1348 0117 00000000 		.4byte	.LVL12
+ 1349 011b 11000000 		.4byte	.LVL14-1
+ 1350 011f 0100     		.2byte	0x1
+ 1351 0121 53       		.byte	0x53
+ 1352 0122 11000000 		.4byte	.LVL14-1
+ 1353 0126 62000000 		.4byte	.LFE3
+ 1354 012a 0100     		.2byte	0x1
+ 1355 012c 57       		.byte	0x57
+ 1356 012d 00000000 		.4byte	0
+ 1357 0131 00000000 		.4byte	0
+ 1358              	.LLST8:
+ 1359 0135 12000000 		.4byte	.LVL14
+ 1360 0139 1A000000 		.4byte	.LVL16
+ 1361 013d 0100     		.2byte	0x1
+ 1362 013f 50       		.byte	0x50
+ 1363 0140 1E000000 		.4byte	.LVL17
+ 1364 0144 26000000 		.4byte	.LVL18
+ 1365 0148 0100     		.2byte	0x1
+ 1366 014a 50       		.byte	0x50
+ 1367 014b 2A000000 		.4byte	.LVL19
+ 1368 014f 30000000 		.4byte	.LVL20
+ 1369 0153 0100     		.2byte	0x1
+ 1370 0155 50       		.byte	0x50
+ 1371 0156 44000000 		.4byte	.LVL24
+ 1372 015a 46000000 		.4byte	.LVL25
+ 1373 015e 0100     		.2byte	0x1
+ 1374 0160 50       		.byte	0x50
+ 1375 0161 54000000 		.4byte	.LVL27
+ 1376 0165 62000000 		.4byte	.LFE3
+ 1377 0169 0100     		.2byte	0x1
+ 1378 016b 55       		.byte	0x55
+ 1379 016c 00000000 		.4byte	0
+ 1380 0170 00000000 		.4byte	0
+ 1381              	.LLST9:
+ 1382 0174 30000000 		.4byte	.LVL20
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 29
+
+
+ 1383 0178 40000000 		.4byte	.LVL22
+ 1384 017c 0100     		.2byte	0x1
+ 1385 017e 54       		.byte	0x54
+ 1386 017f 42000000 		.4byte	.LVL23
+ 1387 0183 44000000 		.4byte	.LVL24
+ 1388 0187 0100     		.2byte	0x1
+ 1389 0189 54       		.byte	0x54
+ 1390 018a 46000000 		.4byte	.LVL25
+ 1391 018e 54000000 		.4byte	.LVL27
+ 1392 0192 0100     		.2byte	0x1
+ 1393 0194 54       		.byte	0x54
+ 1394 0195 00000000 		.4byte	0
+ 1395 0199 00000000 		.4byte	0
+ 1396              	.LLST10:
+ 1397 019d 00000000 		.4byte	.LVL29
+ 1398 01a1 0B000000 		.4byte	.LVL31-1
+ 1399 01a5 0100     		.2byte	0x1
+ 1400 01a7 50       		.byte	0x50
+ 1401 01a8 0B000000 		.4byte	.LVL31-1
+ 1402 01ac 2E000000 		.4byte	.LFE4
+ 1403 01b0 0400     		.2byte	0x4
+ 1404 01b2 F3       		.byte	0xf3
+ 1405 01b3 01       		.uleb128 0x1
+ 1406 01b4 50       		.byte	0x50
+ 1407 01b5 9F       		.byte	0x9f
+ 1408 01b6 00000000 		.4byte	0
+ 1409 01ba 00000000 		.4byte	0
+ 1410              	.LLST11:
+ 1411 01be 00000000 		.4byte	.LVL29
+ 1412 01c2 08000000 		.4byte	.LVL30
+ 1413 01c6 0100     		.2byte	0x1
+ 1414 01c8 51       		.byte	0x51
+ 1415 01c9 08000000 		.4byte	.LVL30
+ 1416 01cd 2E000000 		.4byte	.LFE4
+ 1417 01d1 0400     		.2byte	0x4
+ 1418 01d3 F3       		.byte	0xf3
+ 1419 01d4 01       		.uleb128 0x1
+ 1420 01d5 51       		.byte	0x51
+ 1421 01d6 9F       		.byte	0x9f
+ 1422 01d7 00000000 		.4byte	0
+ 1423 01db 00000000 		.4byte	0
+ 1424              	.LLST12:
+ 1425 01df 00000000 		.4byte	.LVL29
+ 1426 01e3 0B000000 		.4byte	.LVL31-1
+ 1427 01e7 0100     		.2byte	0x1
+ 1428 01e9 52       		.byte	0x52
+ 1429 01ea 0B000000 		.4byte	.LVL31-1
+ 1430 01ee 2E000000 		.4byte	.LFE4
+ 1431 01f2 0400     		.2byte	0x4
+ 1432 01f4 F3       		.byte	0xf3
+ 1433 01f5 01       		.uleb128 0x1
+ 1434 01f6 52       		.byte	0x52
+ 1435 01f7 9F       		.byte	0x9f
+ 1436 01f8 00000000 		.4byte	0
+ 1437 01fc 00000000 		.4byte	0
+ 1438              	.LLST13:
+ 1439 0200 0C000000 		.4byte	.LVL31
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 30
+
+
+ 1440 0204 12000000 		.4byte	.LVL32
+ 1441 0208 0100     		.2byte	0x1
+ 1442 020a 50       		.byte	0x50
+ 1443 020b 16000000 		.4byte	.LVL33
+ 1444 020f 1C000000 		.4byte	.LVL34
+ 1445 0213 0100     		.2byte	0x1
+ 1446 0215 50       		.byte	0x50
+ 1447 0216 22000000 		.4byte	.LVL36
+ 1448 021a 2E000000 		.4byte	.LFE4
+ 1449 021e 0100     		.2byte	0x1
+ 1450 0220 54       		.byte	0x54
+ 1451 0221 00000000 		.4byte	0
+ 1452 0225 00000000 		.4byte	0
+ 1453              	.LLST14:
+ 1454 0229 00000000 		.4byte	.LVL38
+ 1455 022d 0D000000 		.4byte	.LVL40-1
+ 1456 0231 0100     		.2byte	0x1
+ 1457 0233 50       		.byte	0x50
+ 1458 0234 0D000000 		.4byte	.LVL40-1
+ 1459 0238 42000000 		.4byte	.LFE5
+ 1460 023c 0400     		.2byte	0x4
+ 1461 023e F3       		.byte	0xf3
+ 1462 023f 01       		.uleb128 0x1
+ 1463 0240 50       		.byte	0x50
+ 1464 0241 9F       		.byte	0x9f
+ 1465 0242 00000000 		.4byte	0
+ 1466 0246 00000000 		.4byte	0
+ 1467              	.LLST15:
+ 1468 024a 00000000 		.4byte	.LVL38
+ 1469 024e 0A000000 		.4byte	.LVL39
+ 1470 0252 0100     		.2byte	0x1
+ 1471 0254 51       		.byte	0x51
+ 1472 0255 0A000000 		.4byte	.LVL39
+ 1473 0259 42000000 		.4byte	.LFE5
+ 1474 025d 0400     		.2byte	0x4
+ 1475 025f F3       		.byte	0xf3
+ 1476 0260 01       		.uleb128 0x1
+ 1477 0261 51       		.byte	0x51
+ 1478 0262 9F       		.byte	0x9f
+ 1479 0263 00000000 		.4byte	0
+ 1480 0267 00000000 		.4byte	0
+ 1481              	.LLST16:
+ 1482 026b 00000000 		.4byte	.LVL38
+ 1483 026f 0D000000 		.4byte	.LVL40-1
+ 1484 0273 0100     		.2byte	0x1
+ 1485 0275 52       		.byte	0x52
+ 1486 0276 0D000000 		.4byte	.LVL40-1
+ 1487 027a 42000000 		.4byte	.LFE5
+ 1488 027e 0400     		.2byte	0x4
+ 1489 0280 F3       		.byte	0xf3
+ 1490 0281 01       		.uleb128 0x1
+ 1491 0282 52       		.byte	0x52
+ 1492 0283 9F       		.byte	0x9f
+ 1493 0284 00000000 		.4byte	0
+ 1494 0288 00000000 		.4byte	0
+ 1495              	.LLST17:
+ 1496 028c 00000000 		.4byte	.LVL38
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 31
+
+
+ 1497 0290 0D000000 		.4byte	.LVL40-1
+ 1498 0294 0100     		.2byte	0x1
+ 1499 0296 53       		.byte	0x53
+ 1500 0297 0D000000 		.4byte	.LVL40-1
+ 1501 029b 42000000 		.4byte	.LFE5
+ 1502 029f 0100     		.2byte	0x1
+ 1503 02a1 56       		.byte	0x56
+ 1504 02a2 00000000 		.4byte	0
+ 1505 02a6 00000000 		.4byte	0
+ 1506              	.LLST18:
+ 1507 02aa 0E000000 		.4byte	.LVL40
+ 1508 02ae 14000000 		.4byte	.LVL41
+ 1509 02b2 0100     		.2byte	0x1
+ 1510 02b4 50       		.byte	0x50
+ 1511 02b5 18000000 		.4byte	.LVL42
+ 1512 02b9 22000000 		.4byte	.LVL44
+ 1513 02bd 0100     		.2byte	0x1
+ 1514 02bf 50       		.byte	0x50
+ 1515 02c0 26000000 		.4byte	.LVL45
+ 1516 02c4 2B000000 		.4byte	.LVL46-1
+ 1517 02c8 0100     		.2byte	0x1
+ 1518 02ca 50       		.byte	0x50
+ 1519 02cb 30000000 		.4byte	.LVL47
+ 1520 02cf 36000000 		.4byte	.LVL50
+ 1521 02d3 0100     		.2byte	0x1
+ 1522 02d5 50       		.byte	0x50
+ 1523 02d6 36000000 		.4byte	.LVL50
+ 1524 02da 42000000 		.4byte	.LFE5
+ 1525 02de 0100     		.2byte	0x1
+ 1526 02e0 54       		.byte	0x54
+ 1527 02e1 00000000 		.4byte	0
+ 1528 02e5 00000000 		.4byte	0
+ 1529              	.LLST19:
+ 1530 02e9 1E000000 		.4byte	.LVL43
+ 1531 02ed 32000000 		.4byte	.LVL48
+ 1532 02f1 0100     		.2byte	0x1
+ 1533 02f3 54       		.byte	0x54
+ 1534 02f4 34000000 		.4byte	.LVL49
+ 1535 02f8 36000000 		.4byte	.LVL50
+ 1536 02fc 0100     		.2byte	0x1
+ 1537 02fe 54       		.byte	0x54
+ 1538 02ff 00000000 		.4byte	0
+ 1539 0303 00000000 		.4byte	0
+ 1540              	.LLST20:
+ 1541 0307 00000000 		.4byte	.LVL52
+ 1542 030b 07000000 		.4byte	.LVL53-1
+ 1543 030f 0100     		.2byte	0x1
+ 1544 0311 50       		.byte	0x50
+ 1545 0312 07000000 		.4byte	.LVL53-1
+ 1546 0316 18000000 		.4byte	.LFE6
+ 1547 031a 0400     		.2byte	0x4
+ 1548 031c F3       		.byte	0xf3
+ 1549 031d 01       		.uleb128 0x1
+ 1550 031e 50       		.byte	0x50
+ 1551 031f 9F       		.byte	0x9f
+ 1552 0320 00000000 		.4byte	0
+ 1553 0324 00000000 		.4byte	0
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 32
+
+
+ 1554              		.section	.debug_aranges,"",%progbits
+ 1555 0000 4C000000 		.4byte	0x4c
+ 1556 0004 0200     		.2byte	0x2
+ 1557 0006 00000000 		.4byte	.Ldebug_info0
+ 1558 000a 04       		.byte	0x4
+ 1559 000b 00       		.byte	0
+ 1560 000c 0000     		.2byte	0
+ 1561 000e 0000     		.2byte	0
+ 1562 0010 00000000 		.4byte	.LFB0
+ 1563 0014 0A000000 		.4byte	.LFE0-.LFB0
+ 1564 0018 00000000 		.4byte	.LFB1
+ 1565 001c 0A000000 		.4byte	.LFE1-.LFB1
+ 1566 0020 00000000 		.4byte	.LFB2
+ 1567 0024 3A000000 		.4byte	.LFE2-.LFB2
+ 1568 0028 00000000 		.4byte	.LFB3
+ 1569 002c 62000000 		.4byte	.LFE3-.LFB3
+ 1570 0030 00000000 		.4byte	.LFB4
+ 1571 0034 2E000000 		.4byte	.LFE4-.LFB4
+ 1572 0038 00000000 		.4byte	.LFB5
+ 1573 003c 42000000 		.4byte	.LFE5-.LFB5
+ 1574 0040 00000000 		.4byte	.LFB6
+ 1575 0044 18000000 		.4byte	.LFE6-.LFB6
+ 1576 0048 00000000 		.4byte	0
+ 1577 004c 00000000 		.4byte	0
+ 1578              		.section	.debug_ranges,"",%progbits
+ 1579              	.Ldebug_ranges0:
+ 1580 0000 30000000 		.4byte	.LBB2
+ 1581 0004 44000000 		.4byte	.LBE2
+ 1582 0008 46000000 		.4byte	.LBB3
+ 1583 000c 54000000 		.4byte	.LBE3
+ 1584 0010 00000000 		.4byte	0
+ 1585 0014 00000000 		.4byte	0
+ 1586 0018 00000000 		.4byte	.LFB0
+ 1587 001c 0A000000 		.4byte	.LFE0
+ 1588 0020 00000000 		.4byte	.LFB1
+ 1589 0024 0A000000 		.4byte	.LFE1
+ 1590 0028 00000000 		.4byte	.LFB2
+ 1591 002c 3A000000 		.4byte	.LFE2
+ 1592 0030 00000000 		.4byte	.LFB3
+ 1593 0034 62000000 		.4byte	.LFE3
+ 1594 0038 00000000 		.4byte	.LFB4
+ 1595 003c 2E000000 		.4byte	.LFE4
+ 1596 0040 00000000 		.4byte	.LFB5
+ 1597 0044 42000000 		.4byte	.LFE5
+ 1598 0048 00000000 		.4byte	.LFB6
+ 1599 004c 18000000 		.4byte	.LFE6
+ 1600 0050 00000000 		.4byte	0
+ 1601 0054 00000000 		.4byte	0
+ 1602              		.section	.debug_line,"",%progbits
+ 1603              	.Ldebug_line0:
+ 1604 0000 04020000 		.section	.debug_str,"MS",%progbits,1
+ 1604      02005A01 
+ 1604      00000201 
+ 1604      FB0E0D00 
+ 1604      01010101 
+ 1605              	.LASF9:
+ 1606 0000 5F5F7569 		.ascii	"__uint8_t\000"
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 33
+
+
+ 1606      6E74385F 
+ 1606      7400
+ 1607              	.LASF37:
+ 1608 000a 4932435F 		.ascii	"I2C_Master_MasterReadByte\000"
+ 1608      4D617374 
+ 1608      65725F4D 
+ 1608      61737465 
+ 1608      72526561 
+ 1609              	.LASF35:
+ 1610 0024 4932435F 		.ascii	"I2C_Master_MasterWriteByte\000"
+ 1610      4D617374 
+ 1610      65725F4D 
+ 1610      61737465 
+ 1610      72577269 
+ 1611              	.LASF26:
+ 1612 003f 72656769 		.ascii	"register_count\000"
+ 1612      73746572 
+ 1612      5F636F75 
+ 1612      6E7400
+ 1613              	.LASF40:
+ 1614 004e 4932435F 		.ascii	"I2C_Interface.c\000"
+ 1614      496E7465 
+ 1614      72666163 
+ 1614      652E6300 
+ 1615              	.LASF16:
+ 1616 005e 4572726F 		.ascii	"ErrorCode\000"
+ 1616      72436F64 
+ 1616      6500
+ 1617              	.LASF31:
+ 1618 0068 4932435F 		.ascii	"I2C_Peripheral_IsDeviceConnected\000"
+ 1618      50657269 
+ 1618      70686572 
+ 1618      616C5F49 
+ 1618      73446576 
+ 1619              	.LASF41:
+ 1620 0089 433A5C55 		.ascii	"C:\\Users\\indya\\Desktop\\master\\FINAL_ASSIGNMENT"
+ 1620      73657273 
+ 1620      5C696E64 
+ 1620      79615C44 
+ 1620      65736B74 
+ 1621 00b7 5F67726F 		.ascii	"_group4\\ASSIGNMENT_finale_4.cydsn\000"
+ 1621      7570345C 
+ 1621      41535349 
+ 1621      474E4D45 
+ 1621      4E545F66 
+ 1622              	.LASF11:
+ 1623 00d9 666C6F61 		.ascii	"float\000"
+ 1623      7400
+ 1624              	.LASF24:
+ 1625 00df 64617461 		.ascii	"data\000"
+ 1625      00
+ 1626              	.LASF1:
+ 1627 00e4 756E7369 		.ascii	"unsigned char\000"
+ 1627      676E6564 
+ 1627      20636861 
+ 1627      7200
+ 1628              	.LASF39:
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 34
+
+
+ 1629 00f2 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1629      43313120 
+ 1629      352E342E 
+ 1629      31203230 
+ 1629      31363036 
+ 1630 0125 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 1630      20726576 
+ 1630      6973696F 
+ 1630      6E203233 
+ 1630      37373135 
+ 1631 0158 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 1631      66756E63 
+ 1631      74696F6E 
+ 1631      2D736563 
+ 1631      74696F6E 
+ 1632              	.LASF30:
+ 1633 0180 4932435F 		.ascii	"I2C_Peripheral_WriteRegisterMulti\000"
+ 1633      50657269 
+ 1633      70686572 
+ 1633      616C5F57 
+ 1633      72697465 
+ 1634              	.LASF3:
+ 1635 01a2 73686F72 		.ascii	"short unsigned int\000"
+ 1635      7420756E 
+ 1635      7369676E 
+ 1635      65642069 
+ 1635      6E7400
+ 1636              	.LASF23:
+ 1637 01b5 72656769 		.ascii	"register_address\000"
+ 1637      73746572 
+ 1637      5F616464 
+ 1637      72657373 
+ 1637      00
+ 1638              	.LASF36:
+ 1639 01c6 4932435F 		.ascii	"I2C_Master_MasterSendRestart\000"
+ 1639      4D617374 
+ 1639      65725F4D 
+ 1639      61737465 
+ 1639      7253656E 
+ 1640              	.LASF28:
+ 1641 01e3 636F756E 		.ascii	"counter\000"
+ 1641      74657200 
+ 1642              	.LASF32:
+ 1643 01eb 4932435F 		.ascii	"I2C_Master_Start\000"
+ 1643      4D617374 
+ 1643      65725F53 
+ 1643      74617274 
+ 1643      00
+ 1644              	.LASF12:
+ 1645 01fc 646F7562 		.ascii	"double\000"
+ 1645      6C6500
+ 1646              	.LASF25:
+ 1647 0203 4932435F 		.ascii	"I2C_Peripheral_ReadRegisterMulti\000"
+ 1647      50657269 
+ 1647      70686572 
+ 1647      616C5F52 
+ 1647      65616452 
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 35
+
+
+ 1648              	.LASF29:
+ 1649 0224 4932435F 		.ascii	"I2C_Peripheral_WriteRegister\000"
+ 1649      50657269 
+ 1649      70686572 
+ 1649      616C5F57 
+ 1649      72697465 
+ 1650              	.LASF5:
+ 1651 0241 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1651      20756E73 
+ 1651      69676E65 
+ 1651      6420696E 
+ 1651      7400
+ 1652              	.LASF8:
+ 1653 0253 756E7369 		.ascii	"unsigned int\000"
+ 1653      676E6564 
+ 1653      20696E74 
+ 1653      00
+ 1654              	.LASF7:
+ 1655 0260 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1655      206C6F6E 
+ 1655      6720756E 
+ 1655      7369676E 
+ 1655      65642069 
+ 1656              	.LASF10:
+ 1657 0277 75696E74 		.ascii	"uint8_t\000"
+ 1657      385F7400 
+ 1658              	.LASF15:
+ 1659 027f 4552524F 		.ascii	"ERROR\000"
+ 1659      5200
+ 1660              	.LASF34:
+ 1661 0285 4932435F 		.ascii	"I2C_Master_MasterSendStart\000"
+ 1661      4D617374 
+ 1661      65725F4D 
+ 1661      61737465 
+ 1661      7253656E 
+ 1662              	.LASF18:
+ 1663 02a0 73697A65 		.ascii	"sizetype\000"
+ 1663      74797065 
+ 1663      00
+ 1664              	.LASF27:
+ 1665 02a9 6572726F 		.ascii	"error\000"
+ 1665      7200
+ 1666              	.LASF6:
+ 1667 02af 6C6F6E67 		.ascii	"long long int\000"
+ 1667      206C6F6E 
+ 1667      6720696E 
+ 1667      7400
+ 1668              	.LASF38:
+ 1669 02bd 4932435F 		.ascii	"I2C_Master_MasterSendStop\000"
+ 1669      4D617374 
+ 1669      65725F4D 
+ 1669      61737465 
+ 1669      7253656E 
+ 1670              	.LASF20:
+ 1671 02d7 4932435F 		.ascii	"I2C_Peripheral_Stop\000"
+ 1671      50657269 
+ 1671      70686572 
+ARM GAS  C:\Users\indya\AppData\Local\Temp\cceoKtJv.s 			page 36
+
+
+ 1671      616C5F53 
+ 1671      746F7000 
+ 1672              	.LASF21:
+ 1673 02eb 4932435F 		.ascii	"I2C_Peripheral_ReadRegister\000"
+ 1673      50657269 
+ 1673      70686572 
+ 1673      616C5F52 
+ 1673      65616452 
+ 1674              	.LASF2:
+ 1675 0307 73686F72 		.ascii	"short int\000"
+ 1675      7420696E 
+ 1675      7400
+ 1676              	.LASF22:
+ 1677 0311 64657669 		.ascii	"device_address\000"
+ 1677      63655F61 
+ 1677      64647265 
+ 1677      737300
+ 1678              	.LASF33:
+ 1679 0320 4932435F 		.ascii	"I2C_Master_Stop\000"
+ 1679      4D617374 
+ 1679      65725F53 
+ 1679      746F7000 
+ 1680              	.LASF14:
+ 1681 0330 4E4F5F45 		.ascii	"NO_ERROR\000"
+ 1681      52524F52 
+ 1681      00
+ 1682              	.LASF4:
+ 1683 0339 6C6F6E67 		.ascii	"long int\000"
+ 1683      20696E74 
+ 1683      00
+ 1684              	.LASF13:
+ 1685 0342 63686172 		.ascii	"char\000"
+ 1685      00
+ 1686              	.LASF17:
+ 1687 0347 6C6F6E67 		.ascii	"long double\000"
+ 1687      20646F75 
+ 1687      626C6500 
+ 1688              	.LASF0:
+ 1689 0353 7369676E 		.ascii	"signed char\000"
+ 1689      65642063 
+ 1689      68617200 
+ 1690              	.LASF19:
+ 1691 035f 4932435F 		.ascii	"I2C_Peripheral_Start\000"
+ 1691      50657269 
+ 1691      70686572 
+ 1691      616C5F53 
+ 1691      74617274 
+ 1692              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran
